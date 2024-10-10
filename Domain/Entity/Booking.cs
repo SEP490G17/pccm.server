@@ -35,7 +35,7 @@ namespace Domain.Entity
         public PaymentStatus PaymentStatus { get; set; }  // Trạng thái thanh toán
 
         [ForeignKey("CourtId")]
-        public virtual Courts Court { get; set; }  // Liên kết với bảng Courts
+        public virtual Court Court { get; set; }  // Liên kết với bảng Courts
 
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; }  // Liên kết với bảng Users
