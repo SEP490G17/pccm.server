@@ -17,7 +17,7 @@ namespace Persistence
         public DbSet<StaffDetail> StaffDetails { get; set; }
         public DbSet<Shift> Shifts { get; set; }
         public DbSet<StaffAssignment> StaffAssignments { get; set; }
-        public DbSet<Courts> Courts { get; set; }
+        public DbSet<Court> Courts { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Event> Events { get; set; }

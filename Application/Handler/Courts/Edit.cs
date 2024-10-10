@@ -6,23 +6,23 @@ using FluentValidation;
 using MediatR;
 using Persistence;
 
-namespace Application.Handler.Events
+namespace Application.Handler.Courts
 {
     public class Edit
     {
-        public class Command : IRequest<Result<Event>>
+        public class Command : IRequest<Result<Court>>
         {
-            public Event Event { get; set; }
+            public Court court { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Event).SetValidator(new EventValidator());
+                RuleFor(x => x.court).SetValidator(new CourtValidator());
 
             }
         }
-        public class Handler : IRequestHandler<Command, Result<Event>>
+        public class Handler : IRequestHandler<Command, Result<Court>>
         {
 
             private readonly DataContext _context;
@@ -33,12 +33,12 @@ namespace Application.Handler.Events
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<Event>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Court>> Handle(Command request, CancellationToken cancellationToken)
             {
-                _context.Events.Update(request.Event);
+                _context.Courts.Update(request.court);
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Event>.Failure("Faild to edit event");
-                return Result<Event>.Success(_context.Entry(request.Event).Entity);
+                if (!result) return Result<Court>.Failure("Faild to edit court");
+                return Result<Court>.Success(_context.Entry(request.court).Entity);
             }
         }
     }
