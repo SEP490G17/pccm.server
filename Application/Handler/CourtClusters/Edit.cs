@@ -6,6 +6,7 @@ using Domain;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.CourtClusters
@@ -37,7 +38,14 @@ namespace Application.Handler.CourtClusters
             }
             public async Task<Result<CourtCluster>> Handle(Command request, CancellationToken cancellationToken)
             {
-                 var courtCluster = _mapper.Map<CourtCluster>(request.courtCluster);
+                var courtCluster = _mapper.Map<CourtCluster>(request.courtCluster);
+                var existingCourtCluster  = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == courtCluster.Id);
+                if (existingCourtCluster  == null)
+                {
+                    return Result<CourtCluster>.Failure("Not found court cluster.");
+                }
+
+                _context.Entry(existingCourtCluster).State = EntityState.Detached;
                 _context.CourtClusters.Update(courtCluster);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (!result) return Result<CourtCluster>.Failure("Faild to edit court cluster.");
