@@ -19,7 +19,7 @@ namespace Application.DTOs
         public string OwnerId { get; set; }  // Id của người sở hữu cụm sân (có thể là null)
         [StringLength(255)]
         public string Description { get; set; }  // Mô tả chi tiết về cụm sân
-        public string Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
+        public List<string> Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         
     }
