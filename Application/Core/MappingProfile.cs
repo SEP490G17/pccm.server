@@ -1,4 +1,6 @@
+using Application.DTOs;
 using AutoMapper;
+using Domain.Entity;
 
 namespace Application.Core
 {
@@ -6,7 +8,7 @@ namespace Application.Core
     {
         public MappingProfile()
         {
-
+             CreateMap<CourtClustersInputDTO, CourtCluster>();
         }
     }
 }
