@@ -9,6 +9,7 @@ namespace Application.Core
         public MappingProfile()
         {
              CreateMap<CourtClustersInputDTO, CourtCluster>();
+             CreateMap<OrderInputDTO, Order>();
         }
     }
 }
