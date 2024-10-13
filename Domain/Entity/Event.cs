@@ -4,7 +4,6 @@ namespace Domain.Entity
 {
     public class Event
     {
-        [Key]
         public int Id { get; set; } 
 
         [Required]
