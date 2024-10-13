@@ -4,7 +4,7 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Courts
+    public class Court
     {
         [Key]
         public int Id { get; set; }  

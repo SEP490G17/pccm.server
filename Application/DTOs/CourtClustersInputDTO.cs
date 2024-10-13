@@ -1,11 +1,14 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Domain.Entity
+namespace Application.DTOs
 {
-    public class CourtCluster
+    public class CourtClustersInputDTO
     {
-        [Key]
+         [Key]
         public int Id { get; set; }
         [Required]
         [StringLength(255)]
@@ -18,7 +21,6 @@ namespace Domain.Entity
         public string Description { get; set; }  // Mô tả chi tiết về cụm sân
         public List<string> Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
-        [ForeignKey("OwnerId")]
-        public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
+        
     }
 }

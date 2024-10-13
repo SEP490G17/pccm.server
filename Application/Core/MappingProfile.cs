@@ -24,6 +24,8 @@ namespace Application.Core
                 .ForMember(b => b.StartDate, o => o.MapFrom(s => s.StartDate))
                 .ForMember(b => b.EndDate, o => o.MapFrom(s => s.EndDate))
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
+             CreateMap<CourtClustersInputDTO, CourtCluster>();
+             CreateMap<OrderInputDTO, Order>();
         }
     }
 }
