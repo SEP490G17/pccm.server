@@ -4,6 +4,7 @@ namespace Domain.Enum
     {
         Pending,
         Confirmed,
+        Declined,
         Cancelled
     }
 }
