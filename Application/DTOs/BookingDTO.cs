@@ -1,10 +1,15 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Domain.Enum;
+using System.Linq;
+using System.Threading.Tasks;
+using Domain;
+using Domain.Entity;
 
-namespace Domain.Entity
+namespace Application.DTOs
 {
-    public class Booking
+    public class BookingDTO
     {
         [Key]
         public int Id { get; set; }
@@ -27,12 +32,8 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         [Range(1000, double.MaxValue, ErrorMessage = "Tổng giá trị tiền thuê sân phải lớn hơn hoặc bằng 1,000 VND.")]
         public decimal TotalPrice { get; set; }  // Tổng giá trị tiền thuê sân
-
-        [Required]
-        public BookingStatus Status { get; set; }  // Trạng thái đặt sân
-
-        [Required]
-        public PaymentStatus PaymentStatus { get; set; }  // Trạng thái thanh toán
+        public string Status { get; set; }  // Sẽ hiển thị tên của trạng thái
+        public string PaymentStatus { get; set; } // Sẽ hiển thị tên của trạng thái thanh toán
 
         [ForeignKey("CourtId")]
         public virtual Court Court { get; set; }  // Liên kết với bảng Courts
@@ -43,11 +44,6 @@ namespace Domain.Entity
         [ForeignKey("StaffId")]
         public virtual StaffDetail Staff { get; set; }  // Liên kết với bảng StaffDetails
 
-        [NotMapped]
-        public string StatusName => Status.ToString();  // Trả về tên của trạng thái thay vì số
-
-        [NotMapped]
-        public string PaymentName => PaymentStatus.ToString();  // Trả về tên của trạng thái thay vì số
 
     }
 }
