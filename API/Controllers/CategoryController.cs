@@ -24,6 +24,14 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Category = category }, ct));
         }
+        [AllowAnonymous]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategories(int id, Category category, CancellationToken ct)
+        {
+            category.Id = id;
+            return HandleResult(await Mediator.Send(new Edit.Command() { Category = category }, ct));
+
+        }
 
     }
 }
