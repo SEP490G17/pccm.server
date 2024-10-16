@@ -28,6 +28,11 @@ namespace Application.Core
             CreateMap<ServiceDto, Service>();
             CreateMap<CourtClustersInputDTO, CourtCluster>();
             CreateMap<OrderInputDTO, Order>();
+
+
+            CreateMap<Booking, BookingDTO>()
+            .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
+            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()));
         }
     }
 }
