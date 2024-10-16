@@ -43,7 +43,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteActivity(int id)
+        public async Task<IActionResult> DeleteBanner(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
