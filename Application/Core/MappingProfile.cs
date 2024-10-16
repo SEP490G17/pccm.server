@@ -1,6 +1,7 @@
 using Application.DTOs;
 using AutoMapper;
 using Domain.Entity;
+using System.Runtime.ConstrainedExecution;
 
 namespace Application.Core
 {
@@ -24,8 +25,9 @@ namespace Application.Core
                 .ForMember(b => b.StartDate, o => o.MapFrom(s => s.StartDate))
                 .ForMember(b => b.EndDate, o => o.MapFrom(s => s.EndDate))
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
-             CreateMap<CourtClustersInputDTO, CourtCluster>();
-             CreateMap<OrderInputDTO, Order>();
+            CreateMap<ServiceDto, Service>();
+            CreateMap<CourtClustersInputDTO, CourtCluster>();
+            CreateMap<OrderInputDTO, Order>();
         }
     }
 }
