@@ -17,7 +17,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new List.Query(), ct));
         }
 
-         [HttpGet("{id}")]
+        [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourt(int id, CancellationToken ct)
         {
@@ -45,6 +45,20 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteCourt(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("search/{value}")]
+        public async Task<IActionResult> SearchCourt(string value, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new Search.Query() { value = value }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("filter/{valueFilter}")]
+        public async Task<IActionResult> FilterCourt(string valueFilter, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new Filter.Query() { value = valueFilter }, ct));
         }
     }
 }
