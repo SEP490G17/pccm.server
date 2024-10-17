@@ -4,9 +4,11 @@ using Application.Interfaces;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Photos;
+using Infrastructure.Repository;
 using Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
+using Persistence.Repository;
 
 namespace API.Extensions
 {
@@ -32,10 +34,13 @@ namespace API.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<Create>();
             services.AddHttpContextAccessor();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
-
+            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            
             return services;
         }
     }

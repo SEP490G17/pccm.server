@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Review
+    public class Review : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string UserId { get; set; }
         public int? CourtClusterId { get; set; }
         [Range(1, 5)]

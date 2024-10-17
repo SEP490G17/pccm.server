@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Service
+    public class Service : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } 
         public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         [Required]
         [StringLength(255)]

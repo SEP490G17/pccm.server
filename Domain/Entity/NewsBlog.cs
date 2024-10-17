@@ -1,17 +1,21 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Event
+    public class NewsBlog : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } 
 
         [Required]
         [StringLength(255)]
         public string Title { get; set; }  // Tiêu đề sự kiện
 
+        [Required]
         [StringLength(255)]
+        public string Thumbnail { get; set; } // Url Ảnh đại diện của tin tức
+
+        [Column(TypeName = "TEXT")]
         public string Description { get; set; }  // Mô tả chi tiết về sự kiện
 
         [Required]
@@ -24,6 +28,12 @@ namespace Domain.Entity
         [StringLength(255)]
         public string Location { get; set; }  // Địa điểm tổ chức sự kiện
 
+        public BannerStatus Status { get; set; }
+
+        public string[] Tags { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo sự kiện
+
+
     }
 }

@@ -1,31 +1,38 @@
 using Application.Core;
 using MediatR;
-using Persistence;
 using Application.DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.EntityFrameworkCore;
+using Application.SpecParams;
+using Application.Interfaces;
+using Domain.Entity;
+using Application.SpecParams.BannerSpec;
 
 namespace Application.Handler.Banners
 {
     public class List
     {
-        public class Query : IRequest<Result<List<BannerDto>>>{}
-        public class Handler : IRequestHandler<Query, Result<List<BannerDto>>>{
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-
-            public Handler(DataContext context, IMapper mapper)
+        public class Query : IRequest<Result<Pagination<BannerDto>>>
+        {
+            public BaseSpecParam BaseSpecParam { get; set; }
+        }
+        public class Handler(IUnitOfWork _unitOfWork, IMapper _mapper) : IRequestHandler<Query, Result<Pagination<BannerDto>>>
+        {
+            public async Task<Result<Pagination<BannerDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                _mapper = mapper;
-                this._context = context;
-            }
-            public async Task<Result<List<BannerDto>>> Handle(Query request, CancellationToken cancellationToken){
-                var bannerGroup = await _context.Banners
-                .ProjectTo<BannerDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
-
-                return Result<List<BannerDto>>.Success(bannerGroup);
+                // lấy các query param từ query
+                var queryParams = request.BaseSpecParam;
+                // tạo đặc tả cho query banner bao gồm cả phân trang
+                var spec = new BannersSpecification(queryParams);
+                // tạo đặc tả cho việc lấy tổng bản ghi của banner theo đặc tả không gồm phân trang
+                var countSpec = new BannersCountSpecification(queryParams);
+                // tổng bản ghi dựa trên đặc tả
+                var totalItem = await _unitOfWork.Repository<Banner>().CountAsync(countSpec, cancellationToken);
+                // danh sách các đặc tả
+                var banners = await _unitOfWork.Repository<Banner>().ListAsync(spec, cancellationToken);
+                // map sang dto
+                var data = _mapper.Map<IReadOnlyList<Banner>, IReadOnlyList<BannerDto>>(banners);
+                var result = new Pagination<BannerDto>(queryParams.PageSize, totalItem, data);
+                return Result<Pagination<BannerDto>>.Success(result);
             }
         }
     }

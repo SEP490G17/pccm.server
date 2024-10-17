@@ -1,0 +1,242 @@
+[
+    {
+        "id": 1,
+        "Title": "Giải vô địch Pickleball 2024",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Giải vô địch Pickleball 2024 sẽ diễn ra vào ngày 5 tháng 10 tại Nhà thi đấu Thể thao Quốc gia. Đây là sự kiện được mong chờ nhất trong năm, quy tụ các tay vợt hàng đầu từ khắp nơi. Hãy đến tham gia và cổ vũ cho các đội tuyển tham gia tranh tài trong không khí thể thao sôi động!</p><p>Trong giải đấu năm nay, chúng tôi sẽ có những trận đấu hấp dẫn, với các phần thưởng giá trị dành cho người chiến thắng. Ngoài ra, sự kiện còn có các hoạt động giao lưu, chương trình giải trí và các gian hàng giới thiệu sản phẩm thể thao.</p>",
+        "StartTime": "2024-10-05T09:00:00",
+        "EndTime": "2024-10-05T17:00:00",
+        "Location": "Nhà thi đấu Thể thao Quốc gia",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "giải đấu",
+            "vô địch"
+        ],
+        "CreatedAt": "2024-09-01T12:00:00"
+    },
+    {
+        "id": 2,
+        "Title": "Hội thảo Pickleball cho người mới bắt đầu",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Hội thảo Pickleball cho người mới bắt đầu sẽ diễn ra vào ngày 12 tháng 10 tại Trung tâm Thể thao Cộng đồng. Đây là cơ hội tuyệt vời để bạn làm quen với môn thể thao thú vị này dưới sự hướng dẫn của các huấn luyện viên chuyên nghiệp.</p><p>Trong hội thảo, bạn sẽ được học về các kỹ thuật cơ bản, cách cầm vợt và chiến thuật chơi. Đừng bỏ lỡ cơ hội để gặp gỡ những người bạn mới và khám phá niềm đam mê với Pickleball!</p>",
+        "StartTime": "2024-10-12T10:00:00",
+        "EndTime": "2024-10-12T14:00:00",
+        "Location": "Trung tâm Thể thao Cộng đồng",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "hội thảo",
+            "người mới"
+        ],
+        "CreatedAt": "2024-09-05T12:30:00"
+    },
+    {
+        "id": 3,
+        "Title": "Giải đấu Pickleball Mùa Thu",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Giải đấu Pickleball Mùa Thu sẽ được tổ chức vào ngày 20 tháng 10 tại Sân vận động Thành phố. Đây là cơ hội tuyệt vời cho các vận động viên bán chuyên để thể hiện tài năng của mình và cọ xát với những đối thủ khác.</p><p>Hãy tham gia và trải nghiệm những trận đấu gay cấn, đồng thời thưởng thức các hoạt động giải trí xung quanh sự kiện!</p>",
+        "StartTime": "2024-10-20T09:00:00",
+        "EndTime": "2024-10-20T16:00:00",
+        "Location": "Sân vận động Thành phố",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "giải đấu",
+            "mùa thu"
+        ],
+        "CreatedAt": "2024-09-10T09:45:00"
+    },
+    {
+        "id": 4,
+        "Title": "Khóa học Pickleball nâng cao",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Khóa học Pickleball nâng cao sẽ được tổ chức vào ngày 1 tháng 11 tại Câu lạc bộ Thể thao Hà Nội. Khóa học này dành cho những người đã có kinh nghiệm và muốn nâng cao kỹ năng chơi của mình.</p><p>Các huấn luyện viên sẽ chia sẻ các chiến thuật chơi, cách giao bóng và cải thiện kỹ thuật di chuyển. Đừng bỏ lỡ cơ hội này để phát triển kỹ năng của bạn!</p>",
+        "StartTime": "2024-11-01T14:00:00",
+        "EndTime": "2024-11-01T17:00:00",
+        "Location": "Câu lạc bộ Thể thao Hà Nội",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "khóa học",
+            "nâng cao"
+        ],
+        "CreatedAt": "2024-09-12T15:00:00"
+    },
+    {
+        "id": 5,
+        "Title": "Pickleball: Bí quyết để trở thành người chơi chuyên nghiệp",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Hội thảo chia sẻ bí quyết để trở thành tay vợt Pickleball chuyên nghiệp sẽ diễn ra vào ngày 15 tháng 11 tại Trung tâm Huấn luyện Quốc gia. Tại đây, bạn sẽ được gặp gỡ các tay vợt chuyên nghiệp và nghe chia sẻ về con đường thành công của họ.</p><p>Chương trình bao gồm các buổi thảo luận và thực hành để bạn có thể áp dụng những gì đã học vào thực tế. Hãy tham gia để nâng cao trình độ của bạn!</p>",
+        "StartTime": "2024-11-15T09:30:00",
+        "EndTime": "2024-11-15T11:30:00",
+        "Location": "Trung tâm Huấn luyện Quốc gia",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "hội thảo",
+            "chuyên nghiệp"
+        ],
+        "CreatedAt": "2024-09-20T14:15:00"
+    },
+    {
+        "id": 6,
+        "Title": "Giải đấu Pickleball khu vực",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Giải đấu Pickleball khu vực sẽ được tổ chức vào ngày 1 tháng 12 tại Nhà thi đấu Thể thao Đà Nẵng. Đây là giải đấu mở cho tất cả mọi người, từ tay vợt không chuyên đến chuyên nghiệp.</p><p>Các trận đấu sẽ diễn ra trong không khí cạnh tranh và đầy kịch tính. Đừng bỏ lỡ cơ hội để chứng kiến tài năng của các tay vợt địa phương!</p>",
+        "StartTime": "2024-12-01T08:00:00",
+        "EndTime": "2024-12-01T17:00:00",
+        "Location": "Nhà thi đấu Thể thao Đà Nẵng",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "giải đấu",
+            "khu vực"
+        ],
+        "CreatedAt": "2024-09-22T09:00:00"
+    },
+    {
+        "id": 7,
+        "Title": "Hội thảo Pickleball trực tuyến",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Hội thảo Pickleball trực tuyến sẽ diễn ra vào ngày 10 tháng 12 với sự tham gia của các huấn luyện viên quốc tế. Đây là cơ hội để bạn học hỏi kinh nghiệm từ những người đã thành công trong môn thể thao này.</p><p>Bạn sẽ được tìm hiểu về kỹ thuật chơi, chế độ tập luyện và các bí quyết để nâng cao trình độ. Hãy tham gia để không bỏ lỡ!</p>",
+        "StartTime": "2024-12-10T18:00:00",
+        "EndTime": "2024-12-10T20:00:00",
+        "Location": "Online",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "hội thảo",
+            "trực tuyến"
+        ],
+        "CreatedAt": "2024-09-30T10:00:00"
+    },
+    {
+        "id": 8,
+        "Title": "Pickleball: Thể thao cho mọi lứa tuổi",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Chương trình giới thiệu về Pickleball sẽ diễn ra vào ngày 15 tháng 12 tại Công viên Cầu Giấy. Sự kiện này mở ra cho mọi lứa tuổi và là cơ hội tuyệt vời để tìm hiểu về môn thể thao thú vị này.</p><p>Hãy đến và tham gia các hoạt động, trò chơi và giao lưu với những người đam mê Pickleball khác! Chúng tôi sẽ có các huấn luyện viên hướng dẫn và nhiều trò chơi thú vị dành cho cả trẻ em và người lớn.</p>",
+        "StartTime": "2024-12-15T08:00:00",
+        "EndTime": "2024-12-15T12:00:00",
+        "Location": "Công viên Cầu Giấy",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "thể thao",
+            "mọi lứa tuổi"
+        ],
+        "CreatedAt": "2024-10-01T09:00:00"
+    },
+    {
+        "id": 9,
+        "Title": "Cuộc thi Pickleball Đại học",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Cuộc thi Pickleball Đại học sẽ diễn ra vào ngày 22 tháng 12 tại Trường Đại học Quốc gia. Đây là cơ hội để sinh viên thể hiện tài năng và cạnh tranh với nhau trong một môi trường thể thao tích cực.</p><p>Chúng tôi khuyến khích tất cả các sinh viên tham gia, bất kể bạn là người mới hay đã chơi lâu năm. Đừng bỏ lỡ cơ hội để nhận giải thưởng và tạo dựng kỷ niệm đẹp!</p>",
+        "StartTime": "2024-12-22T10:00:00",
+        "EndTime": "2024-12-22T16:00:00",
+        "Location": "Trường Đại học Quốc gia",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "đại học",
+            "cuộc thi"
+        ],
+        "CreatedAt": "2024-10-05T11:00:00"
+    },
+    {
+        "id": 10,
+        "Title": "Giải đấu Pickleball Quốc gia 2025",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Giải đấu Pickleball Quốc gia 2025 sẽ được tổ chức vào tháng 1 năm 2025 tại TP. Hồ Chí Minh. Đây là sự kiện thường niên thu hút nhiều tay vợt hàng đầu trong nước và quốc tế.</p><p>Sự kiện không chỉ là nơi tranh tài mà còn là cơ hội giao lưu, kết nối giữa các vận động viên và người hâm mộ. Hãy chuẩn bị cho những trận đấu kịch tính và các hoạt động bên lề thú vị!</p>",
+        "StartTime": "2025-01-10T09:00:00",
+        "EndTime": "2025-01-12T17:00:00",
+        "Location": "TP. Hồ Chí Minh",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "quốc gia",
+            "giải đấu"
+        ],
+        "CreatedAt": "2024-10-10T10:30:00"
+    },
+    {
+        "id": 11,
+        "Title": "Chương trình khuyến mãi Pickleball",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Chương trình khuyến mãi Pickleball sẽ diễn ra từ ngày 1 đến 31 tháng 12 tại tất cả các cửa hàng thể thao trên toàn quốc. Khách hàng sẽ được giảm giá lên đến 20% cho tất cả các sản phẩm liên quan đến Pickleball.</p><p>Đây là cơ hội tuyệt vời để bạn sắm sửa những dụng cụ cần thiết cho mùa giải tới!</p>",
+        "StartTime": "2024-12-01T00:00:00",
+        "EndTime": "2024-12-31T23:59:59",
+        "Location": "Toàn quốc",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "khuyến mãi",
+            "giảm giá"
+        ],
+        "CreatedAt": "2024-10-15T12:45:00"
+    },
+    {
+        "id": 12,
+        "Title": "Khóa học huấn luyện viên Pickleball",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Khóa học huấn luyện viên Pickleball sẽ diễn ra vào tháng 1 năm 2025 tại Trung tâm Huấn luyện Thể thao Quốc gia. Đây là cơ hội để những ai yêu thích môn thể thao này trở thành huấn luyện viên chuyên nghiệp.</p><p>Khóa học sẽ bao gồm các nội dung về kỹ thuật, chiến thuật và quản lý đội bóng. Sau khi hoàn thành khóa học, bạn sẽ được cấp chứng nhận hành nghề.</p>",
+        "StartTime": "2025-01-15T08:00:00",
+        "EndTime": "2025-01-20T17:00:00",
+        "Location": "Trung tâm Huấn luyện Thể thao Quốc gia",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "khóa học",
+            "huấn luyện viên"
+        ],
+        "CreatedAt": "2024-10-20T09:00:00"
+    },
+    {
+        "id": 13,
+        "Title": "Ngày hội Pickleball cho gia đình",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Ngày hội Pickleball cho gia đình sẽ diễn ra vào ngày 25 tháng 1 tại Công viên Thống Nhất. Đây là dịp để các gia đình có thể cùng nhau tham gia các hoạt động thể thao thú vị và giao lưu.</p><p>Chương trình bao gồm các trò chơi, thi đấu và các hoạt động giải trí khác, hứa hẹn mang lại nhiều niềm vui cho tất cả mọi người.</p>",
+        "StartTime": "2025-01-25T09:00:00",
+        "EndTime": "2025-01-25T16:00:00",
+        "Location": "Công viên Thống Nhất",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "gia đình",
+            "ngày hội"
+        ],
+        "CreatedAt": "2024-10-25T11:00:00"
+    },
+    {
+        "id": 14,
+        "Title": "Giải đấu Pickleball nữ",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Giải đấu Pickleball dành cho nữ sẽ được tổ chức vào ngày 10 tháng 2 tại Nhà thi đấu Thể thao Thành phố. Đây là sự kiện tôn vinh tài năng của các tay vợt nữ trong môn thể thao này.</p><p>Hãy đến cổ vũ cho các nữ vận động viên và tham gia các hoạt động bên lề hấp dẫn!</p>",
+        "StartTime": "2025-02-10T09:00:00",
+        "EndTime": "2025-02-10T15:00:00",
+        "Location": "Nhà thi đấu Thể thao Thành phố",
+        "Status": 1,
+        "Tags": [
+            "pickleball",
+            "nữ",
+            "giải đấu"
+        ],
+        "CreatedAt": "2024-10-30T10:00:00"
+    },
+    {
+        "id": 15,
+        "Title": "Khóa học Pickleball cho trẻ em",
+        "Thumbnail": "https://images.pexels.com/photos/21627/pexels-photo.jpg",
+        "Description": "<p>Khóa học Pickleball cho trẻ em sẽ được tổ chức vào tháng 3 năm 2025 tại Trung tâm Thể thao Thiếu nhi. Đây là cơ hội để trẻ em tìm hiểu và làm quen với môn thể thao bổ ích này.</p><p>Các huấn luyện viên sẽ giúp trẻ em phát triển kỹ năng chơi và tạo ra một môi trường vui vẻ, năng động. Hãy đăng ký ngay để cho con bạn có một trải nghiệm tuyệt vời!</p>",
+        "StartTime": "2025-03-05T10:00:00",
+        "EndTime": "2025-03-05T12:00:00",
+        "Location": "Trung tâm Thể thao Thiếu nhi",
+        "Status": 0,
+        "Tags": [
+            "pickleball",
+            "trẻ em",
+            "khóa học"
+        ],
+        "CreatedAt": "2024-11-05T14:00:00"
+    }
+]

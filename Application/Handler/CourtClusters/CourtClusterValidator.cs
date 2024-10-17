@@ -1,5 +1,4 @@
 using Application.DTOs;
-using Domain.Entity;
 using FluentValidation;
 
 namespace Application.Handler.CourtClusters

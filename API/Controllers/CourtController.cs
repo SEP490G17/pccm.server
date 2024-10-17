@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Handler.Courts;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;

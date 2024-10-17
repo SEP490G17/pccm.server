@@ -1,9 +1,8 @@
 ﻿using Application.Handler.Banners;
+using Application.SpecParams;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace API.Controllers
 {
@@ -11,11 +10,21 @@ namespace API.Controllers
     {
         public BannerController() { }
 
+        /*
+            Không hiểu code đọc theo thứ tự:
+            1. BaseSpecParam
+            2. List
+            3. ISpecification
+            4. BaseSpecification
+            5. GenericRepository
+            6. SpecificationEvaluator
+            7. UnitOfWork
+        */
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetBanner(CancellationToken ct)
+        public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query(),ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
         [AllowAnonymous]
@@ -38,7 +47,7 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateBanner(int id, Banner updatedBanner)
         {
             updatedBanner.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner}));
+            return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner }));
         }
 
         [AllowAnonymous]

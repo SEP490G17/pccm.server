@@ -1,10 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Handler.Services;
-using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.ConstrainedExecution;
 
 namespace API.Controllers
 {

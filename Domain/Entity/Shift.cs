@@ -2,16 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entity
 {
-    public class Shift
+    public class Shift : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } 
         [Required]
         [StringLength(100)]
-        public string ShiftName { get; set; }  
+        public string ShiftName { get; set; }
         [Required]
-        public TimeSpan StartTime { get; set; }  
+        public TimeSpan StartTime { get; set; }
         [Required]
-        public TimeSpan EndTime { get; set; }  
+        public TimeSpan EndTime { get; set; }
     }
 }

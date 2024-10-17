@@ -4,10 +4,8 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Booking
+    public class Booking : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public int CourtId { get; set; }
 
         public string UserId { get; set; }
