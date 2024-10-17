@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class StaffDetail
+    public class StaffDetail : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string UserId { get; set; }  // Id của người dùng 
         [Required]
         [Column(TypeName = "decimal(10, 2)")]

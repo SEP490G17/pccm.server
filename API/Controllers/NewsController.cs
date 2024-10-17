@@ -1,22 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Events;
-using Application.Handler.Events;
+using Application.Handler.News;
+using Application.SpecParams;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class EventController : BaseApiController
+    public class NewsController : BaseApiController
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetEvents(CancellationToken ct)
+        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecParam baseSpecParam ,CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query(), ct));
+            return HandleResult(await Mediator.Send(new List.Query(){BaseSpecParam=baseSpecParam}, ct));
         }
 
         [HttpGet("{id}")]
@@ -28,13 +25,13 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostCategories([FromBody] Event events, CancellationToken ct)
+        public async Task<IActionResult> PostCategories([FromBody] NewsBlog events, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Event = events }, ct));
         }
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateActivity(int id, Event updatedActivity)
+        public async Task<IActionResult> UpdateActivity(int id, NewsBlog updatedActivity)
         {
             updatedActivity.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { Event = updatedActivity }));

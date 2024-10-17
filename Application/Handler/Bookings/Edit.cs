@@ -1,8 +1,5 @@
 using Application.Core;
-using Application.DTOs;
-using Application.Handler.Courts;
 using AutoMapper;
-using Domain;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;

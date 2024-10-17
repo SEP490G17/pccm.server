@@ -3,11 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Product
+    public class Product : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }  
-        public int? CategoryId { get; set; }  
+        public int? CategoryId { get; set; }
         [Required]
         [StringLength(255)]
         public string ProductName { get; set; }  // Tên sản phẩm

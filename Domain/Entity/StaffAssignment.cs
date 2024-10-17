@@ -1,12 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class StaffAssignment
+    public class StaffAssignment : BaseEntity
     {
-        [Key]
-        public int Id { get; set; } 
         public int StaffId { get; set; }  // Mã định danh của nhân viên
         public int CourtClusterId { get; set; }  // Mã định danh của cụm sân
         [ForeignKey("StaffId")]

@@ -1,6 +1,5 @@
 using Domain;
 using Domain.Entity;
-using Domain.Enum;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +19,7 @@ namespace Persistence
         public DbSet<Court> Courts { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Payment> Payments { get; set; }
-        public DbSet<Event> Events { get; set; }
+        public DbSet<NewsBlog> NewsBlogs { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -35,6 +34,10 @@ namespace Persistence
 
             builder.Entity<CourtCluster>()
                 .Property(c => c.Images)
+                .HasColumnType("json"); // Đặt kiểu cột là JSON
+            
+            builder.Entity<NewsBlog>().ToTable("News")
+                .Property(c => c.Tags)
                 .HasColumnType("json"); // Đặt kiểu cột là JSON
                 
             foreach (var entityType in builder.Model.GetEntityTypes())
