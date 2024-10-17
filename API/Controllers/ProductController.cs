@@ -1,0 +1,37 @@
+﻿using Application.DTOs;
+using Application.Handler.Products;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Controllers
+{
+    public class ProductController : BaseApiController
+    {
+        public ProductController()
+        {
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> PostProduct([FromBody] ProductInputDTO product, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new Create.Command() { product = product }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, ProductInputDTO updatedProduct)
+        {
+            updatedProduct.Id = id;
+            return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct }));
+        }
+
+        [AllowAnonymous]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+        }
+    }
+}

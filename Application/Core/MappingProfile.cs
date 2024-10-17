@@ -31,7 +31,9 @@ namespace Application.Core
             CreateMap<CourtClustersInputDTO, CourtCluster>();
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
-
+            CreateMap<Review, Review>();
+            CreateMap<ProductInputDTO, Product>();
+            CreateMap<Product, Product>();
             CreateMap<Booking, BookingDTO>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()));
