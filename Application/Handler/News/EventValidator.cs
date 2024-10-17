@@ -1,9 +1,9 @@
 using Domain.Entity;
 using FluentValidation;
 
-namespace Application.Handler.Events
+namespace Application.Handler.News
 {
-    public class EventValidator:AbstractValidator<Event>
+    public class EventValidator:AbstractValidator<NewsBlog>
     {
         public EventValidator()
         {

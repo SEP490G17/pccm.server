@@ -1,6 +1,5 @@
 using Application.Core;
 using Domain.Entity;
-using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;

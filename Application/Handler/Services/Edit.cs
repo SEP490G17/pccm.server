@@ -1,17 +1,10 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Handler.Banners;
 using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Services
 {

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Domain.Enum;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain

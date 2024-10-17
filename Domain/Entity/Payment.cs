@@ -4,11 +4,9 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Payment
+    public class Payment : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }  
-        public int BookingId { get; set; }  
+        public int BookingId { get; set; }
         [Required]
         public PaymentMethod PaymentMethod { get; set; }  // Phương thức thanh toán
         [Required]

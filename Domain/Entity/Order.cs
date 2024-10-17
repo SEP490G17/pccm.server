@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Order
+    public class Order : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public int? BookingId { get; set; }
         public int? StaffId { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.Now;  // Thời gian đặt hàng

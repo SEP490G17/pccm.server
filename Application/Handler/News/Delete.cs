@@ -21,7 +21,7 @@ namespace Application.Events
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var even = await _context.Events.FindAsync(request.Id);
+                var even = await _context.NewsBlogs.FindAsync(request.Id);
                 if (even is null) return null;
                 _context.Remove(even);
                 var result = await _context.SaveChangesAsync() > 0;

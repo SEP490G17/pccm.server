@@ -1,4 +1,6 @@
+using System.Text.Json;
 using Domain;
+using Domain.Entity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistence
@@ -25,6 +27,21 @@ namespace Persistence
           await userManager.CreateAsync(user, "123456aA@");
         }
       }
+
+      if (!context.Banners.Any())
+      {
+        var bannersData = File.ReadAllText("../Persistence/SeedData/banners.json");
+        var banners = JsonSerializer.Deserialize<List<Banner>>(bannersData);
+        context.Banners.AddRange(banners);
+
+      }
+
+      if(!context.NewsBlogs.Any()){
+        var newsData = File.ReadAllText("../Persistence/SeedData/news.json");
+        var newsBlogs = JsonSerializer.Deserialize<List<NewsBlog>>(newsData);
+        context.NewsBlogs.AddRange(newsBlogs);
+      }
+
       await context.SaveChangesAsync();
     }
   }

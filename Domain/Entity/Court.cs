@@ -4,15 +4,13 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Court
+    public class Court : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }  
         [Required]
         [StringLength(255)]
         public string CourtName { get; set; }  // Tên sân
 
-        public int? CourtClusterId { get; set; }  
+        public int? CourtClusterId { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
