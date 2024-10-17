@@ -5,6 +5,9 @@ namespace Domain.Entity
 {
     public class Product : BaseEntity
     {
+        [Required]
+        [StringLength(255)]
+        public string ThumbnailUrl { get; set; }
         public int? CategoryId { get; set; }
         [Required]
         [StringLength(255)]

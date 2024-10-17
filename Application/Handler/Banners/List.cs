@@ -6,6 +6,7 @@ using Application.SpecParams;
 using Application.Interfaces;
 using Domain.Entity;
 using Application.SpecParams.BannerSpec;
+using Persistence;
 
 namespace Application.Handler.Banners
 {
