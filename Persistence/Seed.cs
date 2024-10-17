@@ -7,7 +7,7 @@ namespace Persistence
 {
   public class Seed
   {
-    public static async Task SeedData(DataContext context, UserManager<AppUser> userManager)
+    public static async Task SeedData(DataContext context, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
       if (!userManager.Users.Any())
       {
@@ -36,12 +36,34 @@ namespace Persistence
 
       }
 
-      if(!context.NewsBlogs.Any()){
+      if (!context.NewsBlogs.Any())
+      {
         var newsData = File.ReadAllText("../Persistence/SeedData/news.json");
         var newsBlogs = JsonSerializer.Deserialize<List<NewsBlog>>(newsData);
         context.NewsBlogs.AddRange(newsBlogs);
       }
 
+      if (!context.Roles.Any())
+      {
+        var rolesData = File.ReadAllText("../Persistence/SeedData/roles.json");
+        var roles = JsonSerializer.Deserialize<List<IdentityRole>>(rolesData);
+        foreach (var role in roles)
+        {
+          await roleManager.CreateAsync(role);
+        }
+      }
+      if (!context.CourtClusters.Any())
+      {
+        var courtClustersData = File.ReadAllText("../Persistence/SeedData/courtCluster.json");
+        var CourtClusters = JsonSerializer.Deserialize<List<CourtCluster>>(courtClustersData);
+        await context.CourtClusters.AddRangeAsync(CourtClusters);
+      }
+      if (!context.Services.Any())
+      {
+        var servicesData = File.ReadAllText("../Persistence/SeedData/services.json");
+        var services = JsonSerializer.Deserialize<List<Service>>(servicesData);
+        await context.Services.AddRangeAsync(services);
+      }
       await context.SaveChangesAsync();
     }
   }

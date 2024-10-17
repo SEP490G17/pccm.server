@@ -1,0 +1,182 @@
+[
+    {
+        "CourtClusterName": "Cụm Sân 1",
+        "Location": "10.7769, 106.6954",
+        "Address": "123 Đường 1, Quận 1, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Cụm sân bóng đa năng, phù hợp cho các trận đấu giao hữu.",
+        "Images": [
+            "image1.jpg",
+            "image2.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 2",
+        "Location": "10.7760, 106.6950",
+        "Address": "456 Đường 2, Quận 1, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng đá mini, trang bị đầy đủ thiết bị.",
+        "Images": [
+            "image3.jpg",
+            "image4.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 3",
+        "Location": "10.7751, 106.6940",
+        "Address": "789 Đường 3, Quận 2, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng rổ, có chỗ ngồi cho khán giả.",
+        "Images": [
+            "image5.jpg",
+            "image6.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 4",
+        "Location": "10.7742, 106.6930",
+        "Address": "101 Đường 4, Quận 3, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Cụm sân tennis, không gian yên tĩnh.",
+        "Images": [
+            "image7.jpg",
+            "image8.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 5",
+        "Location": "10.7733, 106.6920",
+        "Address": "202 Đường 5, Quận 3, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân thể thao đa năng, phục vụ nhiều bộ môn.",
+        "Images": [
+            "image9.jpg",
+            "image10.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 6",
+        "Location": "10.7724, 106.6910",
+        "Address": "303 Đường 6, Quận 4, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng chuyền bãi biển, thích hợp cho mùa hè.",
+        "Images": [
+            "image11.jpg",
+            "image12.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 7",
+        "Location": "10.7715, 106.6900",
+        "Address": "404 Đường 7, Quận 5, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng đá cổ điển, phù hợp với mọi lứa tuổi.",
+        "Images": [
+            "image13.jpg",
+            "image14.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 8",
+        "Location": "10.7706, 106.6890",
+        "Address": "505 Đường 8, Quận 5, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân golf mini, không gian xanh mát.",
+        "Images": [
+            "image15.jpg",
+            "image16.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 9",
+        "Location": "10.7697, 106.6880",
+        "Address": "606 Đường 9, Quận 6, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng chày, trang bị đầy đủ.",
+        "Images": [
+            "image17.jpg",
+            "image18.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 10",
+        "Location": "10.7688, 106.6870",
+        "Address": "707 Đường 10, Quận 6, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân cầu lông, không gian thoải mái.",
+        "Images": [
+            "image19.jpg",
+            "image20.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 11",
+        "Location": "10.7679, 106.6860",
+        "Address": "808 Đường 11, Quận 7, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng đá mini, nơi tổ chức các giải đấu.",
+        "Images": [
+            "image21.jpg",
+            "image22.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 12",
+        "Location": "10.7670, 106.6850",
+        "Address": "909 Đường 12, Quận 7, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân tập thể dục, phục vụ miễn phí.",
+        "Images": [
+            "image23.jpg",
+            "image24.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 13",
+        "Location": "10.7661, 106.6840",
+        "Address": "1010 Đường 13, Quận 8, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân thể thao đa năng, không gian mở.",
+        "Images": [
+            "image25.jpg",
+            "image26.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 14",
+        "Location": "10.7652, 106.6830",
+        "Address": "1111 Đường 14, Quận 8, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân bóng bàn, cho thuê theo giờ.",
+        "Images": [
+            "image27.jpg",
+            "image28.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    },
+    {
+        "CourtClusterName": "Cụm Sân 15",
+        "Location": "10.7643, 106.6820",
+        "Address": "1212 Đường 15, Quận 9, TP.HCM",
+        "OwnerId": "a522eabe-9f69-4160-89d6-2667a328d401",
+        "Description": "Sân yoga, tổ chức các lớp học.",
+        "Images": [
+            "image29.jpg",
+            "image30.jpg"
+        ],
+        "CreatedAt": "2024-10-18T00:00:00"
+    }
+]

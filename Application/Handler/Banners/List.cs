@@ -7,6 +7,8 @@ using Application.Interfaces;
 using Domain.Entity;
 using Application.SpecParams.BannerSpec;
 using Persistence;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Handler.Banners
 {
@@ -29,9 +31,9 @@ namespace Application.Handler.Banners
                 // tổng bản ghi dựa trên đặc tả
                 var totalItem = await _unitOfWork.Repository<Banner>().CountAsync(countSpec, cancellationToken);
                 // danh sách các đặc tả
-                var banners = await _unitOfWork.Repository<Banner>().ListAsync(spec, cancellationToken);
+                var data = await _unitOfWork.Repository<Banner>().QueryList(spec)
+                .ProjectTo<BannerDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
                 // map sang dto
-                var data = _mapper.Map<IReadOnlyList<Banner>, IReadOnlyList<BannerDto>>(banners);
                 var result = new Pagination<BannerDto>(queryParams.PageSize, totalItem, data);
                 return Result<Pagination<BannerDto>>.Success(result);
             }

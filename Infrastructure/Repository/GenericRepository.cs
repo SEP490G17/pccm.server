@@ -38,7 +38,7 @@ namespace Persistence.Repository
         private IQueryable<T> ApplySpecification(ISpecification<T> spec)
         {
             // Sử dụng đánh giá đặc tả query để tạo câu lệnh phù hợp => apply trả về 1 IQueryable
-            return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec); 
+            return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
         }
 
         public T Add(T entity)
@@ -58,6 +58,11 @@ namespace Persistence.Repository
         {
             _context.Set<T>().Remove(entity);
             return _context.Entry(entity).Entity;
+        }
+
+        public IQueryable<T> QueryList(ISpecification<T> spec)
+        {
+            return ApplySpecification(spec);
         }
     }
 }
