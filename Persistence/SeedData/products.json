@@ -1,0 +1,74 @@
+[
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 1,
+    "ProductName": "Sandwich",
+    "Description": "Sandwich thịt nguội và phô mai",
+    "Quantity": 50,
+    "Price": 35000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 1,
+    "ProductName": "Bánh Mì Thịt",
+    "Description": "Bánh mì với nhân thịt và rau",
+    "Quantity": 30,
+    "Price": 25000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 2,
+    "ProductName": "Coca-Cola",
+    "Description": "Nước giải khát có gas",
+    "Quantity": 100,
+    "Price": 15000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 2,
+    "ProductName": "Nước Suối",
+    "Description": "Nước suối tinh khiết",
+    "Quantity": 200,
+    "Price": 10000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 2,
+    "ProductName": "Trà Đào",
+    "Description": "Trà đào đóng chai",
+    "Quantity": 80,
+    "Price": 20000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 3,
+    "ProductName": "Thuốc Lá Vinataba",
+    "Description": "Bao thuốc lá Vinataba",
+    "Quantity": 60,
+    "Price": 30000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 3,
+    "ProductName": "Kẹo Cao Su",
+    "Description": "Kẹo cao su bạc hà",
+    "Quantity": 120,
+    "Price": 5000.00,
+    "CourtClusterId": 1
+  },
+  {
+    "ThumbnailUrl": "https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_limit,w_1200,h_630,dpr_1/https://assets.app.engoo.com/images/x7jPxj9YtJfv97hnC3mMmQog5VwuYojZ7tlrhczGXIV.jpeg",
+    "CategoryId": 3,
+    "ProductName": "Bật Lửa",
+    "Description": "Bật lửa tiện dụng",
+    "Quantity": 90,
+    "Price": 10000.00,
+    "CourtClusterId": 1
+  }
+]

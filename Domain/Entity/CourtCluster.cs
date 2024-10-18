@@ -8,6 +8,7 @@ namespace Domain.Entity
         [Required]
         [StringLength(255)]
         public string CourtClusterName { get; set; }  // Tên cụm sân
+
         [Required]
         [StringLength(255)]
         public string Location { get; set; }  // Địa điểm theo tọa độ google map của cụm sân
@@ -21,5 +22,7 @@ namespace Domain.Entity
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         [ForeignKey("OwnerId")]
         public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
+        public List<Service> Services { get; set; }
+        public List<Product> Products { get; set; }
     }
 }

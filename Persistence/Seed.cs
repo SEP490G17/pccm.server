@@ -64,6 +64,16 @@ namespace Persistence
         var services = JsonSerializer.Deserialize<List<Service>>(servicesData);
         await context.Services.AddRangeAsync(services);
       }
+      if(!context.Categories.Any()){
+        var categoriesData = File.ReadAllText("../Persistence/SeedData/categories.json");
+        var categories = JsonSerializer.Deserialize<List<Category>>(categoriesData);
+        await context.Categories.AddRangeAsync(categories);
+      }
+      if(!context.Products.Any()){
+        var productsData = File.ReadAllText("../Persistence/SeedData/products.json");
+        var products = JsonSerializer.Deserialize<List<Product>>(productsData);
+        await context.Products.AddRangeAsync(products);
+      }
       await context.SaveChangesAsync();
     }
   }

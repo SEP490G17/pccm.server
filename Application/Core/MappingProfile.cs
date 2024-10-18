@@ -29,6 +29,11 @@ namespace Application.Core
             CreateMap<Review, Review>();
             CreateMap<ProductInputDTO, Product>();
             CreateMap<Product, Product>();
+            CreateMap<Product, ProductDTO>()
+            .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
+            .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+            
+
             CreateMap<Booking, BookingDTO>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()));
