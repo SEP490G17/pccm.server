@@ -4,8 +4,10 @@ using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.EventSpecification;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Handler.News
 {
@@ -24,8 +26,9 @@ namespace Application.Handler.News
                 var spec = new EventsSpecification(querySpec);
                 var specCount = new EventsCountSpecification(querySpec);
                 var totalItem = await _unitOfWork.Repository<NewsBlog>().CountAsync(specCount, cancellationToken);
-                var events = await _unitOfWork.Repository<NewsBlog>().ListAsync(spec, cancellationToken);
-                var data = _mapper.Map<IReadOnlyList<NewsBlog>, IReadOnlyList<NewsBlogDTO>>(events);
+                var data = await _unitOfWork.Repository<NewsBlog>().QueryList(spec)
+                .ProjectTo<NewsBlogDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
                 return Result<Pagination<NewsBlogDTO>>.Success(new Pagination<NewsBlogDTO>(querySpec.PageSize, totalItem, data));
             }
         }

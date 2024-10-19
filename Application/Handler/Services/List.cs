@@ -1,7 +1,11 @@
 ﻿using Application.Core;
 using Application.DTOs;
+using Application.Interfaces;
+using Application.SpecParams;
+using Application.SpecParams.ServiceSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -10,24 +14,25 @@ namespace Application.Handler.Services
 {
     public class List
     {
-        public class Query : IRequest<Result<List<ServiceDto>>> { }
-        public class Handler : IRequestHandler<Query, Result<List<ServiceDto>>>
+        public class Query : IRequest<Result<Pagination<ServiceDto>>>
         {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
+            public BaseSpecParam BaseSpecParam { get; set; }
+        }
+        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<ServiceDto>>>
+        {
 
-            public Handler(DataContext context, IMapper mapper)
+            public async Task<Result<Pagination<ServiceDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                _mapper = mapper;
-                this._context = context;
-            }
-            public async Task<Result<List<ServiceDto>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var serviceGroup = await _context.Services
-                .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider)
-                .ToListAsync(cancellationToken);
+                var querySpec = request.BaseSpecParam;
 
-                return Result<List<ServiceDto>>.Success(serviceGroup);
+                var spec = new ServicesSpecification(querySpec);
+                var specCount = new ServicesCountSpecification(querySpec);
+
+                var totalElement = await _unitOfWork.Repository<Service>().CountAsync(specCount, cancellationToken);
+                var data = await _unitOfWork.Repository<Service>().QueryList(spec)
+                .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+
+                return Result<Pagination<ServiceDto>>.Success(new Pagination<ServiceDto>(querySpec.PageSize, totalElement, data));
             }
         }
     }

@@ -2,6 +2,7 @@ using System.Text;
 using API.Services;
 using Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Persistence;
 
@@ -20,7 +21,8 @@ namespace API.Extensions
                 opt.Password.RequireDigit = true;
                 opt.Password.RequireUppercase = true;
                 opt.User.RequireUniqueEmail = true;
-            }).AddEntityFrameworkStores<DataContext>();
+            }).AddRoles<IdentityRole>() 
+            .AddEntityFrameworkStores<DataContext>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
 

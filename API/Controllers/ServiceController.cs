@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Handler.Services;
+using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetService(CancellationToken ct)
+        public async Task<IActionResult> GetService([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query(), ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
         [AllowAnonymous]

@@ -1,0 +1,18 @@
+[
+    {
+        "Name": "Admin",
+        "NormalizedName": "ADMIN"
+    },
+    {
+        "Name": "Owner",
+        "NormalizedName": "OWNER"
+    },
+    {
+        "Name": "EditBanner",
+        "NormalizedName": "EDITBANNER"
+    },
+    {
+        "Name": "EditNews",
+        "NormalizedName": "EDITNEWS"
+    }
+]

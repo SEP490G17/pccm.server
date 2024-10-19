@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241018014739_ProductEntity")]
+    partial class ProductEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,6 +252,9 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<int?>("CourtClusterId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CourtClusterName")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -446,6 +452,9 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10, 2)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -464,6 +473,8 @@ namespace Persistence.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CourtClusterId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Products");
                 });
@@ -518,6 +529,9 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10, 2)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -526,6 +540,8 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourtClusterId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Services");
                 });
@@ -820,13 +836,15 @@ namespace Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
+                    b.HasOne("Domain.Entity.CourtCluster", null)
                         .WithMany("Products")
                         .HasForeignKey("CourtClusterId");
 
-                    b.Navigation("Category");
+                    b.HasOne("Domain.Entity.Product", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ProductId");
 
-                    b.Navigation("CourtCluster");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -849,6 +867,10 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
                         .WithMany("Services")
                         .HasForeignKey("CourtClusterId");
+
+                    b.HasOne("Domain.Entity.Product", null)
+                        .WithMany("Services")
+                        .HasForeignKey("ProductId");
 
                     b.Navigation("CourtCluster");
                 });
@@ -933,6 +955,13 @@ namespace Persistence.Migrations
                 });
 
             modelBuilder.Entity("Domain.Entity.CourtCluster", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Product", b =>
                 {
                     b.Navigation("Products");
 

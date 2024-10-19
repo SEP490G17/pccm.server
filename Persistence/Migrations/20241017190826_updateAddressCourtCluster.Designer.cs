@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241017190826_updateAddressCourtCluster")]
+    partial class updateAddressCourtCluster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -436,9 +439,6 @@ namespace Persistence.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CourtClusterId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
@@ -462,8 +462,6 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("CourtClusterId");
 
                     b.ToTable("Products");
                 });
@@ -820,13 +818,7 @@ namespace Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
-                        .WithMany("Products")
-                        .HasForeignKey("CourtClusterId");
-
                     b.Navigation("Category");
-
-                    b.Navigation("CourtCluster");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -847,7 +839,7 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.Service", b =>
                 {
                     b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
-                        .WithMany("Services")
+                        .WithMany()
                         .HasForeignKey("CourtClusterId");
 
                     b.Navigation("CourtCluster");
@@ -930,13 +922,6 @@ namespace Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Entity.CourtCluster", b =>
-                {
-                    b.Navigation("Products");
-
-                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }

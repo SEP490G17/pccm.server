@@ -5,6 +5,10 @@ namespace Domain.Entity
 {
     public class Product : BaseEntity
     {
+        [Required]
+        [StringLength(255)]
+        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
+        public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         public int? CategoryId { get; set; }
         [Required]
         [StringLength(255)]
@@ -18,6 +22,8 @@ namespace Domain.Entity
         public decimal Price { get; set; }  // Giá sản phẩm
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }  // Liên kết với bảng Categories
+        [ForeignKey("CourtClusterId")]
+        public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
     }
 
 }

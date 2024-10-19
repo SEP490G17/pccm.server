@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Handler.Products;
+using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,14 @@ namespace API.Controllers
     {
         public ProductController()
         {
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetProducts([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+
         }
 
         [AllowAnonymous]
