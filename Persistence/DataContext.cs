@@ -27,6 +27,7 @@ namespace Persistence
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Banner> Banners { get; set; }
+         public DbSet<StaffPosition> StaffPositions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
