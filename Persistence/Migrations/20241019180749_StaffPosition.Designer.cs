@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241019180749_StaffPosition")]
+    partial class StaffPosition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -585,9 +588,6 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("PositionId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(10, 2)");
 
@@ -598,8 +598,6 @@ namespace Persistence.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PositionId");
 
                     b.HasIndex("UserId");
 
@@ -898,15 +896,9 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entity.StaffDetail", b =>
                 {
-                    b.HasOne("Domain.Entity.StaffPosition", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId");
-
                     b.HasOne("Domain.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Position");
 
                     b.Navigation("User");
                 });

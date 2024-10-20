@@ -13,5 +13,7 @@ namespace Domain.Entity
         public int? ShiftId { get; set; }  // Id của ca làm việc (có thể là null)
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; }  // Liên kết với bảng Users
+
+        public virtual StaffPosition Position { get; set; } 
     }
 }
