@@ -15,8 +15,11 @@ namespace Domain.Entity
         [StringLength(255)]
         public string Thumbnail { get; set; } // Url Ảnh đại diện của tin tức
 
-        [Column(TypeName = "TEXT")]
+        [StringLength(1000)]
         public string Description { get; set; }  // Mô tả chi tiết về sự kiện
+
+        [Column(TypeName = "TEXT")]
+        public string Content { get; set; }  // Mô tả chi tiết về sự kiện
 
         [Required]
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu sự kiện
