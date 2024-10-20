@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace API.DTOs
 {
     [Route("api/[controller]")]
@@ -103,8 +104,18 @@ namespace API.DTOs
 
             var token = _tokenService.CreatePasswordResetToken(user);
 
-            var emailMessage = $"Click on the following link to reset your password: http://localhost:5000/api/Account/confirm-forgot-password?token={token}";
-
+            var emailMessage = $@"
+                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                        <h2 style='text-align: center; color: #007BFF;'>Password Reset Request</h2>
+                        <p>Hi,</p>
+                        <p>You have requested to reset your password. Please click the link below to reset your password:</p>
+                        <p style='text-align: center;'>
+                            <a href='http://localhost:5000/api/Account/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
+                        </p>
+                        <p>If you didn't request this, you can safely ignore this email.</p>
+                        <p>Thanks,<br>PCCM System.</p>
+                    </div>
+                ";
             try
             {
                 await _emailService.SendEmailAsync(user.Email, "Reset Password", emailMessage);
@@ -167,7 +178,18 @@ namespace API.DTOs
             // Tạo token để thay đổi mật khẩu
             var token = _tokenService.CreatePasswordResetToken(user);
 
-            var emailMessage = $"Click on the following link to change your password: http://localhost:5000/api/Account/change-password?token={token}";
+            var emailMessage = $@"
+                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                        <h2 style='text-align: center; color: #007BFF;'>Password Change Request</h2>
+                        <p>Hi,</p>
+                        <p>You have requested to change your password. Please click the link below to change your password:</p>
+                        <p style='text-align: center;'>
+                            <a href='http://localhost:5000/api/Account/confirm-change-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Change Password</a>
+                        </p>
+                        <p>If you didn't request this, you can safely ignore this email.</p>
+                        <p>Thanks,<br>PCCM System.</p>
+                    </div>
+                ";
             await _emailService.SendEmailAsync(user.Email, "Change Password", emailMessage);
 
             return Ok("An email has been sent to change your password.");
