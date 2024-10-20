@@ -56,6 +56,8 @@ namespace Persistence
       {
         var courtClustersData = File.ReadAllText("../Persistence/SeedData/courtCluster.json");
         var CourtClusters = JsonSerializer.Deserialize<List<CourtCluster>>(courtClustersData);
+        var adminId = await userManager.FindByNameAsync("adminstrator");
+        CourtClusters.ForEach(c => c.OwnerId = adminId.Id);
         await context.CourtClusters.AddRangeAsync(CourtClusters);
       }
       if (!context.Services.Any())
@@ -64,12 +66,14 @@ namespace Persistence
         var services = JsonSerializer.Deserialize<List<Service>>(servicesData);
         await context.Services.AddRangeAsync(services);
       }
-      if(!context.Categories.Any()){
+      if (!context.Categories.Any())
+      {
         var categoriesData = File.ReadAllText("../Persistence/SeedData/categories.json");
         var categories = JsonSerializer.Deserialize<List<Category>>(categoriesData);
         await context.Categories.AddRangeAsync(categories);
       }
-      if(!context.Products.Any()){
+      if (!context.Products.Any())
+      {
         var productsData = File.ReadAllText("../Persistence/SeedData/products.json");
         var products = JsonSerializer.Deserialize<List<Product>>(productsData);
         await context.Products.AddRangeAsync(products);
