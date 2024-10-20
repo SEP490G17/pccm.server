@@ -8,7 +8,6 @@ namespace Application.DTOs
             Count = count;
             Data = data;
         }
-
         public int PageSize { get; set; }
         public int Count { get; set; }
         public IReadOnlyList<T> Data { get; set; }
