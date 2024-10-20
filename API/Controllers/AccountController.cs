@@ -1,6 +1,10 @@
 using System.Security.Claims;
 using API.Services;
+using Application.DTOs;
+using Application.Handler.Users;
 using Domain;
+using Domain.Entity;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -82,5 +86,7 @@ namespace API.DTOs
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
             return CreateUserObject(user);
         }
+
+
     }
 }
