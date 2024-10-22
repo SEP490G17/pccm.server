@@ -25,6 +25,16 @@ namespace Application.Core
              .ForMember(s => s.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
             CreateMap<Service, Service>();
             CreateMap<ServiceDto, Service>();
+
+            CreateMap<CourtCluster, CourtClustersInputDTO>()
+             .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(b => b.CourtClusterName, o => o.MapFrom(s => s.CourtClusterName))
+                .ForMember(b => b.Location, o => o.MapFrom(s => s.Location))
+                .ForMember(b => b.Address, o => o.MapFrom(s => s.Address))
+                .ForMember(b => b.OwnerId, o => o.MapFrom(s => s.OwnerId))
+                .ForMember(b => b.Description, o => o.MapFrom(s => s.Description))
+                .ForMember(b => b.Images, o => o.MapFrom(s => s.Images))
+                .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
             CreateMap<CourtClustersInputDTO, CourtCluster>();
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
