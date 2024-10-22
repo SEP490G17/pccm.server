@@ -9,7 +9,7 @@ namespace Application.Interfaces
         Task<IReadOnlyList<T>> ListAllAsync();
         Task<T> GetEntityWithSpec(ISpecification<T> spec);
         Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken);
-        IQueryable<T> QueryList(ISpecification<T> spec);
+        IQueryable<T> QueryList(ISpecification<T>? spec);
         Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken);
         T Add(T entity);
         T Update(T entity);

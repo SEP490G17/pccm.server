@@ -60,8 +60,11 @@ namespace Persistence.Repository
             return _context.Entry(entity).Entity;
         }
 
-        public IQueryable<T> QueryList(ISpecification<T> spec)
-        {
+        public IQueryable<T> QueryList(ISpecification<T>? spec)
+        {   
+            if(spec == null){
+                return _context.Set<T>().AsQueryable();
+            }
             return ApplySpecification(spec);
         }
     }

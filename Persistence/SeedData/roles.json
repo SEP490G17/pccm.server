@@ -8,11 +8,32 @@
         "NormalizedName": "OWNER"
     },
     {
-        "Name": "EditBanner",
-        "NormalizedName": "EDITBANNER"
+        "Name": "ManagerBanner",
+        "NormalizedName": "MANAGERBANNER"
     },
     {
-        "Name": "EditNews",
-        "NormalizedName": "EDITNEWS"
+        "Name": "ManagerNews",
+        "NormalizedName": "MANAGERNEWS"
+    },
+    {
+        "Name": "ManagerStaff",
+        "NormalizedName": "MANAGERSTAFF"
+    },
+    {
+        "Name": "ManagerCourtCluster",
+        "NormalizedName": "MANAGERCOURTCLUSTER"
+    },
+    {
+        "Name": "ManagerBooking",
+        "NormalizedName": "MANAGERBOOKING"
+    },
+    {
+        "Name": "ManagerOrder",
+        "NormalizedName": "MANAGERORDER"
+    }
+    ,
+    {
+        "Name": "ManagerCustomer",
+        "NormalizedName": "MANAGERCUSTOMER"
     }
 ]

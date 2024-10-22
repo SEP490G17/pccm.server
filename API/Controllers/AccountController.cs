@@ -3,14 +3,14 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using API.Services;
 using Application.DTOs;
-using Application.Handler.Users;
+using Application.Interfaces;
 using Domain;
-using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace API.DTOs
 {
@@ -21,11 +21,15 @@ namespace API.DTOs
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly TokenService _tokenService;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService)
+        private readonly IEmailService _emailService;
+        private readonly IMediator _mediator;
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _mediator = mediator;
+            _emailService = emailService;
         }
 
         [AllowAnonymous]
@@ -59,7 +63,7 @@ namespace API.DTOs
             var user = new AppUser
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Username
+                UserName = registerDto.Username,
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -130,6 +134,121 @@ namespace API.DTOs
         {
             var user = await _userManager.FindByNameAsync(userName);
 
+        // API khi người dùng yêu cầu quên mật khẩu
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO request)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var token = _tokenService.CreatePasswordResetToken(user);
+
+            var emailMessage = $@"
+                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                        <h2 style='text-align: center; color: #007BFF;'>Password Reset Request</h2>
+                        <p>Hi,</p>
+                        <p>You have requested to reset your password. Please click the link below to reset your password:</p>
+                        <p style='text-align: center;'>
+                            <a href='http://localhost:5000/api/Account/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
+                        </p>
+                        <p>If you didn't request this, you can safely ignore this email.</p>
+                        <p>Thanks,<br>PCCM System.</p>
+                    </div>
+                ";
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email, "Reset Password", emailMessage);
+                return Ok("Reset password email sent.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error sending email: {ex.Message}");
+            }
+        }
+
+        // API xác nhận reset mật khẩu sau khi click vào link email
+        [AllowAnonymous]
+        [HttpPost("confirm-forgot-password")]
+        public async Task<IActionResult> ConfirmForgotPassword([FromBody] ConfirmForgotPasswordDto command)
+        {
+            // Validate token
+            var principal = _tokenService.ValidateToken(command.Token);
+            if (principal == null)
+            {
+                return BadRequest("Invalid or expired token");
+            }
+
+            // Extract user email from token
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, command.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok("Password has been reset successfully.");
+            }
+            return BadRequest(result.Errors);
+        }
+
+        // API khi người dùng yêu cầu thay đổi mật khẩu (nhập mật khẩu hiện tại)
+        [AllowAnonymous]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            // Tìm người dùng theo email
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            if (!await _userManager.CheckPasswordAsync(user, request.CurrentPassword))
+            {
+                return BadRequest("Current password is incorrect");
+            }
+
+            // Tạo token để thay đổi mật khẩu
+            var token = _tokenService.CreatePasswordResetToken(user);
+
+            var emailMessage = $@"
+                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                        <h2 style='text-align: center; color: #007BFF;'>Password Change Request</h2>
+                        <p>Hi,</p>
+                        <p>You have requested to change your password. Please click the link below to change your password:</p>
+                        <p style='text-align: center;'>
+                            <a href='http://localhost:5000/api/Account/confirm-change-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Change Password</a>
+                        </p>
+                        <p>If you didn't request this, you can safely ignore this email.</p>
+                        <p>Thanks,<br>PCCM System.</p>
+                    </div>
+                ";
+            await _emailService.SendEmailAsync(user.Email, "Change Password", emailMessage);
+
+            return Ok("An email has been sent to change your password.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm-change-password")]
+        public async Task<IActionResult> ConfirmChangePassword([FromBody] ConfirmChangePasswordDto request)
+        {
+            // Validate token
+            var principal = _tokenService.ValidateToken(request.Token);
+            if (principal == null)
+            {
+                return BadRequest("Invalid or expired token");
+            }
+
             if (user != null)
             {
                 var result = await _userManager.AddToRoleAsync(user, roleName);
@@ -145,6 +264,23 @@ namespace API.DTOs
             }
             return NotFound("User not found.");
         }
+            // Extract user email from token
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            //var result = await _userManager.ChangePasswordAsync(user, user.PasswordHash, request.NewPassword);
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok("Password has been reset successfully.");
+            }
+            return BadRequest(result.Errors);
+        }
     }
 }
