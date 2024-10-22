@@ -1,3 +1,5 @@
+using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using API.Services;
 using Application.DTOs;
@@ -17,13 +19,15 @@ namespace API.DTOs
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly IMediator _mediator;
-        public AccountController(UserManager<AppUser> userManager, TokenService tokenService, IMediator mediator, IEmailService emailService)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
+            _roleManager = roleManager;
             _mediator = mediator;
             _emailService = emailService;
         }
@@ -90,6 +94,45 @@ namespace API.DTOs
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
             return CreateUserObject(user);
         }
+
+        [AllowAnonymous]
+        [HttpPost("Profile")]
+        public async Task<ActionResult<AppUser>> viewProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            return user;
+        }
+
+        [AllowAnonymous]
+        [HttpPost("CreateRole")]
+        public async Task<IActionResult> CreateRole(string roleName)
+        {
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                var role = new IdentityRole(roleName);
+                var result = await _roleManager.CreateAsync(role);
+
+                if (result.Succeeded)
+                {
+                    return Ok("Role created successfully.");
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            return BadRequest("Role already exists.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("AddUserRole")]
+        public async Task<IActionResult> AddUserToRole(string userName, string roleName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
 
         // API khi người dùng yêu cầu quên mật khẩu
         [AllowAnonymous]
@@ -206,6 +249,21 @@ namespace API.DTOs
                 return BadRequest("Invalid or expired token");
             }
 
+            if (user != null)
+            {
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    return Ok("User added to role successfully.");
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            return NotFound("User not found.");
+        }
             // Extract user email from token
             var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
