@@ -134,6 +134,23 @@ namespace API.DTOs
         {
             var user = await _userManager.FindByNameAsync(userName);
 
+            if (user != null)
+            {
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    return Ok("User added to role successfully.");
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            return NotFound("User not found.");
+        }
+
+
         // API khi người dùng yêu cầu quên mật khẩu
         [AllowAnonymous]
         [HttpPost("forgot-password")]
@@ -249,21 +266,6 @@ namespace API.DTOs
                 return BadRequest("Invalid or expired token");
             }
 
-            if (user != null)
-            {
-                var result = await _userManager.AddToRoleAsync(user, roleName);
-
-                if (result.Succeeded)
-                {
-                    return Ok("User added to role successfully.");
-                }
-                else
-                {
-                    return BadRequest(result.Errors);
-                }
-            }
-            return NotFound("User not found.");
-        }
             // Extract user email from token
             var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
