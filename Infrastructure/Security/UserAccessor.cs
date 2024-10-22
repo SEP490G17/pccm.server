@@ -25,16 +25,15 @@ public class UserAccessor : IUserAccessor
 
     public async Task<List<AppUser>> GetUsers(int pageIndex, int pageSize, string searchString)
     {
-        var user = await _context.Users
-            .OrderBy(b => b.Id)
+        var user = _context.Users
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .AsQueryable();
         if (!String.IsNullOrEmpty(searchString))
         {
-            user = user.Where(b => b.UserName.Contains(searchString)).ToList();
+            user = user.Where(b => b.UserName.Contains(searchString));
         }
-        return user;
+        return await user.ToListAsync();
     }
 
 }

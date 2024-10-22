@@ -3,6 +3,7 @@ using Application.Core;
 using Application.DTOs;
 using Application.Handler.Categories;
 using Application.Interfaces;
+using AutoMapper;
 using Domain;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -46,6 +47,7 @@ namespace API.Extensions
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<Create>();
             services.AddHttpContextAccessor();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repository
 {
-    public class GenericRepository<T>(DataContext _context) : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T>(DataContext _context) : IGenericRepository<T> where T : class, IEntity
     {
 
 

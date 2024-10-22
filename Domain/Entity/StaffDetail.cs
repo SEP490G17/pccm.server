@@ -6,6 +6,7 @@ namespace Domain.Entity
     public class StaffDetail : BaseEntity
     {
         public string UserId { get; set; }  // Id của người dùng 
+        public int PositionId { get; set; }
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
         [Range(1000, double.MaxValue, ErrorMessage = "Lương phải lớn hơn hoặc bằng 1,000 VND.")]
@@ -13,7 +14,10 @@ namespace Domain.Entity
         public int? ShiftId { get; set; }  // Id của ca làm việc (có thể là null)
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; }  // Liên kết với bảng Users
+        [ForeignKey("PositionId")]
+        public virtual StaffPosition Position { get; set; }
 
-        public virtual StaffPosition Position { get; set; } 
+        public virtual ICollection<StaffAssignment> StaffAssignments { get; set; }
+
     }
 }

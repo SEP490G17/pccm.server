@@ -13,9 +13,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetUsers(int pageIndex, int pageSize, string searchString, CancellationToken ct)
+        public async Task<IActionResult> GetUsers([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query() { pageIndex = pageIndex, pageSize = pageSize, searchString = searchString }, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam=baseSpecParam }, ct));
         }
 
         [AllowAnonymous]

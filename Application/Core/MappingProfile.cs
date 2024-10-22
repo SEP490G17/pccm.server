@@ -1,7 +1,9 @@
 using Application.DTOs;
 using AutoMapper;
+using Domain;
 using Domain.Entity;
 using Domain.Enum;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Core
 {
@@ -32,11 +34,22 @@ namespace Application.Core
             CreateMap<Product, ProductDTO>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
             .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
-            
+
 
             CreateMap<Booking, BookingDTO>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()));
+
+            CreateMap<StaffDetail, StaffDto>()
+            .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
+            .ForMember(st => st.Position, o => o.MapFrom(s => s.Position.Name))
+            .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
+            .ForMember(st => st.CCCD, o => o.MapFrom(s => s.User.CitizenIdentification ?? "037202001234"))
+            .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.CourtClusterName)));
+
+            CreateMap<AppUser, UserDto>()
+            .ForMember(u => u.FullName, o => o.MapFrom(au => $"{au.FirstName} {au.LastName}"));
         }
+
     }
 }
