@@ -12,6 +12,9 @@ namespace Application.DTOs
         [Required]
         [StringLength(255)]
         public string Location { get; set; }  // Địa điểm theo tọa độ google map của cụm sân
+         [Required]
+        [StringLength(255)]
+        public string Address { get; set; }  // Địa điểm địa lý thực của cụm sân
         public string OwnerId { get; set; }  // Id của người sở hữu cụm sân (có thể là null)
         [StringLength(255)]
         public string Description { get; set; }  // Mô tả chi tiết về cụm sân
