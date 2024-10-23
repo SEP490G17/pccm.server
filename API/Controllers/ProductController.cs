@@ -2,7 +2,6 @@
 using Application.Handler.Products;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -30,10 +29,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductInputDTO updatedProduct)
+        public async Task<IActionResult> UpdateProduct(int id, ProductInputDTO updatedProduct, CancellationToken ct)
         {
-            updatedProduct.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct }));
+            return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id }, ct));
         }
 
         [AllowAnonymous]

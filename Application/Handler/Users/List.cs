@@ -1,19 +1,11 @@
 ﻿using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
-using Application.SpecParams.BannerSpec;
 using Application.SpecParams;
 using AutoMapper;
-using Domain.Entity;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain;
 using Application.SpecParams.UserSpecification;
-using Persistence;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 

@@ -5,13 +5,11 @@ using Application.SpecParams;
 using Application.SpecParams.CourtCountSpecification;
 using Application.SpecParams.StaffSpecification;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Domain;
 using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.Staffs
 {

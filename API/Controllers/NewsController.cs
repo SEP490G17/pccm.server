@@ -43,5 +43,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
+
+        [AllowAnonymous]
+        [HttpPut]
+        public async Task<IActionResult> ChangeStatus(int id, int status)
+        {
+            return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));
+        }
     }
 }

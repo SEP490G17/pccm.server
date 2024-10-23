@@ -1,22 +1,18 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Handler.Services;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Products
 {
     public class Create
     {
-        public class Command : IRequest<Result<Product>>
+        public class Command : IRequest<Result<ProductDTO>>
         {
             public ProductInputDTO product { get; set; }
         }
@@ -27,7 +23,7 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<Product>>
+        public class Handler : IRequestHandler<Command, Result<ProductDTO>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -36,14 +32,19 @@ namespace Application.Handler.Products
                 _mapper = mapper;
                 this._context = context;
             }
-            public async Task<Result<Product>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<ProductDTO>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var product = _mapper.Map<Product>(request.product);
+                var category = await _context.Categories.FirstOrDefaultAsync(x=>x.Id == product.CategoryId);
+                var courtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x=>x.Id == product.CourtClusterId);
+                product.Category = category;
+                product.CourtCluster = courtCluster;
                 await _context.AddAsync(product, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<Product>.Failure("Fail to create product");
+                if (!result) return Result<ProductDTO>.Failure("Fail to create product");
                 var newProduct = _context.Entry(product).Entity;
-                return Result<Product>.Success(newProduct);
+                var data = await _context.Products.ProjectTo<ProductDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == newProduct.Id);
+                return Result<ProductDTO>.Success(data);
             }
         }
     }
