@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
+using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +10,9 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetCourtClusters(CancellationToken ct)
+        public async Task<IActionResult> GetCourtClusters([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query(), ct));
+             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
         [HttpGet("{id}")]

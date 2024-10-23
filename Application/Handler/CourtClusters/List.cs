@@ -1,4 +1,10 @@
 using Application.Core;
+using Application.DTOs;
+using Application.Interfaces;
+using Application.SpecParams;
+using Application.SpecParams.CourtClusterSpecification;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,20 +14,24 @@ namespace Application.Handler.CourtClusters
 {
     public class List
     {
-        public class Query : IRequest<Result<List<CourtCluster>>> { }
-
-        public class Handler : IRequestHandler<Query, Result<List<CourtCluster>>>
+        public class Query : IRequest<Result<Pagination<CourtCluster>>>
         {
-            private readonly DataContext _context;
+               public BaseSpecWithFilterParam BaseSpecWithFilterParam { get; set; }
+        }
 
-            public Handler(DataContext context)
+        public class Handler(IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<CourtCluster>>>
+        {
+            public async Task<Result<Pagination<CourtCluster>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                _context = context;
-            }
-            public async Task<Result<List<CourtCluster>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var courtCluster = await _context.CourtClusters.ToListAsync(cancellationToken);
-                return Result<List<CourtCluster>>.Success(courtCluster);
+                var querySpec = request.BaseSpecWithFilterParam;
+
+                var spec = new CourtClustersSpecification(querySpec);
+                var specCount = new CourtClustersCountSpecification(querySpec);
+
+                var totalElement = await _unitOfWork.Repository<CourtCluster>().CountAsync(specCount, cancellationToken);
+                var data = await _unitOfWork.Repository<CourtCluster>().QueryList(spec).ToListAsync(cancellationToken);
+
+                return Result<Pagination<CourtCluster>>.Success(new Pagination<CourtCluster>(querySpec.PageSize, totalElement, data));
             }
         }
 

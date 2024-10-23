@@ -19,7 +19,8 @@ namespace Persistence
               FirstName = "Alexandros",
               LastName = "Papadopoulos",
               UserName = "adminstrator",
-              Email = "adminstrator@test.com"
+              Email = "adminstrator@test.com",
+              ImageUrl = ""
             },
 
           };
@@ -87,39 +88,39 @@ namespace Persistence
         await context.Products.AddRangeAsync(products);
       }
 
-      if (context.StaffPositions.Count() == 0)
-      {
-        var managerBanner = "ManagerBanner";
-        var managerNews = "ManagerNews";
-        var managerStaff = "ManagerStaff";
-        var managerCourtCluster = "ManagerCourtCluster";
-        var managerBooking = "ManagerBooking";
-        var managerOrder = "ManagerOrder";
-        var managerCustomer = "ManagerCustomer";
+      // if (context.StaffPositions.Count() == 0)
+      // {
+      //   var managerBanner = "ManagerBanner";
+      //   var managerNews = "ManagerNews";
+      //   var managerStaff = "ManagerStaff";
+      //   var managerCourtCluster = "ManagerCourtCluster";
+      //   var managerBooking = "ManagerBooking";
+      //   var managerOrder = "ManagerOrder";
+      //   var managerCustomer = "ManagerCustomer";
 
 
-        var managerPosition = new StaffPosition()
-        {
-          Name = "Quản lý",
-          DefaultRoles = [managerBanner, managerNews, managerStaff, managerCourtCluster, managerBooking, managerOrder]
-        };
+      //   var managerPosition = new StaffPosition()
+      //   {
+      //     Name = "Quản lý",
+      //     DefaultRoles = [managerBanner, managerNews, managerStaff, managerCourtCluster, managerBooking, managerOrder]
+      //   };
 
-        var staffOne = new StaffPosition()
-        {
-          Name = "Nhân viên tiếp tân",
-          DefaultRoles = [managerBooking, managerOrder, managerCustomer]
-        };
+      //   var staffOne = new StaffPosition()
+      //   {
+      //     Name = "Nhân viên tiếp tân",
+      //     DefaultRoles = [managerBooking, managerOrder, managerCustomer]
+      //   };
 
-        var staffTwo = new StaffPosition()
-        {
-          Name = "Nhân viên truyền thông",
-          DefaultRoles = [managerBanner, managerNews]
-        };
+      //   var staffTwo = new StaffPosition()
+      //   {
+      //     Name = "Nhân viên truyền thông",
+      //     DefaultRoles = [managerBanner, managerNews]
+      //   };
 
-        await context.StaffPositions.AddRangeAsync(managerPosition, staffOne, staffTwo);
-        await context.SaveChangesAsync();
+      //   await context.StaffPositions.AddRangeAsync(managerPosition, staffOne, staffTwo);
+      //   await context.SaveChangesAsync();
 
-      }
+      // }
       // if (!context.StaffDetails.Any())
       // {
       //   var users = new List<AppUser>();

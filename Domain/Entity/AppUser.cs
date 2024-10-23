@@ -13,7 +13,6 @@ namespace Domain
         [StringLength(100)]
         public string LastName { get; set; }
 
-        [Required]
         [StringLength(255)]
         public string ImageUrl { get; set; }
 
