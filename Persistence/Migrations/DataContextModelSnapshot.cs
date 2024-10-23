@@ -51,7 +51,6 @@ namespace Persistence.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -471,7 +470,6 @@ namespace Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ThumbnailUrl")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -896,13 +894,13 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.StaffAssignment", b =>
                 {
                     b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
-                        .WithMany()
+                        .WithMany("StaffAssignments")
                         .HasForeignKey("CourtClusterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entity.StaffDetail", "StaffDetail")
-                        .WithMany()
+                        .WithMany("StaffAssignments")
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -985,6 +983,13 @@ namespace Persistence.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Services");
+
+                    b.Navigation("StaffAssignments");
+                });
+
+            modelBuilder.Entity("Domain.Entity.StaffDetail", b =>
+                {
+                    b.Navigation("StaffAssignments");
                 });
 #pragma warning restore 612, 618
         }

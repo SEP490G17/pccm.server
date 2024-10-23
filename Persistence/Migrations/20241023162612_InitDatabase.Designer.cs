@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241021163828_FixStaffDetials")]
-    partial class FixStaffDetials
+    [Migration("20241023162612_InitDatabase")]
+    partial class InitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("CitizenIdentification")
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -48,6 +52,13 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -462,7 +473,6 @@ namespace Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ThumbnailUrl")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -887,13 +897,13 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.StaffAssignment", b =>
                 {
                     b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
-                        .WithMany()
+                        .WithMany("StaffAssignments")
                         .HasForeignKey("CourtClusterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entity.StaffDetail", "StaffDetail")
-                        .WithMany()
+                        .WithMany("StaffAssignments")
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -976,6 +986,13 @@ namespace Persistence.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Services");
+
+                    b.Navigation("StaffAssignments");
+                });
+
+            modelBuilder.Entity("Domain.Entity.StaffDetail", b =>
+                {
+                    b.Navigation("StaffAssignments");
                 });
 #pragma warning restore 612, 618
         }
