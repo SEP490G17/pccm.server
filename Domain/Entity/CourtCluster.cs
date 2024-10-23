@@ -24,5 +24,7 @@ namespace Domain.Entity
         public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
         public List<Service> Services { get; set; }
         public List<Product> Products { get; set; }
+        public virtual ICollection<StaffAssignment> StaffAssignments { get; set; }
+
     }
 }

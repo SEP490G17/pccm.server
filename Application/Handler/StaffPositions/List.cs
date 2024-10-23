@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Core;
 using Application.Interfaces;
 using AutoMapper;
@@ -20,7 +16,7 @@ namespace Application.Handler.StaffPositions
 
             public async Task<Result<List<StaffPosition>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var tasks = await _unitOfWork.Repository<StaffPosition>().QueryList(null).ToListAsync();
+                var tasks = await _unitOfWork.Repository<StaffPosition>().QueryList(null).ToListAsync(cancellationToken);
                 return Result<List<StaffPosition>>.Success(tasks);
             }
         }

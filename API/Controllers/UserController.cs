@@ -2,7 +2,6 @@
 using Application.Handler.Users;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -13,9 +12,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetUsers(int pageIndex, int pageSize, string searchString, CancellationToken ct)
+        public async Task<IActionResult> GetUsers([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query() { pageIndex = pageIndex, pageSize = pageSize, searchString = searchString }, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam=baseSpecParam }, ct));
         }
 
         [AllowAnonymous]

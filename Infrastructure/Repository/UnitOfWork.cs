@@ -34,7 +34,7 @@ namespace Infrastructure.Repository
         }
 
         // Gọi hoặc khởi tạo 1 repository
-        public IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity
+        public IGenericRepository<TEntity> Repository<TEntity>()  where TEntity : class, IEntity
         {
             if (_repositories == null) _repositories = new Hashtable(); // check hashtable nếu null thì tạo mới
 

@@ -1,5 +1,3 @@
-using System.Runtime.ConstrainedExecution;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
 using API.Services;
 using Application.DTOs;
@@ -34,10 +32,11 @@ namespace API.DTOs
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login([FromBody]LoginDto loginDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Email));
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username));
             if (user is null) return Unauthorized();
+            if(user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (result)
             {

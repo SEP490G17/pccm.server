@@ -1,6 +1,7 @@
 
 
 using Application.Core;
+using Application.Interfaces;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,21 +11,15 @@ namespace Application.Handler.Categories
 {
     public class List
     {
-        public class Query : IRequest<Result<List<Category>>> { }
+        public class Query : IRequest<Result<IReadOnlyList<Category>>> { }
 
-        public class Handler : IRequestHandler<Query, Result<List<Category>>>
+        public class Handler(IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<IReadOnlyList<Category>>>
         {
-            private readonly DataContext _context;
-
-            public Handler(DataContext context)
-            {
-                _context = context;
-            }
-            public async Task<Result<List<Category>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<IReadOnlyList<Category>>> Handle(Query request, CancellationToken cancellationToken)
             {
 
-                var activityGroup = await _context.Categories.ToListAsync(cancellationToken);
-                return Result<List<Category>>.Success(activityGroup);
+                var activityGroup = await unitOfWork.Repository<Category>().ListAllAsync();
+                return Result<IReadOnlyList<Category>>.Success(activityGroup);
             }
         }
 

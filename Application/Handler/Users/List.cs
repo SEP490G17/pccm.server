@@ -1,39 +1,34 @@
 ﻿using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
-using Application.SpecParams.BannerSpec;
 using Application.SpecParams;
 using AutoMapper;
-using Domain.Entity;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Domain;
 using Application.SpecParams.UserSpecification;
-using Persistence;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper.QueryableExtensions;
 
 namespace Application.Handler.Users
 {
     public class List
     {
-        public class Query : IRequest<Result<Pagination<AppUser>>>
+        public class Query : IRequest<Result<Pagination<UserDto>>>
         {
-            public int pageIndex { get; set; }
-            public int pageSize { get; set; }
-            public string searchString { get; set; }
+            public BaseSpecParam BaseSpecParam { get; set; }
         }
-        public class Handler(DataContext _context, IUserAccessor _userAccessor) : IRequestHandler<Query, Result<Pagination<AppUser>>>
+        public class Handler(IUnitOfWork _unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<Pagination<UserDto>>>
         {
-            public async Task<Result<Pagination<AppUser>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Pagination<UserDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var data = await _userAccessor.GetUsers(request.pageIndex, request.pageSize, request.searchString);
-                var count = await _context.Users.CountAsync();
-                var result = new Pagination<AppUser>(request.pageSize, count, data);
-                return Result<Pagination<AppUser>>.Success(result);
+                var query = request.BaseSpecParam;
+                var spec = new UsersSpecification(query);
+                var specCount = new UsersCountSpecification(query);
+                var totalCount = await _unitOfWork.Repository<AppUser>().CountAsync(specCount,cancellationToken);
+                var users = await _unitOfWork.Repository<AppUser>().QueryList(spec)
+                .ProjectTo<UserDto>(mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+                var result = new Pagination<UserDto>(query.PageSize, totalCount, users);
+                return Result<Pagination<UserDto>>.Success(result);
             }
         }
     }
