@@ -2,8 +2,6 @@ using Application.DTOs;
 using AutoMapper;
 using Domain;
 using Domain.Entity;
-using Domain.Enum;
-using Microsoft.AspNetCore.Identity;
 
 namespace Application.Core
 {
@@ -36,11 +34,19 @@ namespace Application.Core
                 .ForMember(b => b.Images, o => o.MapFrom(s => s.Images))
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
             CreateMap<CourtClustersInputDTO, CourtCluster>();
+
+            CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
+            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>();
+
+
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
             CreateMap<Review, Review>();
-            CreateMap<ProductInputDTO, Product>();
+            CreateMap<ProductInputDTO, Product>()
+            .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(s => s.Thumbnail));
+
             CreateMap<Product, Product>();
+
             CreateMap<Product, ProductDTO>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
             .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));

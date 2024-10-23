@@ -8,7 +8,7 @@ namespace API.Controllers
     public class CourtClusterController : BaseApiController
     {
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("list-all")]
         public async Task<IActionResult> GetCourtClusters(CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query(), ct));

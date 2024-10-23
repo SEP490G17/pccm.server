@@ -2,7 +2,6 @@
 using Application.Handler.Users;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

@@ -1,16 +1,10 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Handler.Services;
 using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Products
 {
@@ -19,6 +13,7 @@ namespace Application.Handler.Products
         public class Command : IRequest<Result<Product>>
         {
             public ProductInputDTO product { get; set; }
+            public int Id { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -41,7 +36,7 @@ namespace Application.Handler.Products
             public async Task<Result<Product>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var product = _mapper.Map<Product>(request.product);
-                var productExist = await _context.Products.FindAsync(request.product.Id);
+                var productExist = await _context.Products.FindAsync(request.Id);
                 _mapper.Map(product, productExist);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (!result) return Result<Product>.Failure("Faild to edit product");

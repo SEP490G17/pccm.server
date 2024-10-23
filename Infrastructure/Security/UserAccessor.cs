@@ -1,9 +1,7 @@
 using System.Security.Claims;
-using Application.DTOs;
 using Application.Interfaces;
 using Domain;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 

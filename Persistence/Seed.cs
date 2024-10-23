@@ -2,11 +2,10 @@ using System.Text.Json;
 using Domain;
 using Domain.Entity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
-  public class Seed
+    public class Seed
   {
     public static async Task SeedData(DataContext context, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {

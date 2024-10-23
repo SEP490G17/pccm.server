@@ -1,13 +1,11 @@
 using Application.Core;
 using Application.Interfaces;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Domain;
 using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.Staffs
 {

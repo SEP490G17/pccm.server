@@ -1,6 +1,5 @@
 using System.Collections;
 using Application.Interfaces;
-using Domain;
 using Domain.Entity;
 using Persistence;
 using Persistence.Repository;

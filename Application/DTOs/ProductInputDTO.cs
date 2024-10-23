@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
 {
     public class ProductInputDTO
     {
-        [Key]
-        public int Id { get; set; }
-        public int? CategoryId { get; set; }
         [Required]
-        [StringLength(255)]
+        public int CategoryId { get; set; }
+        [Required]
+        public int CourtClusterId { get; set; }
+        [Required]
         public string ProductName { get; set; }  // Tên sản phẩm
-        [StringLength(255)]
+        [Required]
         public string Description { get; set; }  // Mô tả chi tiết về sản phẩm
         [Required]
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }  // Số lượng sản phẩm có sẵn
         [Required]
-        [Column(TypeName = "decimal(10, 2)")]
+        [Range(1, double.MaxValue)]
         public decimal Price { get; set; }  // Giá sản phẩm
+        [Required]
+        public string Thumbnail { get; set; }
     }
 }

@@ -1,4 +1,8 @@
 using Application.Core;
+using Application.DTOs;
+using Application.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,20 +12,16 @@ namespace Application.Handler.CourtClusters
 {
     public class List
     {
-        public class Query : IRequest<Result<List<CourtCluster>>> { }
+        public class Query : IRequest<Result<List<CourtClusterDto.CourtClusterListAll>>> { }
 
-        public class Handler : IRequestHandler<Query, Result<List<CourtCluster>>>
+        public class Handler(IMapper mapper, IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<List<CourtClusterDto.CourtClusterListAll>>>
         {
-            private readonly DataContext _context;
-
-            public Handler(DataContext context)
+            public async Task<Result<List<CourtClusterDto.CourtClusterListAll>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                _context = context;
-            }
-            public async Task<Result<List<CourtCluster>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var courtCluster = await _context.CourtClusters.ToListAsync(cancellationToken);
-                return Result<List<CourtCluster>>.Success(courtCluster);
+                var courtCluster = await unitOfWork.Repository<CourtCluster>().QueryList(null)
+                .ProjectTo<CourtClusterDto.CourtClusterListAll>(mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+                return Result<List<CourtClusterDto.CourtClusterListAll>>.Success(courtCluster);
             }
         }
 

@@ -1,17 +1,9 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Handler.Services;
 using AutoMapper;
-using Domain;
-using Domain.Entity;
 using FluentValidation;
 using MediatR;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Users
 {
