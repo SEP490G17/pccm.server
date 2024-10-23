@@ -13,6 +13,7 @@ namespace Application.DTOs
         [Key]
         public int Id { get; set; }
         public int? CategoryId { get; set; }
+        public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         [Required]
         [StringLength(255)]
         public string ProductName { get; set; }  // Tên sản phẩm
@@ -23,5 +24,8 @@ namespace Application.DTOs
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá sản phẩm
+        [Required]
+        [StringLength(255)]
+        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
     }
 }
