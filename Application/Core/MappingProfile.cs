@@ -36,9 +36,9 @@ namespace Application.Core
             CreateMap<CourtClustersInputDTO, CourtCluster>();
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
+
             CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>();
-
-
+           
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
             CreateMap<Review, Review>();
