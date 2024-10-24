@@ -14,7 +14,7 @@ namespace Domain.Enum
                 case BannerStatus.Display:
                     return "hoạt động";
                 case BannerStatus.Hidden:
-                    return "ẩn";
+                    return "không hoạt động";
                 default:
                     return "không xác định";
             }

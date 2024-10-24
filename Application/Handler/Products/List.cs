@@ -19,7 +19,6 @@ namespace Application.Handler.Products
         }
         public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<ProductDTO>>>
         {
-
             public async Task<Result<Pagination<ProductDTO>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var querySpec = request.BaseSpecWithFilterParam;

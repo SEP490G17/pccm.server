@@ -54,9 +54,12 @@ namespace Application.Core
 
             CreateMap<Booking, BookingDTO>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
-            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()));
+            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()))
+             .ForMember(b => b.UserName, o => o.MapFrom(s => s.User.UserName.ToString()))
+            .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName.ToString()));
 
-            CreateMap<StaffDetail, StaffDto>()
+
+        CreateMap<StaffDetail, StaffDto>()
             .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
             .ForMember(st => st.Position, o => o.MapFrom(s => s.Position.Name))
             .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
@@ -67,5 +70,5 @@ namespace Application.Core
             .ForMember(u => u.FullName, o => o.MapFrom(au => $"{au.FirstName} {au.LastName}"));
         }
 
-    }
+}
 }
