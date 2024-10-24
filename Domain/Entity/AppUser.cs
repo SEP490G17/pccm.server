@@ -13,9 +13,8 @@ namespace Domain
         [StringLength(100)]
         public string LastName { get; set; }
 
-        [Required]
         [StringLength(255)]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [StringLength(12)]
         public string CitizenIdentification { get; set; }

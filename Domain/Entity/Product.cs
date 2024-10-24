@@ -5,9 +5,8 @@ namespace Domain.Entity
 {
     public class Product : BaseEntity
     {
-        [Required]
         [StringLength(255)]
-        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
+        public string? ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
         public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         public int? CategoryId { get; set; }
         [Required]
