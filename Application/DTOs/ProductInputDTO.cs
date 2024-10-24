@@ -4,8 +4,6 @@ namespace Application.DTOs
 {
     public class ProductInputDTO
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         public int CategoryId { get; set; }
         [Required]
@@ -22,6 +20,6 @@ namespace Application.DTOs
         public decimal Price { get; set; }  // Giá sản phẩm
         [Required]
         [StringLength(255)]
-        public string Thumbnail { get; set; } // URL ảnh đại diện cho Product
+        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
     }
 }

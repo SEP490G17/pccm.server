@@ -11,8 +11,8 @@ namespace Application.Interfaces
         Task<IReadOnlyList<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken);
         IQueryable<T> QueryList(ISpecification<T>? spec);
         Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken);
-        T Add(T entity);
-        T Update(T entity);
-        T Delete(T entity);
+        void Add(T entity);
+        void Update(T entity);
+        void Delete(T entity);
     }
 }
