@@ -31,7 +31,7 @@ namespace API.Extensions
 
             services.AddCors(opt =>
             {
-                opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000"));
+                opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000","http://argonaut.asia","https://argonaut.asia"));
             });
 
             services.AddIdentity<AppUser, IdentityRole>(options =>
