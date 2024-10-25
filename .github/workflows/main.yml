@@ -10,6 +10,8 @@ jobs:
     runs-on: self-hosted
     environment: docker
     steps:
+    - name: Check current user
+      run: whoami
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Copy appsettings.json
