@@ -1,14 +1,18 @@
 ﻿using Application.Core;
+using Application.DTOs;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Banners
 {
     public class Create
     {
-        public class Command : IRequest<Result<Banner>>
+        public class Command : IRequest<Result<BannerDto>>
         {
             public Banner Banner { get; set; }
         }
@@ -19,21 +23,25 @@ namespace Application.Handler.Banners
                 RuleFor(x => x.Banner).SetValidator(new BannerValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<Banner>>
+        public class Handler : IRequestHandler<Command, Result<BannerDto>>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+
+            private readonly IMapper _mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
+                _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<Banner>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<BannerDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var banner = request.Banner;
+                var banner = _mapper.Map<Banner>(request.Banner);
                 await _context.AddAsync(banner, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<Banner>.Failure("Fail to create banner");
+                if (!result) return Result<BannerDto>.Failure("Fail to create banner");
                 var newBanner = _context.Entry(banner).Entity;
-                return Result<Banner>.Success(newBanner);
+                var data = await _context.Banners.ProjectTo<BannerDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == newBanner.Id);
+                return Result<BannerDto>.Success(data);
             }
         }
     }

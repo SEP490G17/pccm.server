@@ -4,24 +4,25 @@ using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Services
 {
     public class Create
     {
-        public class Command : IRequest<Result<Service>>
+        public class Command : IRequest<Result<List<Service>>>
         {
-            public ServiceDto Service { get; set; }
+            public ServiceInputDTO Service { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Service).SetValidator(new ServiceValidator());
+                RuleFor(x => x.Service).SetValidator(new ServiceInputDTOValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<Service>>
+        public class Handler : IRequestHandler<Command, Result<List<Service>>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -30,14 +31,31 @@ namespace Application.Handler.Services
                 _mapper = mapper;
                 this._context = context;
             }
-            public async Task<Result<Service>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<List<Service>>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var service = _mapper.Map<Service>(request.Service);
-                await _context.AddAsync(service, cancellationToken);
+                ServiceInputDTO serviceDtos = request.Service;
+                List<Service> services = new List<Service>();
+                foreach (var courtClusterId in serviceDtos.CourtClusterId)
+                {
+                    Service service = new Service()
+                    {
+                        CourtClusterId = courtClusterId,
+                        Description = serviceDtos.Description,
+                        Price = serviceDtos.Price,
+                        ServiceName = serviceDtos.ServiceName,
+                        CourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == courtClusterId)
+                    };
+                    services.Add(service);
+                }
+                foreach (var service in services)
+                {
+                    await _context.AddAsync(service, cancellationToken);
+                    var newService = _context.Entry(service).Entity;
+                }
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<Service>.Failure("Fail to create service");
-                var newService = _context.Entry(service).Entity;
-                return Result<Service>.Success(newService);
+                if (!result) return Result<List<Service>>.Failure("Fail to create service");
+
+                return Result<List<Service>>.Success(services);
             }
         }
     }

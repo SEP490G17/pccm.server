@@ -27,7 +27,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostService([FromBody] ServiceDto service, CancellationToken ct)
+        public async Task<IActionResult> PostService([FromBody] ServiceInputDTO service, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Service = service }, ct));
         }
