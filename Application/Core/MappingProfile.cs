@@ -22,7 +22,7 @@ namespace Application.Core
             CreateMap<Service, ServiceDto>()
              .ForMember(s => s.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
             CreateMap<Service, Service>();
-            CreateMap<ServiceDto, Service>();
+            CreateMap<ServiceInputDTO, Service>();
 
             CreateMap<CourtCluster, CourtClustersInputDTO>()
              .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
