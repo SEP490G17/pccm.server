@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241027035922_AddCourtPrice")]
+    partial class AddCourtPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,7 +189,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UpdaterId");
 
-                    b.ToTable("Banners", (string)null);
+                    b.ToTable("Banners");
                 });
 
             modelBuilder.Entity("Domain.Entity.BannerLog", b =>
@@ -246,7 +249,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("BannerLog", (string)null);
+                    b.ToTable("BannerLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Booking", b =>
@@ -297,7 +300,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("StaffId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("Domain.Entity.Category", b =>
@@ -315,7 +318,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Domain.Entity.Court", b =>
@@ -344,7 +347,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CourtClusterId");
 
-                    b.ToTable("Courts", (string)null);
+                    b.ToTable("Courts");
                 });
 
             modelBuilder.Entity("Domain.Entity.CourtCluster", b =>
@@ -359,9 +362,6 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
-
-                    b.Property<TimeOnly>("CloseTime")
-                        .HasColumnType("time(6)");
 
                     b.Property<string>("CourtClusterName")
                         .IsRequired()
@@ -383,9 +383,6 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<TimeOnly>("OpenTime")
-                        .HasColumnType("time(6)");
-
                     b.Property<string>("OwnerId")
                         .HasColumnType("varchar(255)");
 
@@ -393,7 +390,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("CourtClusters", (string)null);
+                    b.ToTable("CourtClusters");
                 });
 
             modelBuilder.Entity("Domain.Entity.CourtPrice", b =>
@@ -417,7 +414,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CourtId");
 
-                    b.ToTable("CourtPrices", (string)null);
+                    b.ToTable("CourtPrices");
                 });
 
             modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
@@ -556,7 +553,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("NewsBlogId");
 
-                    b.ToTable("NewsLog", (string)null);
+                    b.ToTable("NewsLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Order", b =>
@@ -595,7 +592,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Domain.Entity.OrderDetail", b =>
@@ -629,7 +626,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("OrderDetails", (string)null);
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("Domain.Entity.Payment", b =>
@@ -656,7 +653,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Domain.Entity.Product", b =>
@@ -734,7 +731,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UpdaterId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Domain.Entity.ProductLog", b =>
@@ -791,7 +788,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductLog", (string)null);
+                    b.ToTable("ProductLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -823,7 +820,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Domain.Entity.Service", b =>
@@ -886,7 +883,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UpdaterId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("Domain.Entity.ServiceLog", b =>
@@ -931,7 +928,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ServiceLog", (string)null);
+                    b.ToTable("ServiceLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffAssignment", b =>
@@ -954,7 +951,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("StaffId");
 
-                    b.ToTable("StaffAssignments", (string)null);
+                    b.ToTable("StaffAssignments");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffDetail", b =>
@@ -983,7 +980,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StaffDetails", (string)null);
+                    b.ToTable("StaffDetails");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffPosition", b =>
@@ -1002,7 +999,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StaffPositions", (string)null);
+                    b.ToTable("StaffPositions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
