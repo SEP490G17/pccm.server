@@ -4,7 +4,7 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class NewsBlog : BaseEntity
+    public class NewsBlog : BaseNeedLogEntity
     {
 
         [Required]
@@ -35,8 +35,7 @@ namespace Domain.Entity
 
         public string[] Tags { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo sự kiện
-
+        public virtual ICollection<NewsLog> NewsLogs { get; set; } = new List<NewsLog>();
 
     }
 }

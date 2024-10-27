@@ -27,6 +27,10 @@ namespace Infrastructure.Repository
             return await _context.SaveChangesAsync();
         }
 
+        public TEntity GetEntry<TEntity>(TEntity entiy) where TEntity: class, IEntity {
+            return _context.Entry<TEntity>(entiy).Entity;
+        }
+
         // Giải phóng tài nguyên khi cần
         public void Dispose()
         {

@@ -12,7 +12,14 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCourtClusters([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
-             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("list-all")]
+        public async Task<IActionResult> GetAllCourtClusters(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListAll.Query(), ct));
         }
 
         [HttpGet("{id}")]

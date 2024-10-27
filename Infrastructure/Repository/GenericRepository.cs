@@ -41,28 +41,26 @@ namespace Persistence.Repository
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
         }
 
-        public T Add(T entity)
+        public void Add(T entity)
         {
             _context.Set<T>().Add(entity);
-            return _context.Entry(entity).Entity;
         }
 
-        public T Update(T entity)
+        public void Update(T entity)
         {
             _context.Set<T>().Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
-            return _context.Entry(entity).Entity;
         }
 
-        public T Delete(T entity)
+        public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
-            return _context.Entry(entity).Entity;
         }
 
         public IQueryable<T> QueryList(ISpecification<T>? spec)
-        {   
-            if(spec == null){
+        {
+            if (spec == null)
+            {
                 return _context.Set<T>().AsQueryable();
             }
             return ApplySpecification(spec);

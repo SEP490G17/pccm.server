@@ -20,21 +20,23 @@ namespace API.DTOs
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
+        private readonly ISendSmsService _sendSmsService;
         private readonly IMediator _mediator;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService, ISendSmsService sendSmsService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
             _mediator = mediator;
             _emailService = emailService;
+            _sendSmsService = sendSmsService;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login([FromBody]LoginDto loginDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username));
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
             if (user is null) return Unauthorized();
             if(user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
@@ -285,6 +287,17 @@ namespace API.DTOs
                 return Ok("Password has been reset successfully.");
             }
             return BadRequest(result.Errors);
+        }
+
+        public class SendMessOtp{
+            public string To { get; set; }
+            public string Text { get; set; }
+        }
+        [HttpPost("test-sendsms")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendSmsTest([FromBody]SendMessOtp sendMessOtp, CancellationToken cancellationToken){
+            await _sendSmsService.SendSms(sendMessOtp.To,sendMessOtp.Text, cancellationToken);
+            return Ok("Send sms success");
         }
     }
 }

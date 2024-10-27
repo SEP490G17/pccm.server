@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-compose:
+    runs-on: self-hosted
+    environment: docker
+    steps:
+    - name: Check current user
+      run: whoami
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Copy appsettings.json
+      run: cp /project-config/pccm.server/appsettings.json ./API/
+    - name: Run `docker compose`
+      run: docker compose up --build -d
+    
+    

@@ -21,6 +21,14 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProducts([FromRoute] Details.Query query , CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(query, ct));
+
+        }
+
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostProduct([FromBody] ProductInputDTO product, CancellationToken ct)
         {
@@ -29,7 +37,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, ProductInputDTO updatedProduct, CancellationToken ct)
+        public async Task<IActionResult> UpdateProduct([FromRoute]int id, ProductInputDTO updatedProduct, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id }, ct));
         }

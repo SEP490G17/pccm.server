@@ -57,6 +57,9 @@ namespace Persistence.Migrations
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime?>("JoiningDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -124,6 +127,21 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("DeleterId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
@@ -151,9 +169,84 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdaterId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("DeleterId");
+
+                    b.HasIndex("UpdaterId");
+
                     b.ToTable("Banners");
+                });
+
+            modelBuilder.Entity("Domain.Entity.BannerLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BannerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BannerInPage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BannerType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("LinkUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BannerId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("BannerLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Booking", b =>
@@ -164,7 +257,10 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourtId")
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("CourtId")
                         .HasColumnType("int");
 
                     b.Property<int>("Duration")
@@ -176,7 +272,12 @@ namespace Persistence.Migrations
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("StaffId")
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)");
+
+                    b.Property<int?>("StaffId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
@@ -188,16 +289,13 @@ namespace Persistence.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(10, 2)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CourtId");
 
                     b.HasIndex("StaffId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
                 });
@@ -243,6 +341,8 @@ namespace Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CourtClusterId");
 
                     b.ToTable("Courts");
                 });
@@ -290,6 +390,30 @@ namespace Persistence.Migrations
                     b.ToTable("CourtClusters");
                 });
 
+            modelBuilder.Entity("Domain.Entity.CourtPrice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CourtId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("MyProperty")
+                        .HasColumnType("TIME");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourtId");
+
+                    b.ToTable("CourtPrices");
+                });
+
             modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
                 {
                     b.Property<int>("Id")
@@ -303,6 +427,21 @@ namespace Persistence.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("DeleterId")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -335,9 +474,83 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdaterId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("DeleterId");
+
+                    b.HasIndex("UpdaterId");
+
                     b.ToTable("News", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entity.NewsLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("NewsBlogId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Thumbnail")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("NewsBlogId");
+
+                    b.ToTable("NewsLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Order", b =>
@@ -351,17 +564,17 @@ namespace Persistence.Migrations
                     b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndTime")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("StaffId")
+                    b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime(6)");
+                    b.Property<float?>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -374,7 +587,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.HasIndex("StaffId");
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Orders");
                 });
@@ -387,20 +600,20 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<int?>("ServiceId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.HasKey("Id");
 
@@ -454,6 +667,93 @@ namespace Persistence.Migrations
                     b.Property<int?>("CourtClusterId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("DeleterId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("ImportFee")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdaterId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CourtClusterId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("DeleterId");
+
+                    b.HasIndex("UpdaterId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Domain.Entity.ProductLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CourtClusterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
@@ -461,8 +761,10 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10, 2)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
@@ -479,7 +781,11 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CourtClusterId");
 
-                    b.ToTable("Products");
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -525,6 +831,24 @@ namespace Persistence.Migrations
                     b.Property<int?>("CourtClusterId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("DeleterId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
@@ -537,14 +861,29 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UpdaterId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourtClusterId");
 
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("DeleterId");
+
+                    b.HasIndex("UpdaterId");
+
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Shift", b =>
+            modelBuilder.Entity("Domain.Entity.ServiceLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -552,20 +891,41 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time(6)");
+                    b.Property<int?>("CourtClusterId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ShiftName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time(6)");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ServiceName")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Shifts");
+                    b.HasIndex("CourtClusterId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffAssignment", b =>
@@ -771,29 +1131,70 @@ namespace Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entity.Banner", b =>
+                {
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.AppUser", "Deleter")
+                        .WithMany()
+                        .HasForeignKey("DeleterId");
+
+                    b.HasOne("Domain.AppUser", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Deleter");
+
+                    b.Navigation("Updater");
+                });
+
+            modelBuilder.Entity("Domain.Entity.BannerLog", b =>
+                {
+                    b.HasOne("Domain.Entity.Banner", "Banner")
+                        .WithMany("BannerLogs")
+                        .HasForeignKey("BannerId");
+
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Banner");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Domain.Entity.Booking", b =>
                 {
+                    b.HasOne("Domain.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId");
+
                     b.HasOne("Domain.Entity.Court", "Court")
                         .WithMany()
-                        .HasForeignKey("CourtId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CourtId");
 
                     b.HasOne("Domain.Entity.StaffDetail", "Staff")
                         .WithMany()
-                        .HasForeignKey("StaffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StaffId");
 
-                    b.HasOne("Domain.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                    b.Navigation("AppUser");
 
                     b.Navigation("Court");
 
                     b.Navigation("Staff");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("Domain.Entity.Court", b =>
+                {
+                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
+                        .WithMany("Courts")
+                        .HasForeignKey("CourtClusterId");
+
+                    b.Navigation("CourtCluster");
                 });
 
             modelBuilder.Entity("Domain.Entity.CourtCluster", b =>
@@ -805,15 +1206,60 @@ namespace Persistence.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("Domain.Entity.CourtPrice", b =>
+                {
+                    b.HasOne("Domain.Entity.Court", "Court")
+                        .WithMany("CourtPrices")
+                        .HasForeignKey("CourtId");
+
+                    b.Navigation("Court");
+                });
+
+            modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
+                {
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.AppUser", "Deleter")
+                        .WithMany()
+                        .HasForeignKey("DeleterId");
+
+                    b.HasOne("Domain.AppUser", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Deleter");
+
+                    b.Navigation("Updater");
+                });
+
+            modelBuilder.Entity("Domain.Entity.NewsLog", b =>
+                {
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.Entity.NewsBlog", "NewsBlog")
+                        .WithMany("NewsLogs")
+                        .HasForeignKey("NewsBlogId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("NewsBlog");
+                });
+
             modelBuilder.Entity("Domain.Entity.Order", b =>
                 {
                     b.HasOne("Domain.Entity.Booking", "Booking")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("BookingId");
 
                     b.HasOne("Domain.Entity.StaffDetail", "Staff")
                         .WithMany()
-                        .HasForeignKey("StaffId");
+                        .HasForeignKey("CreatedBy");
 
                     b.Navigation("Booking");
 
@@ -823,8 +1269,10 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.OrderDetail", b =>
                 {
                     b.HasOne("Domain.Entity.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entity.Product", "Product")
                         .WithMany()
@@ -862,9 +1310,54 @@ namespace Persistence.Migrations
                         .WithMany("Products")
                         .HasForeignKey("CourtClusterId");
 
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.AppUser", "Deleter")
+                        .WithMany()
+                        .HasForeignKey("DeleterId");
+
+                    b.HasOne("Domain.AppUser", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId");
+
                     b.Navigation("Category");
 
                     b.Navigation("CourtCluster");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Deleter");
+
+                    b.Navigation("Updater");
+                });
+
+            modelBuilder.Entity("Domain.Entity.ProductLog", b =>
+                {
+                    b.HasOne("Domain.Entity.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
+                        .WithMany()
+                        .HasForeignKey("CourtClusterId");
+
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.Entity.Product", "Product")
+                        .WithMany("ProductLogs")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("CourtCluster");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -888,7 +1381,46 @@ namespace Persistence.Migrations
                         .WithMany("Services")
                         .HasForeignKey("CourtClusterId");
 
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.AppUser", "Deleter")
+                        .WithMany()
+                        .HasForeignKey("DeleterId");
+
+                    b.HasOne("Domain.AppUser", "Updater")
+                        .WithMany()
+                        .HasForeignKey("UpdaterId");
+
                     b.Navigation("CourtCluster");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Deleter");
+
+                    b.Navigation("Updater");
+                });
+
+            modelBuilder.Entity("Domain.Entity.ServiceLog", b =>
+                {
+                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
+                        .WithMany()
+                        .HasForeignKey("CourtClusterId");
+
+                    b.HasOne("Domain.AppUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Domain.Entity.Service", "Service")
+                        .WithMany("ServiceLogs")
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("CourtCluster");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffAssignment", b =>
@@ -978,13 +1510,50 @@ namespace Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Entity.Banner", b =>
+                {
+                    b.Navigation("BannerLogs");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Booking", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Court", b =>
+                {
+                    b.Navigation("CourtPrices");
+                });
+
             modelBuilder.Entity("Domain.Entity.CourtCluster", b =>
                 {
+                    b.Navigation("Courts");
+
                     b.Navigation("Products");
 
                     b.Navigation("Services");
 
                     b.Navigation("StaffAssignments");
+                });
+
+            modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
+                {
+                    b.Navigation("NewsLogs");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Product", b =>
+                {
+                    b.Navigation("ProductLogs");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Service", b =>
+                {
+                    b.Navigation("ServiceLogs");
                 });
 
             modelBuilder.Entity("Domain.Entity.StaffDetail", b =>

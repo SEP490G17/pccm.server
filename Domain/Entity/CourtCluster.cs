@@ -22,9 +22,11 @@ namespace Domain.Entity
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         [ForeignKey("OwnerId")]
         public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
-        public List<Service> Services { get; set; }
-        public List<Product> Products { get; set; }
-        public virtual ICollection<StaffAssignment> StaffAssignments { get; set; }
+        public List<Service> Services { get; set; } = new List<Service>();
+        public List<Product> Products { get; set; } = new List<Product>();
+        public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = new List<StaffAssignment>();
+        public virtual ICollection<Court> Courts { get; set; } = new List<Court>();
+
 
     }
 }

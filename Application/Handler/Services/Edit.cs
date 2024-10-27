@@ -10,7 +10,7 @@ namespace Application.Handler.Services
 {
     public class Edit
     {
-        public class Command : IRequest<Result<Service>>
+        public class Command : IRequest<Result<ServiceDto>>
         {
             public ServiceInputDTO Service { get; set; }
         }
@@ -21,7 +21,7 @@ namespace Application.Handler.Services
                 RuleFor(x => x.Service).SetValidator(new ServiceValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<Service>>
+        public class Handler : IRequestHandler<Command, Result<ServiceDto>>
         {
 
             private readonly DataContext _context;
@@ -32,14 +32,16 @@ namespace Application.Handler.Services
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<Service>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<ServiceDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var service = _mapper.Map<Service>(request.Service);
                 var serviceExist = await _context.Services.FindAsync(request.Service.Id);
                 _mapper.Map(service, serviceExist);
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Service>.Failure("Faild to edit service");
-                return Result<Service>.Success(_context.Entry(service).Entity);
+                if (!result) return Result<ServiceDto>.Failure("Fail to edit service");
+                var entity = _context.Entry(service).Reference(s=>s.CourtCluster);
+                var response = _mapper.Map<ServiceDto>(entity);
+                return Result<ServiceDto>.Success(response);
             }
         }
     }

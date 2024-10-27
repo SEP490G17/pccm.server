@@ -14,7 +14,7 @@ namespace Application.SpecParams.CourtSpecification
                 x.CourtName.ToLower().Contains(baseSpecParam.Search)
             ))
             && (baseSpecParam.Filter == null ||
-                x.Status.Equals(baseSpecParam.Filter)
+                (int)x.Status == (baseSpecParam.Filter)
             )
         )
         {

@@ -14,7 +14,6 @@ namespace Persistence
 
         public DbSet<CourtCluster> CourtClusters { get; set; }
         public DbSet<StaffDetail> StaffDetails { get; set; }
-        public DbSet<Shift> Shifts { get; set; }
         public DbSet<StaffAssignment> StaffAssignments { get; set; }
         public DbSet<Court> Courts { get; set; }
         public DbSet<Booking> Bookings { get; set; }
@@ -28,6 +27,8 @@ namespace Persistence
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Banner> Banners { get; set; }
          public DbSet<StaffPosition> StaffPositions { get; set; }
+         public DbSet<CourtPrice> CourtPrices { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
