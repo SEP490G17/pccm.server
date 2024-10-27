@@ -21,17 +21,5 @@ public class UserAccessor : IUserAccessor
         return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Name);
     }
 
-    public async Task<List<AppUser>> GetUsers(int pageIndex, int pageSize, string searchString)
-    {
-        var user = _context.Users
-            .Skip((pageIndex - 1) * pageSize)
-            .Take(pageSize)
-            .AsQueryable();
-        if (!String.IsNullOrEmpty(searchString))
-        {
-            user = user.Where(b => b.UserName.Contains(searchString));
-        }
-        return await user.ToListAsync();
-    }
 
 }

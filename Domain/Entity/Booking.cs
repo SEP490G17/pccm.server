@@ -6,11 +6,9 @@ namespace Domain.Entity
 {
     public class Booking : BaseEntity
     {
-        public int CourtId { get; set; }
-
-        public string UserId { get; set; }
-
-        public int StaffId { get; set; }
+        [Required]
+        [StringLength(12)]
+        public string PhoneNumber { get; set; }
 
         [Required]
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
@@ -32,20 +30,17 @@ namespace Domain.Entity
         [Required]
         public PaymentStatus PaymentStatus { get; set; }  // Trạng thái thanh toán
 
-        [ForeignKey("CourtId")]
-        public virtual Court Court { get; set; }  // Liên kết với bảng Courts
+        public virtual Court? Court { get; set; }  // Liên kết với bảng Courts
 
-        [ForeignKey("UserId")]
-        public virtual AppUser User { get; set; }  // Liên kết với bảng Users
-
-        [ForeignKey("StaffId")]
-        public virtual StaffDetail Staff { get; set; }  // Liên kết với bảng StaffDetails
+        public virtual AppUser? AppUser { get; set; }  // Liên kết với bảng Users
+        public virtual StaffDetail Staff { get; set; } 
 
         [NotMapped]
         public string StatusName => Status.ToString();  // Trả về tên của trạng thái thay vì số
 
         [NotMapped]
         public string PaymentName => PaymentStatus.ToString();  // Trả về tên của trạng thái thay vì số
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>(); // Liên kết với nhiều Order
 
     }
 }

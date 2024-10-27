@@ -9,6 +9,7 @@ using FluentValidation.AspNetCore;
 using Infrastructure.Photos;
 using Infrastructure.Repository;
 using Infrastructure.Security;
+using Infrastructure.SendMessage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -29,10 +30,15 @@ namespace API.Extensions
                 }
             );
 
+            // services.AddCors(opt =>
+            // {
+            //     opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000", "http://argonaut.asia", "https://argonaut.asia"));
+            // });
+
             services.AddCors(opt =>
-            {
-                opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000","http://argonaut.asia","https://argonaut.asia"));
-            });
+                      {
+                          opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+                      });
 
             services.AddIdentity<AppUser, IdentityRole>(options =>
                {
@@ -54,9 +60,11 @@ namespace API.Extensions
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.AddScoped<ISendSmsService, SendSmsService>();
             services.AddOptions();
             services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.Configure<InfobipAPI>(configuration.GetSection("InfobipAPI"));
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
             return services;
         }

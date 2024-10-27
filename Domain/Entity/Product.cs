@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Product : BaseEntity
+    public class Product : BaseNeedLogEntity
     {
         [StringLength(255)]
         public string? ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
@@ -15,14 +15,19 @@ namespace Domain.Entity
         [StringLength(255)]
         public string Description { get; set; }  // Mô tả chi tiết về sản phẩm
         [Required]
-        public int Quantity { get; set; }  // Số lượng sản phẩm có sẵn
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal Quantity { get; set; }  // Số lượng sản phẩm có sẵn
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá sản phẩm
+        [Required]
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal ImportFee { get; set; }
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; }  // Liên kết với bảng Categories
+        public virtual Category? Category { get; set; }  // Liên kết với bảng Categories
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        public virtual List<ProductLog> ProductLogs { get; set; } = new List<ProductLog>();
     }
 
 }

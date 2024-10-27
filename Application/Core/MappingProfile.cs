@@ -56,7 +56,7 @@ namespace Application.Core
             CreateMap<Booking, BookingDTO>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()))
-             .ForMember(b => b.UserName, o => o.MapFrom(s => s.User.UserName.ToString()))
+            .ForMember(b => b.UserName, o => o.MapFrom(s => s.AppUser.UserName.ToString()))
             .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName.ToString()));
 
 

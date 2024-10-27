@@ -17,8 +17,10 @@ namespace Domain
         public string? ImageUrl { get; set; }
 
         [StringLength(12)]
-        public string CitizenIdentification { get; set; }
+        public string? CitizenIdentification { get; set; }
 
         public bool IsDisabled { get; set; } = false;
+
+        public DateTime? JoiningDate { get; set; } = new DateTime();
     }
 }

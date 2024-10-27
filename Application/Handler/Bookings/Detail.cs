@@ -26,7 +26,11 @@ namespace Application.Handler.Bookings
             }
             public async Task<Result<BookingDTO>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var booking = await _context.Bookings.Include(a => a.Court).Include(a => a.User).Include(a => a.Staff).FirstOrDefaultAsync(x => x.Id == request.Id);
+                var booking = await _context.Bookings
+                .Include(a => a.Court)
+                .Include(a=>a.AppUser)
+                .Include(a=>a.Staff)
+                .FirstOrDefaultAsync(x => x.Id == request.Id);
 
                 if (booking == null) return Result<BookingDTO>.Failure("Booking not found");
                 var bookingDTOs = _mapper.Map<BookingDTO>(booking);

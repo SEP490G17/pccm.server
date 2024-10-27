@@ -3,7 +3,7 @@ using Domain.Enum;
 
 namespace Domain.Entity
 {
-    public class Banner : BaseEntity
+    public class Banner : BaseNeedLogEntity
     {
         [Required]
         [StringLength(255)]
@@ -23,6 +23,7 @@ namespace Domain.Entity
         public string LinkUrl { get; set; }  // Đường dẫn khi người dùng click vào banner
         public DateTime StartDate { get; set; }  // Ngày bắt đầu hiển thị banner
         public DateTime EndDate { get; set; }  // Ngày kết thúc hiển thị banner
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Thời gian banner được tạo
+
+        public virtual ICollection<BannerLog> BannerLogs { get; set; } = new List<BannerLog>();  // Danh sách các log banner này
     }
 }

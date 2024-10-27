@@ -19,5 +19,8 @@ namespace Domain.Entity
 
         [Required]
         public CourtStatus Status { get; set; }  // Trạng thái của sân
+        [ForeignKey("CourtClusterId")]
+        public virtual CourtCluster? CourtCluster { get; set; }
+        public ICollection<CourtPrice> CourtPrices { get; set; } = new List<CourtPrice>();
     }
 }

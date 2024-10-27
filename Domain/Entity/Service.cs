@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entity
 {
-    public class Service : BaseEntity
+    public class Service : BaseNeedLogEntity
     {
         public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         [Required]
@@ -15,6 +15,7 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá dịch vụ
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        public virtual ICollection<ServiceLog> ServiceLogs { get; set; } = new List<ServiceLog>();
     }
 }
