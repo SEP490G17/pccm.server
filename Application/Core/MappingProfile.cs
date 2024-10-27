@@ -37,7 +37,10 @@ namespace Application.Core
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
 
-            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>();
+            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>()
+                .ForMember(c=>c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
+                .ForMember(c=>c.Title, o=>o.MapFrom(st=>st.CourtClusterName));
+            
 
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
@@ -49,7 +52,8 @@ namespace Application.Core
 
             CreateMap<Product, ProductDTO>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
-            .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+            .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName))
+            .ForMember(p=>p.Quantity, o=>o.MapFrom(st=>st.Quantity));
 
             CreateMap<Product, ProductDTO.ProductDetails>();
 
