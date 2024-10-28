@@ -25,7 +25,7 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDTO>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, DataContext _context) : IRequestHandler<Command, Result<ProductDTO>>
         {
 
             public async Task<Result<ProductDTO>> Handle(Command request, CancellationToken cancellationToken)
@@ -34,11 +34,17 @@ namespace Application.Handler.Products
                 var id = request.Id;
                 var repo = unitOfWork.Repository<Product>();
                 var product = await repo.GetByIdAsync(id);
-                mapper.Map(productUpdate,product);
+                product.UpdatedAt = DateTime.Now;
+                product.UpdatedBy = "anonymous";
                 repo.Update(product);
                 var result = await unitOfWork.Complete() > 0;
-                if (!result) return Result<ProductDTO>.Failure("Faild to edit product");
-                var response = await repo.QueryList(null).ProjectTo<ProductDTO>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p=>p.Id == product.Id);
+                var newProduct = mapper.Map<Product>(product);
+                newProduct.Id = 0;
+                mapper.Map(productUpdate, newProduct);
+                await _context.AddAsync(newProduct, cancellationToken);
+                var _result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result || !_result) return Result<ProductDTO>.Failure("Faild to edit product");
+                var response = await repo.QueryList(null).ProjectTo<ProductDTO>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == newProduct.Id);
                 return Result<ProductDTO>.Success(response);
             }
         }

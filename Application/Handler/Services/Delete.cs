@@ -23,7 +23,9 @@ namespace Application.Handler.Services
             {
                 var service = await _context.Services.FindAsync(request.Id);
                 if (service is null) return null;
-                _context.Remove(service);
+                service.DeletedAt = DateTime.Now;
+                service.DeletedBy = "Anonymous";
+                _context.Update(service);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (result) return Result<Unit>.Success(Unit.Value);
                 return Result<Unit>.Failure("Failed to delete the service.");

@@ -13,7 +13,7 @@ namespace Application.Handler.Services
     {
         public class Command : IRequest<Result<ServiceDto>>
         {
-            public ServiceInputDTO Service { get; set; }
+            public ServiceDto Service { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -39,12 +39,18 @@ namespace Application.Handler.Services
                 var serviceExist = await _context.Services.Include(s => s.CourtCluster).FirstOrDefaultAsync(s => s.Id == request.Service.Id);
                 if (serviceExist == null)
                     return Result<ServiceDto>.Failure("Fail to edit service");
-                service.CourtCluster = serviceExist.CourtCluster;
-                _mapper.Map(request.Service, serviceExist);
+                serviceExist.UpdatedAt = DateTime.Now;
+                serviceExist.UpdatedBy = "Anonymous";
+                _context.Update(serviceExist);
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<ServiceDto>.Failure("Fail to edit service");
+                service = _mapper.Map<Service>(serviceExist);
+                _mapper.Map(request.Service, service);
+                service.Id = 0;
+                await _context.AddAsync(service, cancellationToken);
+                var _result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result || !_result) return Result<ServiceDto>.Failure("Fail to edit service");
                 var updateService = _context.Entry(service).Entity;
-                var response = _mapper.Map<ServiceDto>(serviceExist);
+                var response = _mapper.Map<ServiceDto>(service);
                 return Result<ServiceDto>.Success(response);
             }
         }

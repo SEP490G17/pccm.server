@@ -21,9 +21,11 @@ namespace Application.Handler.Products
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var product = await _context.Products.FindAsync(request.Id);
-                if (product is null) return null;
-                _context.Remove(product);
+                var deleteProduct = await _context.Products.FindAsync(request.Id);
+                if (deleteProduct is null) return null;
+                deleteProduct.DeletedAt = DateTime.Now;
+                deleteProduct.DeletedBy = "Anoynimous";
+                _context.Update(deleteProduct);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (result) return Result<Unit>.Success(Unit.Value);
                 return Result<Unit>.Failure("Failed to delete the product.");
