@@ -61,7 +61,7 @@ namespace Application.Handler.Statistics
                     .Select(g => new
                     {
                         Month = g.Key,
-                        TotalAmount = g.Sum(x => x.TotalOrderAmount) + g.Sum(x => x.Booking.TotalPrice)
+                        TotalAmount = (g.Sum(x => x.TotalOrderAmount) + g.Sum(x => x.Booking.TotalPrice)) / 1_000_000m
                     })
                     .ToListAsync(cancellationToken);
 
