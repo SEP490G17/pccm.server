@@ -8,13 +8,22 @@ namespace Application.Handler.Statistics
 {
     public class Income
     {
-        public class Query : IRequest<Result<decimal[]>> {
+        public class Query : IRequest<Result<decimal[]>>
+        {
             public string? Year { get; set; }
             public string? Month { get; set; }
             public string? CourtClusterId { get; set; }
         }
-        public class Handler(DataContext _context) : IRequestHandler<Query, Result<decimal[]>>
+
+        public class Handler : IRequestHandler<Query, Result<decimal[]>>
         {
+            private readonly DataContext _context;
+
+            public Handler(DataContext context)
+            {
+                _context = context;
+            }
+
             public async Task<Result<decimal[]>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var incomeByMonth = new decimal[12];
@@ -29,13 +38,14 @@ namespace Application.Handler.Statistics
                         TotalOrderAmount = g.Sum(o => o.TotalAmount)
                     });
 
-                // Thực hiện nối với `bookings` sau khi tính tổng các `orders`
-                var query = orderSums
-                    .Join(
-                        _context.Bookings.Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed),
-                        os => os.BookingId,
+                // Thực hiện LEFT JOIN với `bookings` sau khi tính tổng các `orders`
+                var query = _context.Bookings
+                    .Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed)
+                    .GroupJoin(
+                        orderSums,
                         b => b.Id,
-                        (os, b) => new { os.TotalOrderAmount, Booking = b }
+                        os => os.BookingId,
+                        (b, os) => new { Booking = b, TotalOrderAmount = os.Select(x => x.TotalOrderAmount).FirstOrDefault() }
                     );
 
                 // Thêm các điều kiện lọc tùy chọn
@@ -55,7 +65,7 @@ namespace Application.Handler.Statistics
                     query = query.Where(x => x.Booking.Court.CourtClusterId == courtClusterId);
                 }
 
-                // Tính tổng `TotalAmount` cuối cùng cho từng tháng
+                // Tính tổng `TotalAmount` cuối cùng cho từng tháng, bao gồm `Booking.TotalPrice`
                 var totalAmounts = await query
                     .GroupBy(x => x.Booking.StartTime.Month)
                     .Select(g => new
