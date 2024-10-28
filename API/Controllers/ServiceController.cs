@@ -34,7 +34,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateService(int id, ServiceDto updatedService)
+        public async Task<IActionResult> UpdateService(int id, ServiceInputDTO updatedService)
         {
             updatedService.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { Service = updatedService }));
