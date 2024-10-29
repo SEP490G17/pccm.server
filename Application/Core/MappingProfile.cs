@@ -21,9 +21,11 @@ namespace Application.Core
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
             CreateMap<Service, ServiceDto>()
              .ForMember(s => s.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
-            CreateMap<Service, Service>();
+            CreateMap<Service, Service>()
+            .ForMember(s => s.UpdatedAt, o => o.MapFrom(s => (DateTime?)null))
+                .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDTO, Service>();
-
+            CreateMap<ServiceDto, Service>();
             CreateMap<CourtCluster, CourtClustersInputDTO>()
              .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.CourtClusterName, o => o.MapFrom(s => s.CourtClusterName))
@@ -38,9 +40,9 @@ namespace Application.Core
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
 
             CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>()
-                .ForMember(c=>c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
-                .ForMember(c=>c.Title, o=>o.MapFrom(st=>st.CourtClusterName));
-            
+                .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
+                .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
+
 
             CreateMap<OrderInputDTO, Order>();
             CreateMap<ReviewInputDTO, Review>();
@@ -50,10 +52,14 @@ namespace Application.Core
 
             CreateMap<ProductDTO, Product>();
 
+            CreateMap<Product, Product>()
+                .ForMember(p => p.UpdatedAt, o => o.MapFrom(src => (DateTime?)null))
+                .ForMember(p => p.UpdatedBy, o => o.MapFrom(src => (string)null));
+
             CreateMap<Product, ProductDTO>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
             .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName))
-            .ForMember(p=>p.Quantity, o=>o.MapFrom(st=>st.Quantity));
+            .ForMember(p => p.Quantity, o => o.MapFrom(st => st.Quantity));
 
             CreateMap<Product, ProductDTO.ProductDetails>();
 

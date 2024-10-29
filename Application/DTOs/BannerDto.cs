@@ -18,6 +18,7 @@ namespace Application.DTOs
         public DateTime EndDate { get; set; }  // Ngày kết thúc hiển thị banner
         public string Description { get; set; }
         public BannerStatus Status { get; set; }
-
+        public BannerType BannerType { get; set; } // Loại banner
+        public BannerInPage BannerInPage { get; set; } // ở trang nào
     }
 }

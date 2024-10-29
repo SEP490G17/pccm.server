@@ -13,10 +13,12 @@ namespace Application.SpecParams.ProductSpecification
             && (baseSpecParam.Filter == null ||
                 x.CategoryId.Equals(baseSpecParam.Filter)
             )
+            && x.DeletedAt == null
+            && x.UpdatedAt == null
         )
         {
             ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);
-            AddOrderByDescending( x=>x.Id );
+            AddOrderByDescending(x => x.Id);
         }
     }
-}   
+}
