@@ -28,24 +28,17 @@ namespace Application.Handler.Statistics
             {
                 var incomeByMonth = new decimal[12];
 
-                // Nhóm các `orders` theo `BookingId` để tính tổng trước khi nối
-                var orderSums = _context.Orders
-                    .Where(o => o.Status == "Đã hoàn thành")
-                    .GroupBy(o => o.BookingId)
-                    .Select(g => new
-                    {
-                        BookingId = g.Key,
-                        TotalOrderAmount = g.Sum(o => o.TotalAmount)
-                    });
-
-                // Thực hiện LEFT JOIN với `bookings` sau khi tính tổng các `orders`
                 var query = _context.Bookings
                     .Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed)
                     .GroupJoin(
-                        orderSums,
+                        _context.Orders.Where(o => o.Status == "Đã hoàn thành"),
                         b => b.Id,
-                        os => os.BookingId,
-                        (b, os) => new { Booking = b, TotalOrderAmount = os.Select(x => x.TotalOrderAmount).FirstOrDefault() }
+                        o => o.BookingId,
+                        (b, orders) => new
+                        {
+                            Booking = b,
+                            TotalOrderAmount = orders.Sum(x => x.TotalAmount)
+                        }
                     );
 
                 // Thêm các điều kiện lọc tùy chọn
