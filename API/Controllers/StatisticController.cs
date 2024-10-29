@@ -4,6 +4,7 @@ using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -11,9 +12,9 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet("income")]
-        public async Task<IActionResult> GetIncome(FilterStatisticDTO filterStatisticDTO, CancellationToken ct)
+        public async Task<IActionResult> GetIncome([FromQuery] StatisticInputDTO statisticInput, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Income.Query() { datafilter = filterStatisticDTO }, ct));
+            return HandleResult(await Mediator.Send(new Income.Query() { StatisticInput = statisticInput }, ct));
         }
     }
 }
