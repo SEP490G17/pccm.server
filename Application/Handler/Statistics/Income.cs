@@ -1,4 +1,5 @@
 ﻿using Application.Core;
+using Application.DTOs;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +9,12 @@ namespace Application.Handler.Statistics
 {
     public class Income
     {
-        public class Query : IRequest<Result<decimal[]>>
+        public class Query : IRequest<Result<IEnumerable<IncomeResult>>>
         {
-            public string? Year { get; set; }
-            public string? Month { get; set; }
-            public string? CourtClusterId { get; set; }
+            public StatisticInputDTO StatisticInput { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<decimal[]>>
+        public class Handler : IRequestHandler<Query, Result<IEnumerable<IncomeResult>>>
         {
             private readonly DataContext _context;
 
@@ -24,9 +23,18 @@ namespace Application.Handler.Statistics
                 _context = context;
             }
 
-            public async Task<Result<decimal[]>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<IEnumerable<IncomeResult>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var incomeByMonth = new decimal[12];
+                var year = !string.IsNullOrEmpty(request.StatisticInput.Year) && request.StatisticInput.Year != "all"
+                    ? int.Parse(request.StatisticInput.Year)
+                    : DateTime.Now.Year;
+
+                var month = !string.IsNullOrEmpty(request.StatisticInput.Month) && request.StatisticInput.Month != "all"
+                    ? int.Parse(request.StatisticInput.Month)
+                    : 0;
+
+                // Kiểm tra CourtClusterId
+                int? courtClusterId = request.StatisticInput.CourtClusterId; 
 
                 var query = _context.Bookings
                     .Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed)
@@ -37,46 +45,99 @@ namespace Application.Handler.Statistics
                         (b, orders) => new
                         {
                             Booking = b,
-                            TotalOrderAmount = orders.Sum(x => x.TotalAmount)
+                            TotalOrderAmount = orders.Sum(x => x.TotalAmount),
+                            TotalBooking = 1
                         }
                     );
 
-                // Thêm các điều kiện lọc tùy chọn
-                if (!string.IsNullOrEmpty(request.Year) && request.Year != "all")
+                // Thêm điều kiện theo tháng
+                if (month > 0)
                 {
-                    int year = int.Parse(request.Year);
+                    query = query.Where(x => x.Booking.StartTime.Year == year && x.Booking.StartTime.Month == month);
+                }
+                else
+                {
                     query = query.Where(x => x.Booking.StartTime.Year == year);
                 }
-                if (!string.IsNullOrEmpty(request.Month) && request.Month != "all")
+
+                // Thêm điều kiện cho CourtClusterId
+                if (courtClusterId.HasValue)
                 {
-                    int month = int.Parse(request.Month);
-                    query = query.Where(x => x.Booking.StartTime.Month == month);
-                }
-                if (!string.IsNullOrEmpty(request.CourtClusterId) && request.CourtClusterId != "all")
-                {
-                    int courtClusterId = int.Parse(request.CourtClusterId);
-                    query = query.Where(x => x.Booking.Court.CourtClusterId == courtClusterId);
+                    query = query.Where(x => x.Booking.Court != null &&
+                        _context.Courts.Where(c => c.CourtClusterId == courtClusterId.Value)
+                        .Select(c => c.Id).Contains(x.Booking.Court.Id)); // Sử dụng Court.Id
                 }
 
-                // Tính tổng `TotalAmount` cuối cùng cho từng tháng, bao gồm `Booking.TotalPrice`
-                var totalAmounts = await query
-                    .GroupBy(x => x.Booking.StartTime.Month)
-                    .Select(g => new
+                // Nếu tháng đã được chỉ định
+                if (month > 0)
+                {
+                    var daysInMonth = DateTime.DaysInMonth(year, month);
+                    var defaultIncomeByDay = Enumerable.Range(1, daysInMonth)
+                        .Select(day => new IncomeResult
+                        {
+                            Date = $"{day:D2}/{month:D2}",
+                            TotalAmount = 0,
+                            TotalBooking = 0 // Khởi tạo
+                        })
+                        .ToList();
+
+                    var totalAmountsByDay = await query
+                        .GroupBy(x => x.Booking.StartTime.Day)
+                        .Select(g => new IncomeResult
+                        {
+                            Date = $"{g.Key:D2}/{month:D2}",
+                            TotalAmount = (g.Sum(x => x.TotalOrderAmount) + g.Sum(x => x.Booking.TotalPrice)) / 1_000_000m,
+                            TotalBooking = g.Count() // Tính tổng số booking
+                        })
+                        .ToListAsync(cancellationToken);
+
+                    foreach (var dayIncome in totalAmountsByDay)
                     {
-                        Month = g.Key,
-                        TotalAmount = (g.Sum(x => x.TotalOrderAmount) + g.Sum(x => x.Booking.TotalPrice)) / 1_000_000m
-                    })
-                    .ToListAsync(cancellationToken);
+                        var match = defaultIncomeByDay.FirstOrDefault(d => d.Date == dayIncome.Date);
+                        if (match != null)
+                        {
+                            match.TotalAmount = dayIncome.TotalAmount;
+                            match.TotalBooking = dayIncome.TotalBooking; // Cập nhật TotalBooking
+                        }
+                    }
 
-                // Đưa kết quả vào mảng `incomeByMonth`
-                foreach (var item in totalAmounts)
-                {
-                    if (item.Month >= 1 && item.Month <= 12)
-                        incomeByMonth[item.Month - 1] = item.TotalAmount;
+                    return Result<IEnumerable<IncomeResult>>.Success(defaultIncomeByDay);
                 }
+                else // Nếu không có tháng
+                {
+                    var defaultIncomeByMonth = Enumerable.Range(1, 12)
+                        .Select(m => new IncomeResult
+                        {
+                            Date = $"Tháng {m:D2}",
+                            TotalAmount = 0,
+                            TotalBooking = 0 // Khởi tạo
+                        })
+                        .ToList();
 
-                return Result<decimal[]>.Success(incomeByMonth);
+                    var totalAmountsByMonth = await query
+                        .GroupBy(x => x.Booking.StartTime.Month)
+                        .Select(g => new IncomeResult
+                        {
+                            Date = $"Tháng {g.Key:D2}",
+                            TotalAmount = (g.Sum(x => x.TotalOrderAmount) + g.Sum(x => x.Booking.TotalPrice)) / 1_000_000m,
+                            TotalBooking = g.Count() // Tính tổng số booking
+                        })
+                        .ToListAsync(cancellationToken);
+
+                    foreach (var monthIncome in totalAmountsByMonth)
+                    {
+                        var match = defaultIncomeByMonth.FirstOrDefault(d => d.Date == monthIncome.Date);
+                        if (match != null)
+                        {
+                            match.TotalAmount = monthIncome.TotalAmount;
+                            match.TotalBooking = monthIncome.TotalBooking; // Cập nhật TotalBooking
+                        }
+                    }
+
+                    return Result<IEnumerable<IncomeResult>>.Success(defaultIncomeByMonth);
+                }
             }
+
         }
     }
 }

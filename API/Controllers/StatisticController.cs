@@ -1,8 +1,10 @@
-﻿using Application.Handler.Statistics;
+﻿using Application.DTOs;
+using Application.Handler.Statistics;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -10,9 +12,9 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet("income")]
-        public async Task<IActionResult> GetIncome(string? year, string? month, string? courtclusterId, CancellationToken ct)
+        public async Task<IActionResult> GetIncome([FromQuery] StatisticInputDTO statisticInput, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Income.Query() { Year = year, Month = month, CourtClusterId = courtclusterId }, ct));
+            return HandleResult(await Mediator.Send(new Income.Query() { StatisticInput = statisticInput }, ct));
         }
     }
 }
