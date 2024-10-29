@@ -11,10 +11,17 @@ namespace API.Controllers
     public class StatisticController : BaseApiController
     {
         [AllowAnonymous]
-        [HttpGet("income")]
-        public async Task<IActionResult> GetIncome([FromQuery] StatisticInputDTO statisticInput, CancellationToken ct)
+        [HttpGet]
+        public async Task<IActionResult> GetStatistic([FromQuery] StatisticInputDTO statisticInput, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Income.Query() { StatisticInput = statisticInput }, ct));
+            return HandleResult(await Mediator.Send(new StatisticService.Query() { StatisticInput = statisticInput }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("Count")]
+        public async Task<IActionResult> GetStatisticCount(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new Count.Query(), ct));
         }
     }
 }
