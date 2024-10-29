@@ -1,4 +1,5 @@
 ﻿using Application.Core;
+using Application.DTOs;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,7 @@ namespace Application.Handler.Statistics
     {
         public class Query : IRequest<Result<decimal[]>>
         {
-            public string? Year { get; set; }
-            public string? Month { get; set; }
-            public string? CourtClusterId { get; set; }
+            public FilterStatisticDTO datafilter { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Result<decimal[]>>
@@ -42,19 +41,19 @@ namespace Application.Handler.Statistics
                     );
 
                 // Thêm các điều kiện lọc tùy chọn
-                if (!string.IsNullOrEmpty(request.Year) && request.Year != "all")
+                if (!string.IsNullOrEmpty(request.datafilter.Year) && request.datafilter.Year != "all")
                 {
-                    int year = int.Parse(request.Year);
+                    int year = int.Parse(request.datafilter.Year);
                     query = query.Where(x => x.Booking.StartTime.Year == year);
                 }
-                if (!string.IsNullOrEmpty(request.Month) && request.Month != "all")
+                if (!string.IsNullOrEmpty(request.datafilter.Month) && request.datafilter.Month != "all")
                 {
-                    int month = int.Parse(request.Month);
+                    int month = int.Parse(request.datafilter.Month);
                     query = query.Where(x => x.Booking.StartTime.Month == month);
                 }
-                if (!string.IsNullOrEmpty(request.CourtClusterId) && request.CourtClusterId != "all")
+                if (!string.IsNullOrEmpty(request.datafilter.CourtClusterId) && request.datafilter.CourtClusterId != "all")
                 {
-                    int courtClusterId = int.Parse(request.CourtClusterId);
+                    int courtClusterId = int.Parse(request.datafilter.CourtClusterId);
                     query = query.Where(x => x.Booking.Court.CourtClusterId == courtClusterId);
                 }
 
