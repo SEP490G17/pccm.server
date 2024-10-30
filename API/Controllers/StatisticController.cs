@@ -38,5 +38,11 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new StatisticCluster.Query() { Date = date, CourtClusterId = clusterId }, ct));
         }
+        [AllowAnonymous]
+        [HttpGet("ExpendStatistics")]
+        public async Task<IActionResult> GetExpenditureStatistics([FromQuery] int month, [FromQuery] int year, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new StatisticExpend.Query() { Month = month, Year = year }, ct));
+        }
     }
 }

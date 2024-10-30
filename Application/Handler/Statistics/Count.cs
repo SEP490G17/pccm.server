@@ -76,7 +76,7 @@ namespace Application.Handler.Statistics
                     TotalUsers = totalUsers,
                     TotalStaff = totalStaff,
                     TopStaffs = topStaffDetails, 
-                    TopProducts = topProducts   
+                    TopProducts = topProducts
                 };
 
                 return Result<StatisticCount>.Success(statisticCount);
