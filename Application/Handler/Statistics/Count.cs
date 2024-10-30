@@ -35,31 +35,38 @@ namespace Application.Handler.Statistics
                     .Select(g => new
                     {
                         StaffId = g.Key,
-                        FullName = _context.StaffDetails
-                            .Where(s => s.Id == g.Key)
-                            .Join(_context.Users,
-                                s => s.UserId,
-                                u => u.Id,
-                                (s, u) => u.FirstName + " " + u.LastName)
-                            .FirstOrDefault(),
-                        OrderCount = g.Count() 
+                        OrderCount = g.Count()
                     })
-                    .OrderByDescending(g => g.OrderCount) 
+                    .OrderByDescending(g => g.OrderCount)
                     .Take(5)
                     .ToListAsync(cancellationToken);
 
+                var topStaffDetails = topStaffs.Select(s =>
+                    _context.StaffDetails
+                        .Where(staff => staff.Id == s.StaffId)
+                        .Include(staff => staff.User) 
+                        .Select(staff => new StaffDetail
+                        {
+                            Id = staff.Id,
+                            User = new AppUser
+                            {
+                                FirstName = staff.User.FirstName,
+                                LastName = staff.User.LastName
+                            }
+                        })
+                        .FirstOrDefault()
+                ).ToList();
+
                 var topProducts = await _context.OrderDetails
                     .GroupBy(od => od.ProductId)
-                    .OrderByDescending(g => g.Sum(od => od.Quantity))
-                    .Take(5)
                     .Select(g => new
                     {
                         ProductId = g.Key,
-                        ProductName = _context.Products
-                            .Where(p => p.Id == g.Key)
-                            .Select(p => p.ProductName)
-                            .FirstOrDefault()
+                        TotalQuantity = g.Sum(od => od.Quantity)
                     })
+                    .OrderByDescending(g => g.TotalQuantity)
+                    .Take(5)
+                    .Select(g => _context.Products.FirstOrDefault(p => p.Id == g.ProductId))
                     .ToListAsync(cancellationToken);
 
                 var statisticCount = new StatisticCount
@@ -68,8 +75,8 @@ namespace Application.Handler.Statistics
                     TotalCourts = totalCourts,
                     TotalUsers = totalUsers,
                     TotalStaff = totalStaff,
-                    TopStaffs = topStaffs.Select(s => s.FullName).ToArray(),
-                    TopProducts = topProducts.Select(p => p.ProductName).ToArray() 
+                    TopStaffs = topStaffDetails, 
+                    TopProducts = topProducts   
                 };
 
                 return Result<StatisticCount>.Success(statisticCount);
