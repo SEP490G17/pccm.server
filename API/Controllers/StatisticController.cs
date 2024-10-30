@@ -40,7 +40,7 @@ namespace API.Controllers
         }
         [AllowAnonymous]
         [HttpGet("ExpendStatistics")]
-        public async Task<IActionResult> GetExpenditureStatistics([FromQuery] int month, [FromQuery] int year, CancellationToken ct)
+        public async Task<IActionResult> GetExpenditureStatistics([FromQuery] string month, [FromQuery] string year, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new StatisticExpend.Query() { Month = month, Year = year }, ct));
         }

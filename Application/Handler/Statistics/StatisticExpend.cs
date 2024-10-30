@@ -10,8 +10,8 @@ namespace Application.Handler.Statistics
     {
         public class Query : IRequest<Result<ExpendDto>>
         {
-            public int Month { get; set; }
-            public int Year { get; set; }
+            public string Month { get; set; }
+            public string Year { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, Result<ExpendDto>>
@@ -25,17 +25,21 @@ namespace Application.Handler.Statistics
 
             public async Task<Result<ExpendDto>> Handle(Query request, CancellationToken cancellationToken)
             {
+                // Chuyển đổi Month và Year từ chuỗi sang số nguyên
+                if (!int.TryParse(request.Month, out int month) || !int.TryParse(request.Year, out int year))
+                {
+                    return Result<ExpendDto>.Failure("Invalid month or year format.");
+                }
+
                 // Tính tổng chi phí sản phẩm
                 var totalProductExpenditure = await _context.Products
-                    .Where(p => p.CreatedAt.Month == request.Month && p.CreatedAt.Year == request.Year)
+                    .Where(p => p.CreatedAt.Month == month && p.CreatedAt.Year == year)
                     .SumAsync(p => p.ImportFee * p.Quantity, cancellationToken);
 
                 // Tính tổng chi phí nhân viên
                 var totalStaffExpenditure = await _context.StaffDetails
-                   /* .Where(sd => sd.HireDate.Month == request.Month && sd.HireDate.Year == request.Year)*/
+                /*    .Where(sd => sd.HireDate.Month == month && sd.HireDate.Year == year)*/
                     .SumAsync(sd => sd.Salary, cancellationToken);
-
-                var totalExpenditure = totalProductExpenditure + totalStaffExpenditure;
 
                 var expenditureDto = new ExpendDto
                 {
