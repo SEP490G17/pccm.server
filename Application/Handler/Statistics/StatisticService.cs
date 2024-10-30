@@ -92,7 +92,7 @@ namespace Application.Handler.Statistics
                         (b, orders) => new
                         {
                             Booking = b,
-                            TotalOrderAmount = orders.Sum(x => (decimal)x.TotalAmount), // Ensure TotalAmount is treated as decimal
+                            TotalOrderAmount = orders.Sum(x => (decimal)x.TotalAmount), 
                             TotalBooking = 1
                         }
                     );
@@ -122,7 +122,7 @@ namespace Application.Handler.Statistics
                         Month = g.Key,
                         TotalImportFee = g.Sum(p => p.ImportFee * p.Quantity) / 1_000_000m
                     })
-                    .Cast<dynamic>() // Chuyển đổi sang dynamic
+                    .Cast<dynamic>() 
                     .ToListAsync(cancellationToken);
             }
 
@@ -137,9 +137,9 @@ namespace Application.Handler.Statistics
                     .Select(day => new StatisticResult
                     {
                         Date = $"{day:D2}/{month:D2}",
-                        TotalAmount = 0m,  // Đảm bảo kiểu là decimal
+                        TotalAmount = 0m,  
                         TotalBooking = 0,
-                        TotalImportFee = 0m  // Đảm bảo kiểu là decimal
+                        TotalImportFee = 0m  
                     })
                     .ToList();
 
@@ -177,7 +177,7 @@ namespace Application.Handler.Statistics
                     .Select(m => new StatisticResult
                     {
                         Date = $"Tháng {m:D2}",
-                        TotalAmount = 0m,  // Ensure this is decimal
+                        TotalAmount = 0m, 
                         TotalBooking = 0,
                         TotalImportFee = totalImportFees.FirstOrDefault(x => x.Month == m)?.TotalImportFee ?? 0m  // Ensure this is decimal
                     })
