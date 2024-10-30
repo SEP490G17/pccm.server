@@ -11,9 +11,9 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecParam baseSpecParam ,CancellationToken ct)
+        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query(){BaseSpecParam=baseSpecParam}, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
         [HttpGet("{id}")]
@@ -45,7 +45,7 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut]
+        [HttpPut("changestatus/{id}/{status}")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));

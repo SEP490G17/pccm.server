@@ -23,5 +23,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Count.Query(), ct));
         }
+
+        [AllowAnonymous]
+        [HttpGet("Years")]
+        public async Task<IActionResult> GetYear(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetYears.Query(), ct));
+        }
     }
 }

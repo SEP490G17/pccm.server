@@ -68,11 +68,16 @@ namespace Application.Handler.Statistics
                 {
                     bookingsQuery = bookingsQuery.Where(b => b.StartTime.Year == year);
                 }
+                if (courtClusterId == 0)
+                {
+                    bookingsQuery = bookingsQuery.Where(b => b.Court != null);
+                }
 
-                if (courtClusterId.HasValue)
+                else if (courtClusterId.HasValue)
                 {
                     bookingsQuery = bookingsQuery.Where(b => b.Court != null && b.Court.CourtClusterId == courtClusterId.Value);
                 }
+
 
                 return await bookingsQuery.ToListAsync(cancellationToken);
             }
@@ -199,7 +204,7 @@ namespace Application.Handler.Statistics
                         match.TotalImportFee = monthIncome.TotalImportFee;
                     }
                 }
-
+                
                 return Result<IEnumerable<StatisticResult>>.Success(defaultIncomeByMonth);
             }
 
