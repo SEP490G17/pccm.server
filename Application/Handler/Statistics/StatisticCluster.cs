@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Application.Handler.Statistics
 {
@@ -36,13 +35,14 @@ namespace Application.Handler.Statistics
                 var bookingDetails = await _context.Bookings
                     .Where(b => b.StartTime.Date == request.Date.Date &&
                                  b.Court.CourtClusterId == request.CourtClusterId &&
-                                 b.Status == BookingStatus.Confirmed && 
-                                 b.PaymentStatus == PaymentStatus.Paid) 
-                    .Select(b => new BookingDetailDto
+                                 b.Status == BookingStatus.Confirmed &&
+                                 b.PaymentStatus == PaymentStatus.Paid)
+                    .GroupBy(b => b.Court.CourtName)
+                    .Select(g => new BookingDetailDto
                     {
-                        CourtName = b.Court.CourtName,
-                        HoursBooked = EF.Functions.DateDiffHour(b.StartTime, b.EndTime),
-                        TotalPrice = b.TotalPrice
+                        CourtName = g.Key,
+                        HoursBooked = g.Sum(b => EF.Functions.DateDiffHour(b.StartTime, b.EndTime)), // Tính tổng HoursBooked
+                        TotalPrice = g.Sum(b => b.TotalPrice) // Tính tổng TotalPrice
                     })
                     .ToListAsync(cancellationToken);
 
@@ -56,15 +56,15 @@ namespace Application.Handler.Statistics
                                                   b.Status == BookingStatus.Confirmed &&
                                                   b.PaymentStatus == PaymentStatus.Paid)
                                      .Any() &&
-                                     od.Order.CreatedAt.Date == request.Date.Date)
-                    .Select(od => new OrderDetailDto
+                                 od.Order.CreatedAt.Date == request.Date.Date)
+                    .GroupBy(od => od.Product.ProductName)
+                    .Select(g => new OrderDetailDto
                     {
-                        ProductName = od.Product.ProductName,
-                        Quantity = od.Quantity,
-                        TotalPrice = od.TotalPrice
+                        ProductName = g.Key,
+                        Quantity = g.Sum(od => od.Quantity), // Tính tổng Quantity
+                        TotalPrice = g.Sum(od => od.TotalPrice) // Tính tổng TotalPrice
                     })
                     .ToListAsync(cancellationToken);
-
 
                 var statistics = new ClusterStatisticsDto
                 {
