@@ -21,7 +21,7 @@ namespace Application.DTOs
     public class BookingDetailDto
     {
         public string CourtName { get; set; }
-        public double HoursBooked { get; set; }
+        public string HoursBooked { get; set; }
         public decimal TotalPrice { get; set; }
     }
 }
