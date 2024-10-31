@@ -86,7 +86,7 @@ namespace Application.Handler.Statistics
                 int minutes = (int)((totalHours - hours) * 60);
 
                 // Trả về chuỗi theo định dạng "xhyy"
-                return $"{hours}h{minutes:D2}";
+                return $"{hours}h{minutes:D2}p";
             }
         }
     }
