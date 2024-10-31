@@ -37,14 +37,18 @@ namespace Application.Handler.Statistics
                                  b.Court.CourtClusterId == request.CourtClusterId &&
                                  b.Status == BookingStatus.Confirmed &&
                                  b.PaymentStatus == PaymentStatus.Paid)
+                    .Include(b => b.Court) 
+                    .ToListAsync(cancellationToken); 
+
+                var bookingDetailsGrouped = bookingDetails
                     .GroupBy(b => b.Court.CourtName)
                     .Select(g => new BookingDetailDto
                     {
                         CourtName = g.Key,
-                        HoursBooked = g.Sum(b => EF.Functions.DateDiffHour(b.StartTime, b.EndTime)), // Tính tổng HoursBooked
-                        TotalPrice = g.Sum(b => b.TotalPrice) // Tính tổng TotalPrice
+                        HoursBooked = FormatHours(g.Sum(b => (b.EndTime - b.StartTime).TotalHours)), 
+                        TotalPrice = g.Sum(b => b.TotalPrice)
                     })
-                    .ToListAsync(cancellationToken);
+                    .ToList();
 
                 // Thống kê các dịch vụ
                 var orderDetails = await _context.OrderDetails
@@ -61,18 +65,28 @@ namespace Application.Handler.Statistics
                     .Select(g => new OrderDetailDto
                     {
                         ProductName = g.Key,
-                        Quantity = g.Sum(od => od.Quantity), // Tính tổng Quantity
-                        TotalPrice = g.Sum(od => od.TotalPrice) // Tính tổng TotalPrice
+                        Quantity = g.Sum(od => od.Quantity),
+                        TotalPrice = g.Sum(od => od.TotalPrice)
                     })
                     .ToListAsync(cancellationToken);
 
                 var statistics = new ClusterStatisticsDto
                 {
-                    BookingDetails = bookingDetails,
+                    BookingDetails = bookingDetailsGrouped,
                     OrderDetails = orderDetails,
                 };
 
                 return Result<ClusterStatisticsDto>.Success(statistics);
+            }
+
+            private static string FormatHours(double totalHours)
+            {
+                // Tính toán số giờ và phút
+                int hours = (int)totalHours;
+                int minutes = (int)((totalHours - hours) * 60);
+
+                // Trả về chuỗi theo định dạng "xhyy"
+                return $"{hours}h{minutes:D2}";
             }
         }
     }
