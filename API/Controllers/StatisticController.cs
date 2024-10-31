@@ -44,5 +44,11 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new StatisticExpend.Query() { Month = month, Year = year }, ct));
         }
+        [AllowAnonymous]
+        [HttpGet("TopStatistics")]
+        public async Task<IActionResult> GetTopStatistics([FromQuery] string month, [FromQuery] string year, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new TopStatisticsService.Query { Month = month, Year = year }, ct));
+        }
     }
 }
