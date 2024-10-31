@@ -1,5 +1,7 @@
 ﻿using Application.Core;
 using Application.DTOs;
+using AutoMapper;
+using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -21,10 +23,12 @@ namespace Application.Handler.Statistics
         public class Handler : IRequestHandler<Query, Result<TopStatisticDto>>
         {
             private readonly DataContext _context;
+            private readonly IMapper _mapper;
 
-            public Handler(DataContext context)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _context = context;
+                _mapper = mapper;
             }
 
             public async Task<Result<TopStatisticDto>> Handle(Query request, CancellationToken cancellationToken)
@@ -45,12 +49,17 @@ namespace Application.Handler.Statistics
                     .Take(5)
                     .ToListAsync(cancellationToken);
 
-                var topStaffDetails = topStaffs.Select(s =>
+                var listTopStaffDetails = topStaffs.Select(s =>
                     _context.StaffDetails
                         .Where(staff => staff.Id == s.StaffId)
                         .Include(staff => staff.User)
                         .FirstOrDefault()
                 ).ToList();
+                List<StaffDto> topStaffDetails = new List<StaffDto>();
+                foreach (var staff in listTopStaffDetails)
+                {
+                    topStaffDetails.Add(_mapper.Map<StaffDto>(staff));
+                }
 
                 // Lấy top 5 sản phẩm bán chạy nhất theo tháng và năm
                 var topProducts = await _context.OrderDetails
@@ -65,12 +74,16 @@ namespace Application.Handler.Statistics
                     .Take(5)
                     .ToListAsync(cancellationToken);
 
-                var topProductDetails = topProducts.Select(p =>
+                var listTopProductDetails = topProducts.Select(p =>
                     _context.Products
                         .Where(product => product.Id == p.ProductId)
                         .FirstOrDefault()
                 ).ToList();
-
+                List<ProductDTO> topProductDetails = new List<ProductDTO>();
+                foreach (var product in listTopProductDetails)
+                {
+                    topProductDetails.Add(_mapper.Map<ProductDTO>(product));
+                }
                 // Đưa dữ liệu vào DTO
                 var topStatisticDto = new TopStatisticDto
                 {

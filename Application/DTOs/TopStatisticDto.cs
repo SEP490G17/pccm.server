@@ -9,7 +9,7 @@ namespace Application.DTOs
 {
     public class TopStatisticDto
     {
-        public List<StaffDetail> TopStaffs { get; set; }
-        public List<Product> TopProducts { get; set; }
+        public List<StaffDto> TopStaffs { get; set; }
+        public List<ProductDTO> TopProducts { get; set; }
     }
 }
