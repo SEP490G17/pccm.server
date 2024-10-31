@@ -13,8 +13,6 @@ namespace Application.DTOs
         public int TotalCourts { get; set; }
         public int TotalUsers { get; set; }
         public int TotalStaff { get; set; }
-        public List<StaffDetail> TopStaffs { get; set; }
-        public List<Product> TopProducts { get; set; }
 
     }
 }
