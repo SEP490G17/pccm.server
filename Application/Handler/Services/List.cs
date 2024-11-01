@@ -15,7 +15,7 @@ namespace Application.Handler.Services
     {
         public class Query : IRequest<Result<Pagination<ServiceDto>>>
         {
-            public BaseSpecParam BaseSpecParam { get; set; }
+            public BaseSpecWithFilterParam BaseSpecParam { get; set; }
         }
         public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<ServiceDto>>>
         {

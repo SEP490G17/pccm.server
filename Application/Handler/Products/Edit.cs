@@ -13,9 +13,9 @@ namespace Application.Handler.Products
 {
     public class Edit
     {
-        public class Command : IRequest<Result<ProductDTO>>
+        public class Command : IRequest<Result<ProductDto>>
         {
-            public ProductInputDTO product { get; set; }
+            public ProductInputDto product { get; set; }
             public int Id { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
@@ -25,10 +25,10 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, DataContext _context) : IRequestHandler<Command, Result<ProductDTO>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDto>>
         {
 
-            public async Task<Result<ProductDTO>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var productUpdate = request.product;
                 var id = request.Id;
@@ -38,14 +38,9 @@ namespace Application.Handler.Products
                 product.UpdatedBy = "anonymous";
                 repo.Update(product);
                 var result = await unitOfWork.Complete() > 0;
-                var newProduct = mapper.Map<Product>(product);
-                newProduct.Id = 0;
-                mapper.Map(productUpdate, newProduct);
-                await _context.AddAsync(newProduct, cancellationToken);
-                var _result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result || !_result) return Result<ProductDTO>.Failure("Faild to edit product");
-                var response = await repo.QueryList(null).ProjectTo<ProductDTO>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == newProduct.Id);
-                return Result<ProductDTO>.Success(response);
+                if (!result) return Result<ProductDto>.Failure("Faild to edit product");
+                var response = await repo.QueryList(null).ProjectTo<ProductDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p=>p.Id == product.Id);
+                return Result<ProductDto>.Success(response);
             }
         }
     }

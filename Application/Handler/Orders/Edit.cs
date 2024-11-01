@@ -13,7 +13,7 @@ namespace Application.Handler.Orders
     {
         public class Command : IRequest<Result<Order>>
         {
-            public OrderInputDTO order { get; set; }
+            public OrderInputDto order { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {

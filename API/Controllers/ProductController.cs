@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Handler.Products;
 using Application.SpecParams;
+using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +15,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
+        public async Task<IActionResult> GetProducts([FromQuery] ProductSpecParams specWithFilterParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { SpecParam = specWithFilterParam }, ct));
 
         }
 
@@ -30,14 +31,14 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostProduct([FromBody] ProductInputDTO product, CancellationToken ct)
+        public async Task<IActionResult> PostProduct([FromBody] ProductInputDto product, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { product = product }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute]int id, ProductInputDTO updatedProduct, CancellationToken ct)
+        public async Task<IActionResult> UpdateProduct([FromRoute]int id, ProductInputDto updatedProduct, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id }, ct));
         }

@@ -27,7 +27,7 @@ namespace API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> IsActive(ActiveDTO activeDTO, CancellationToken ct)
+        public async Task<IActionResult> IsActive(ActiveDto activeDTO, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new ActiveUser.Command() { user = activeDTO }, ct));
         }

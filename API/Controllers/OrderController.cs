@@ -17,14 +17,14 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] OrderInputDTO orderInput, CancellationToken ct)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderInputDto orderInput, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { order = orderInput }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrder(int id, OrderInputDTO orderInput)
+        public async Task<IActionResult> UpdateOrder(int id, OrderInputDto orderInput)
         {
             orderInput.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));

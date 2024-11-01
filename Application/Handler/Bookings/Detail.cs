@@ -9,12 +9,12 @@ namespace Application.Handler.Bookings
 {
     public class Detail
     {
-        public class Query : IRequest<Result<BookingDTO>>
+        public class Query : IRequest<Result<BookingDto>>
         {
             public int Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<BookingDTO>>
+        public class Handler : IRequestHandler<Query, Result<BookingDto>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -24,7 +24,7 @@ namespace Application.Handler.Bookings
                 this._context = context;
                 this._mapper = mapper;
             }
-            public async Task<Result<BookingDTO>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<BookingDto>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var booking = await _context.Bookings
                 .Include(a => a.Court)
@@ -32,9 +32,9 @@ namespace Application.Handler.Bookings
                 .Include(a=>a.Staff)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
 
-                if (booking == null) return Result<BookingDTO>.Failure("Booking not found");
-                var bookingDTOs = _mapper.Map<BookingDTO>(booking);
-                return Result<BookingDTO>.Success(bookingDTOs);
+                if (booking == null) return Result<BookingDto>.Failure("Booking not found");
+                var bookingDTOs = _mapper.Map<BookingDto>(booking);
+                return Result<BookingDto>.Success(bookingDTOs);
             }
         }
     }

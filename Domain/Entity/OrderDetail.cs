@@ -12,7 +12,7 @@ namespace Domain.Entity
         public decimal Quantity { get; set; }  // Số lượng sản phẩm hoặc dịch vụ
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal TotalPrice { get; set; }  // Giá của sản phẩm hoặc dịch vụ
+        public decimal Price { get; set; }  // Giá của sản phẩm hoặc dịch vụ
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }  // Liên kết với bảng Orders
         [ForeignKey("ProductId")]

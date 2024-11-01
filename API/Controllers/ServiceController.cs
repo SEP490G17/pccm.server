@@ -12,7 +12,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetService([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetService([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
@@ -27,7 +27,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostService([FromBody] ServiceInputDTO service, CancellationToken ct)
+        public async Task<IActionResult> PostService([FromBody] ServiceInputDto service, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Service = service }, ct));
         }

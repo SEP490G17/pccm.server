@@ -1,6 +1,6 @@
 namespace Application.DTOs
 {
-    public class ProductDTO
+    public class ProductDto
     {
         public int Id { get; set; }
         public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product

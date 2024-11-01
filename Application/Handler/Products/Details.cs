@@ -15,19 +15,19 @@ namespace Application.Handler.Products
 {
     public class Details
     {
-        public class Query : IRequest<Result<ProductDTO.ProductDetails>>
+        public class Query : IRequest<Result<ProductDto.ProductDetails>>
         {
             public int Id { get; set; }
         }
-        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<ProductDTO.ProductDetails>>
+        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<ProductDto.ProductDetails>>
         {
-            public async Task<Result<ProductDTO.ProductDetails>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<ProductDto.ProductDetails>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = request.Id;
 
-                var result = await _unitOfWork.Repository<Product>().QueryList(null).ProjectTo<ProductDTO.ProductDetails>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == query);
+                var result = await _unitOfWork.Repository<Product>().QueryList(null).ProjectTo<ProductDto.ProductDetails>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == query);
 
-                return Result<ProductDTO.ProductDetails>.Success(result);
+                return Result<ProductDto.ProductDetails>.Success(result);
             }
         }
     }

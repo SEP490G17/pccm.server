@@ -27,14 +27,14 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostReview([FromBody] ReviewInputDTO review, CancellationToken ct)
+        public async Task<IActionResult> PostReview([FromBody] ReviewInputDto review, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { review = review }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(int id, ReviewInputDTO updatedReview)
+        public async Task<IActionResult> UpdateReview(int id, ReviewInputDto updatedReview)
         {
             updatedReview.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { review = updatedReview }));

@@ -12,7 +12,7 @@ namespace Application.Handler.Reviews
     {
         public class Command : IRequest<Result<Review>>
         {
-            public ReviewInputDTO review { get; set; }
+            public ReviewInputDto review { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {

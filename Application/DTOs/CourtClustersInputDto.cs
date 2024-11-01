@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
 {
-    public class CourtClustersInputDTO
+    public class CourtClustersInputDto
     {
-         [Key]
+        [Key]
         public int Id { get; set; }
         [Required]
         [StringLength(255)]
@@ -12,7 +12,7 @@ namespace Application.DTOs
         [Required]
         [StringLength(255)]
         public string Location { get; set; }  // Địa điểm theo tọa độ google map của cụm sân
-         [Required]
+        [Required]
         [StringLength(255)]
         public string Address { get; set; }  // Địa điểm địa lý thực của cụm sân
         public string OwnerId { get; set; }  // Id của người sở hữu cụm sân (có thể là null)

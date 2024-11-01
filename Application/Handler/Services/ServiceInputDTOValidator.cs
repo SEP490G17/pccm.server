@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Handler.Services
 {
-    public class ServiceInputDTOValidator : AbstractValidator<ServiceInputDTO>
+    public class ServiceInputDTOValidator : AbstractValidator<ServiceInputDto>
     {
         public ServiceInputDTOValidator()
         {
