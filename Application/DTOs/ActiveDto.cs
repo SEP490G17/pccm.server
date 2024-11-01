@@ -2,7 +2,7 @@
 
 namespace Application.DTOs
 {
-    public class ActiveDTO
+    public class ActiveDto
     {
         public string Id { get; set; }
         [Required]

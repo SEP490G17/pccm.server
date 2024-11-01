@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs
 {
-    public class ServiceInputDTO
+    public class ServiceInputDto
     {
         public int Id { get; set; }
         public int[] CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)

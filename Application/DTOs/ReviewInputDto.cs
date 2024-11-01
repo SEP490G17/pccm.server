@@ -2,7 +2,7 @@
 
 namespace Application.DTOs
 {
-    public class ReviewInputDTO
+    public class ReviewInputDto
     {
         [Key]
         public int Id { get; set; }

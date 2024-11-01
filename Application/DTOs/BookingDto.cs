@@ -5,7 +5,7 @@ using Domain.Entity;
 
 namespace Application.DTOs
 {
-    public class BookingDTO
+    public class BookingDto
     {
         [Key]
         public int Id { get; set; }

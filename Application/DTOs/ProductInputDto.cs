@@ -2,7 +2,7 @@
 
 namespace Application.DTOs
 {
-    public class ProductInputDTO
+    public class ProductInputDto
     {
         [Required]
         public int CategoryId { get; set; }

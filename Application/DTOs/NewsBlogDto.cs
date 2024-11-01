@@ -2,7 +2,7 @@ using Domain.Enum;
 
 namespace Application.DTOs
 {
-    public class NewsBlogDTO
+    public class NewsBlogDto
     {
 
         public int Id { get; set; }
