@@ -15,14 +15,14 @@ namespace Application.Handler.Bookings
 {
     public class List
     {
-        public class Query : IRequest<Result<Pagination<BookingDTO>>>
+        public class Query : IRequest<Result<Pagination<BookingDto>>>
         {
             public BaseSpecWithFilterParam BaseSpecWithFilterParam { get; set; }
         }
 
-        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<BookingDTO>>>
+        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<BookingDto>>>
         {
-            public async Task<Result<Pagination<BookingDTO>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Pagination<BookingDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var querySpec = request.BaseSpecWithFilterParam;
 
@@ -36,10 +36,10 @@ namespace Application.Handler.Bookings
                     .Include(a => a.Court) 
                     .Include(a=>a.AppUser)
                     .Include(a=>a.Staff)
-                    .ProjectTo<BookingDTO>(_mapper.ConfigurationProvider) 
+                    .ProjectTo<BookingDto>(_mapper.ConfigurationProvider) 
                     .ToListAsync(cancellationToken);
 
-                return Result<Pagination<BookingDTO>>.Success(new Pagination<BookingDTO>(querySpec.PageSize, totalElement, data));
+                return Result<Pagination<BookingDto>>.Success(new Pagination<BookingDto>(querySpec.PageSize, totalElement, data));
             }
         }
 

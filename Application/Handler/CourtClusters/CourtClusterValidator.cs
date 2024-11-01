@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Handler.CourtClusters
 {
-    public class CourtClusterValidator:AbstractValidator<CourtClustersInputDTO>
+    public class CourtClusterValidator:AbstractValidator<CourtClustersInputDto>
     {
         public CourtClusterValidator()
         {

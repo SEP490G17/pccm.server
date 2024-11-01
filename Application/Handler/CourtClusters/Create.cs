@@ -12,7 +12,7 @@ namespace Application.Handler.CourtClusters
     {
         public class Command : IRequest<Result<CourtCluster>>
         {
-            public CourtClustersInputDTO CourtCluster { get; set; }
+            public CourtClustersInputDto CourtCluster { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>

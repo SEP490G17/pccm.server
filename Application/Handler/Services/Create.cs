@@ -13,7 +13,7 @@ namespace Application.Handler.Services
     {
         public class Command : IRequest<Result<List<Service>>>
         {
-            public ServiceInputDTO Service { get; set; }
+            public ServiceInputDto Service { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -33,7 +33,7 @@ namespace Application.Handler.Services
             }
             public async Task<Result<List<Service>>> Handle(Command request, CancellationToken cancellationToken)
             {
-                ServiceInputDTO serviceDtos = request.Service;
+                ServiceInputDto serviceDtos = request.Service;
                 List<Service> services = new List<Service>();
                 foreach (var courtClusterId in serviceDtos.CourtClusterId)
                 {

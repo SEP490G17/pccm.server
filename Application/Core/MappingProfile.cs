@@ -10,7 +10,7 @@ namespace Application.Core
         public MappingProfile()
         {
             CreateMap<Banner, BannerDto>();
-            CreateMap<NewsBlog, NewsBlogDTO>();
+            CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<Banner, Banner>()
                 .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.Title, o => o.MapFrom(s => s.Title))
@@ -24,9 +24,9 @@ namespace Application.Core
             CreateMap<Service, Service>()
             .ForMember(s => s.UpdatedAt, o => o.MapFrom(s => (DateTime?)null))
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
-            CreateMap<ServiceInputDTO, Service>();
+            CreateMap<ServiceInputDto, Service>();
             CreateMap<ServiceDto, Service>();
-            CreateMap<CourtCluster, CourtClustersInputDTO>()
+            CreateMap<CourtCluster, CourtClustersInputDto>()
              .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.CourtClusterName, o => o.MapFrom(s => s.CourtClusterName))
                 .ForMember(b => b.Location, o => o.MapFrom(s => s.Location))
@@ -35,7 +35,7 @@ namespace Application.Core
                 .ForMember(b => b.Description, o => o.MapFrom(s => s.Description))
                 .ForMember(b => b.Images, o => o.MapFrom(s => s.Images))
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
-            CreateMap<CourtClustersInputDTO, CourtCluster>();
+            CreateMap<CourtClustersInputDto, CourtCluster>();
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
 
@@ -44,26 +44,22 @@ namespace Application.Core
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
 
 
-            CreateMap<OrderInputDTO, Order>();
-            CreateMap<ReviewInputDTO, Review>();
+            CreateMap<OrderInputDto, Order>();
+            CreateMap<ReviewInputDto, Review>();
             CreateMap<Review, Review>();
-            CreateMap<ProductInputDTO, Product>()
+            CreateMap<ProductInputDto, Product>()
             .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(s => s.ThumbnailUrl));
 
-            CreateMap<ProductDTO, Product>();
+            CreateMap<ProductDto, Product>();
 
-            CreateMap<Product, Product>()
-                .ForMember(p => p.UpdatedAt, o => o.MapFrom(src => (DateTime?)null))
-                .ForMember(p => p.UpdatedBy, o => o.MapFrom(src => (string)null));
-
-            CreateMap<Product, ProductDTO>()
+            CreateMap<Product, ProductDto>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
             .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName))
             .ForMember(p => p.Quantity, o => o.MapFrom(st => st.Quantity));
 
-            CreateMap<Product, ProductDTO.ProductDetails>();
+            CreateMap<Product, ProductDto.ProductDetails>();
 
-            CreateMap<Booking, BookingDTO>()
+            CreateMap<Booking, BookingDto>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()))
             .ForMember(b => b.UserName, o => o.MapFrom(s => s.AppUser.UserName.ToString()))

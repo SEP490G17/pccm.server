@@ -13,24 +13,24 @@ namespace Application.Handler.Products
 {
     public class List
     {
-        public class Query : IRequest<Result<Pagination<ProductDTO>>>
+        public class Query : IRequest<Result<Pagination<ProductDto>>>
         {
-            public BaseSpecWithFilterParam BaseSpecWithFilterParam { get; set; }
+            public ProductSpecParams SpecParam { get; set; }
         }
-        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<ProductDTO>>>
+        public class Handler(IMapper _mapper, IUnitOfWork _unitOfWork) : IRequestHandler<Query, Result<Pagination<ProductDto>>>
         {
-            public async Task<Result<Pagination<ProductDTO>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<Pagination<ProductDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var querySpec = request.BaseSpecWithFilterParam;
+                var querySpec = request.SpecParam;
 
                 var spec = new ProductsSpecification(querySpec);
                 var specCount = new ProductsCountSpecification(querySpec);
 
                 var totalElement = await _unitOfWork.Repository<Product>().CountAsync(specCount, cancellationToken);
                 var data = await _unitOfWork.Repository<Product>().QueryList(spec)
-                .ProjectTo<ProductDTO>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
 
-                return Result<Pagination<ProductDTO>>.Success(new Pagination<ProductDTO>(querySpec.PageSize, totalElement, data));
+                return Result<Pagination<ProductDto>>.Success(new Pagination<ProductDto>(querySpec.PageSize, totalElement, data));
             }
         }
     }

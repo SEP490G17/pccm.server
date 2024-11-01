@@ -4,21 +4,27 @@ namespace Application.SpecParams.ProductSpecification
 {
     public class ProductsSpecification : BaseSpecification<Product>
     {
-        public ProductsSpecification(BaseSpecWithFilterParam baseSpecParam) : base(
-            x => (string.IsNullOrEmpty(baseSpecParam.Search) ||
-            (
-                x.ProductName.ToLower().Contains(baseSpecParam.Search)
-                || x.Description.ToLower().Contains(baseSpecParam.Search)
-            ))
-            && (baseSpecParam.Filter == null ||
-                x.CategoryId.Equals(baseSpecParam.Filter)
-            )
-            && x.DeletedAt == null
-            && x.UpdatedAt == null
+        public ProductsSpecification(ProductSpecParams specParam) : base(
+            x =>
+                (string.IsNullOrEmpty(specParam.Search) ||
+                 (
+                     x.ProductName.ToLower().Contains(specParam.Search)
+                     || x.Description.ToLower().Contains(specParam.Search)
+                 )
+                )
+                && (
+                    specParam.CourtCluster == null ||
+                    x.CourtClusterId.Equals(specParam.CourtCluster)
+                )
+                && (
+                    specParam.Category == null ||
+                    x.CategoryId.Equals(specParam.Category)
+                )
         )
         {
-            ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);
+            ApplyPaging(specParam.Skip, specParam.PageSize);
             AddOrderByDescending(x => x.Id);
         }
     }
+}
 }

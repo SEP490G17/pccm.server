@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Handler.Products
 {
-    public class ProductValidator : AbstractValidator<ProductInputDTO>
+    public class ProductValidator : AbstractValidator<ProductInputDto>
     {
         public ProductValidator()
         {

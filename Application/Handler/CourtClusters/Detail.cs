@@ -9,29 +9,27 @@ namespace Application.Handler.CourtClusters
 {
     public class Detail
     {
-          public class Query : IRequest<Result<CourtClustersInputDTO>>
+        public class Query : IRequest<Result<CourtClustersInputDto>>
         {
             public int Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Result<CourtClustersInputDTO>>
+        public class Handler(DataContext _context, IMapper _mapper)
+            : IRequestHandler<Query, Result<CourtClustersInputDto>>
         {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-
-            public Handler(DataContext context,IMapper mapper)
+            public async Task<Result<CourtClustersInputDto>> Handle(
+                Query request, CancellationToken cancellationToken)
             {
-                this._context = context;
-                this._mapper = mapper;
-            }
-            public async Task<Result<CourtClustersInputDTO>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                var court = await _context.CourtClusters.Include(x => x.Services).Include(x => x.Products).FirstOrDefaultAsync(x => x.Id == request.Id);
+                var court = await _context.CourtClusters
+                    .Include(x => x.Services)
+                    .Include(x => x.Products)
+                    .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (court is null)
-                    return Result<CourtClustersInputDTO>.Failure("Court cluster not found");
-                 var courtClusterMap = _mapper.Map<CourtClustersInputDTO>(court);
+                    return Result<CourtClustersInputDto>.Failure(
+                        "Court cluster not found");
+                var courtClusterMap = _mapper.Map<CourtClustersInputDto>(court);
 
-                return Result<CourtClustersInputDTO>.Success(courtClusterMap);
+                return Result<CourtClustersInputDto>.Success(courtClusterMap);
             }
         }
     }
