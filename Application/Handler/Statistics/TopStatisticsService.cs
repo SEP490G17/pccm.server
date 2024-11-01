@@ -79,10 +79,10 @@ namespace Application.Handler.Statistics
                         .Where(product => product.Id == p.ProductId)
                         .FirstOrDefault()
                 ).ToList();
-                List<ProductDTO> topProductDetails = new List<ProductDTO>();
+                List<ProductDto> topProductDetails = new List<ProductDto>();
                 foreach (var product in listTopProductDetails)
                 {
-                    topProductDetails.Add(_mapper.Map<ProductDTO>(product));
+                    topProductDetails.Add(_mapper.Map<ProductDto>(product));
                 }
                 // Đưa dữ liệu vào DTO
                 var topStatisticDto = new TopStatisticDto
