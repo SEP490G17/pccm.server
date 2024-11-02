@@ -9,8 +9,8 @@ namespace Application.SpecParams
         (
             x => string.IsNullOrEmpty(baseSpecParam.Search) ||
             (
-                x.Title.ToLower().Contains(baseSpecParam.Search) ||
-                x.Description.ToLower().Contains(baseSpecParam.Search)
+                x.Title.ToLower().Contains(baseSpecParam.Search) 
+                // || x.Description.ToLower().Contains(baseSpecParam.Search)
             )
         )
         {
@@ -29,6 +29,10 @@ namespace Application.SpecParams
                         AddOrderByDescending(x => x.CreatedAt);
                         break;
                 }
+            }
+            else
+            {
+                AddOrderByDescending(x => x.CreatedAt);
             }
         }
     }

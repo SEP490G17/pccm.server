@@ -36,10 +36,11 @@ namespace Application.Handler.Products
                 var product = await repo.GetByIdAsync(id);
                 product.UpdatedAt = DateTime.Now;
                 product.UpdatedBy = "anonymous";
+                product = mapper.Map<Product>(productUpdate);
                 repo.Update(product);
                 var result = await unitOfWork.Complete() > 0;
                 if (!result) return Result<ProductDto>.Failure("Faild to edit product");
-                var response = await repo.QueryList(null).ProjectTo<ProductDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p=>p.Id == product.Id);
+                var response = await repo.QueryList(null).ProjectTo<ProductDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == product.Id);
                 return Result<ProductDto>.Success(response);
             }
         }

@@ -9,8 +9,8 @@ namespace Application.SpecParams.BannerSpec
         (
             x => string.IsNullOrEmpty(baseSpecParam.Search) ||
             (
-                x.Title.ToLower().Contains(baseSpecParam.Search) ||
-                x.Description.ToLower().Contains(baseSpecParam.Search)
+                x.Title.ToLower().Contains(baseSpecParam.Search) 
+                // || x.Description.ToLower().Contains(baseSpecParam.Search)
             )
         )
         {
