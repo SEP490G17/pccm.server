@@ -30,17 +30,26 @@ namespace Application.Handler.Products
 
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var productUpdate = request.product;
-                var id = request.Id;
+                var product = mapper.Map<Product>(request.product);
                 var repo = unitOfWork.Repository<Product>();
-                var product = await repo.GetByIdAsync(id);
-                product.UpdatedAt = DateTime.Now;
-                product.UpdatedBy = "anonymous";
-                product = mapper.Map<Product>(productUpdate);
-                repo.Update(product);
+                var productToUpdate = await repo.GetByIdAsync(request.Id);
+                if (productToUpdate == null)
+                {
+                    return Result<ProductDto>.Failure("Product not found");
+                }
+                mapper.Map(product, productToUpdate);
+                productToUpdate.UpdatedAt = DateTime.Now;
+                productToUpdate.UpdatedBy = "anonymous";
+                repo.Update(productToUpdate);
                 var result = await unitOfWork.Complete() > 0;
-                if (!result) return Result<ProductDto>.Failure("Faild to edit product");
-                var response = await repo.QueryList(null).ProjectTo<ProductDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p => p.Id == product.Id);
+                if (!result)
+                {
+                    return Result<ProductDto>.Failure("Failed to edit product");
+                }
+                var response = await repo.QueryList(null)
+                    .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(p => p.Id == productToUpdate.Id);
+
                 return Result<ProductDto>.Success(response);
             }
         }

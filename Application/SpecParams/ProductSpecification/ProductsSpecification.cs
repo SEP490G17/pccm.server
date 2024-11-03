@@ -20,6 +20,7 @@ namespace Application.SpecParams.ProductSpecification
                     specParam.Category == null ||
                     x.CategoryId.Equals(specParam.Category)
                 )
+                && x.DeletedAt == null
         )
         {
             ApplyPaging(specParam.Skip, specParam.PageSize);
