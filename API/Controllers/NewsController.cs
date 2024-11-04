@@ -23,6 +23,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
+        [HttpGet("usersite")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ListNewsUserSite(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListNewsUserSite.Query(), ct));
+        }
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostCategories([FromBody] NewsBlog events, CancellationToken ct)

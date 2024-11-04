@@ -46,6 +46,9 @@ namespace Application.Core
                 .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
 
+            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPageUserSite>()
+                .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
+                .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
 
             CreateMap<OrderInputDto, Order>();
             CreateMap<ReviewInputDto, Review>();

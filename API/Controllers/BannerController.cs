@@ -29,6 +29,13 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("usersite")]
+        public async Task<IActionResult> GetBannerUserSite(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListUserSite.Query(), ct));
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
 
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
@@ -62,7 +69,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
-            return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id , status = status}));
+            return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));
         }
     }
 }
