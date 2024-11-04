@@ -30,8 +30,11 @@ namespace Application.Handler.Banners
                 // tổng bản ghi dựa trên đặc tả
                 var totalItem = await _unitOfWork.Repository<Banner>().CountAsync(countSpec, cancellationToken);
                 // danh sách các đặc tả
-                var data = await _unitOfWork.Repository<Banner>().QueryList(spec)
-                .ProjectTo<BannerDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+                var data = await _unitOfWork.Repository<Banner>()
+                                            .QueryList(spec)
+                                            .Where(b => b.DeletedAt == null)
+                                            .ProjectTo<BannerDto>(_mapper.ConfigurationProvider)
+                                            .ToListAsync(cancellationToken);
                 // map sang dto
                 var result = new Pagination<BannerDto>(queryParams.PageSize, totalItem, data);
                 return Result<Pagination<BannerDto>>.Success(result);

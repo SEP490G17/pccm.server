@@ -7,11 +7,12 @@ namespace Application.SpecParams.BannerSpec
         public BannersCountSpecification(BaseSpecParam baseSpecParam) :
         base
         (
-            x => string.IsNullOrEmpty(baseSpecParam.Search) ||
-            (
-                x.Title.ToLower().Contains(baseSpecParam.Search) 
-                // || x.Description.ToLower().Contains(baseSpecParam.Search)
-            )
+            x =>
+                (x.DeletedAt == null) && 
+                (string.IsNullOrEmpty(baseSpecParam.Search) ||
+                (
+                    x.Title.ToLower().Contains(baseSpecParam.Search)
+                ))
         )
         {
 
