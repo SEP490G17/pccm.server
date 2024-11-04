@@ -28,7 +28,7 @@ public class PhotoAccessor : IPhotoAccessor
             var uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(file.FileName, stream),
-                Transformation = new Transformation().Height(500).Width(500).Crop("fill"),
+                Transformation = new Transformation().Crop("limit"),
 
             };
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
