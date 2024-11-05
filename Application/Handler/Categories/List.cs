@@ -4,8 +4,6 @@ using Application.Core;
 using Application.Interfaces;
 using Domain.Entity;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.Categories
 {

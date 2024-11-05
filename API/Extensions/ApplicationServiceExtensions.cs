@@ -40,15 +40,27 @@ namespace API.Extensions
                           opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
                       });
 
-            services.AddIdentity<AppUser, IdentityRole>(options =>
-               {
-                   options.SignIn.RequireConfirmedAccount = true;
-                   options.Tokens.EmailConfirmationTokenProvider = "Default"; // Cung cấp token mặc định
-                                                                              // Thêm các tùy chọn khác nếu cần
-               })
-               .AddEntityFrameworkStores<DataContext>()
-               .AddDefaultTokenProviders(); // Đảm bảo đã thêm DefaultTokenProviders
-
+            // services.AddIdentity<AppUser, IdentityRole>(options =>
+            //    {
+            //        options.SignIn.RequireConfirmedAccount = true;
+            //        options.Tokens.EmailConfirmationTokenProvider = "Default"; // Cung cấp token mặc định
+            //                                                                   // Thêm các tùy chọn khác nếu cần
+            //    })
+            //    .AddEntityFrameworkStores<DataContext>()
+            //    .AddDefaultTokenProviders(); // Đảm bảo đã thêm DefaultTokenProviders
+            // services.ConfigureApplicationCookie(options =>
+            // {
+            //     options.Events.OnRedirectToLogin = context =>
+            //     {
+            //         context.Response.StatusCode = StatusCodes.Status401Unauthorized; // Trả về 401
+            //         return Task.CompletedTask;
+            //     };
+            //     options.Events.OnRedirectToAccessDenied = context =>
+            //     {
+            //         context.Response.StatusCode = StatusCodes.Status403Forbidden; // Trả về 403
+            //         return Task.CompletedTask;
+            //     };
+            // });
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

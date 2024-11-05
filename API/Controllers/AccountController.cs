@@ -1,16 +1,16 @@
 using System.Security.Claims;
+using API.DTOs;
 using API.Services;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace API.DTOs
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,22 +21,20 @@ namespace API.DTOs
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
-        private readonly IMediator _mediator;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService, ISendSmsService sendSmsService)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService,  IEmailService emailService, ISendSmsService sendSmsService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
-            _mediator = mediator;
             _emailService = emailService;
             _sendSmsService = sendSmsService;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login([FromBody]LoginDto loginDto)
+        public async Task<ActionResult<UserResponseDto>> Login([FromBody]LoginDto loginDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
             if (user is null) return Unauthorized();
             if(user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
@@ -49,7 +47,7 @@ namespace API.DTOs
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserResponseDto>> Register(RegisterDto registerDto)
         {
             if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
             {
@@ -79,9 +77,9 @@ namespace API.DTOs
             return BadRequest(result.Errors);
         }
 
-        private UserDto CreateUserObject(AppUser user)
+        private UserResponseDto CreateUserObject(AppUser user)
         {
-            return new UserDto
+            return new UserResponseDto
             {
                 DisplayName = $"{user.FirstName} {user.LastName}",
                 // Image = user?.Photos?.FirstOrDefault(p => p.IsMain)?.Url,
@@ -92,7 +90,7 @@ namespace API.DTOs
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        public async Task<ActionResult<UserResponseDto>> GetCurrentUser()
         {
             var user = await _userManager.Users
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
@@ -101,7 +99,7 @@ namespace API.DTOs
 
         [AllowAnonymous]
         [HttpPost("Profile")]
-        public async Task<ActionResult<AppUser>> viewProfile()
+        public async Task<ActionResult<AppUser>> ViewProfile()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)

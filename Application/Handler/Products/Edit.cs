@@ -7,7 +7,6 @@ using Domain.Entity;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.Products
 {

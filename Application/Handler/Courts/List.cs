@@ -7,7 +7,6 @@ using Application.SpecParams.CourtSpecification;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.Courts
 {

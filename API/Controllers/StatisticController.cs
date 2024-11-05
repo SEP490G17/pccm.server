@@ -1,11 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Handler.Statistics;
-using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API.Controllers
 {
