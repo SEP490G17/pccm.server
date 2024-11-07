@@ -50,13 +50,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command() { CourtCluster = courtCluster }, ct));
         }
 
-        [AllowAnonymous]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersInputDto newCourtCluster)
-        {
-            newCourtCluster.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster }));
-        }
+        // [AllowAnonymous]
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersInputDto newCourtCluster)
+        // {
+        //     newCourtCluster.Id = id;
+        //     return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster }));
+        // }
 
         [AllowAnonymous]
         [HttpDelete("{id}")]

@@ -8,7 +8,6 @@ using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Handler.CourtClusters
 {

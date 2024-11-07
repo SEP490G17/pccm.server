@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Domain.Entity;
 
 namespace Application.SpecParams.CourtClusterSpecification
@@ -15,7 +11,7 @@ namespace Application.SpecParams.CourtClusterSpecification
                 || x.Description.ToLower().Contains(baseSpecParam.Search)
             ))
             && (baseSpecParam.Filter == null ||
-                x.Location.Equals(baseSpecParam.Filter)
+                x.Province.Equals(baseSpecParam.Filter.ToString())
             )
         )
         {

@@ -1,16 +1,16 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Handler.Banners;
+using Application.Interfaces;
 using Application.SpecParams;
 using Domain.Entity;
+using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class BannerController : BaseApiController
+    public class BannerController(IUserAccessor userAccessor, ILogger<BannerController> logger) : BaseApiController
     {
-        public BannerController() { }
-
         /*
             Không hiểu code đọc theo thứ tự:
             1. BaseSpecParam
@@ -21,10 +21,13 @@ namespace API.Controllers
             6. SpecificationEvaluator
             7. UnitOfWork
         */
-        [AllowAnonymous]
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
+            var username = userAccessor.GetUserName();
+            logger.LogInformation($"Check >>> {username}");
+
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 

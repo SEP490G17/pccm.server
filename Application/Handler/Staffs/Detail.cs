@@ -1,6 +1,5 @@
 using Application.Core;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
