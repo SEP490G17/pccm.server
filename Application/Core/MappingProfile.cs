@@ -53,32 +53,23 @@ namespace Application.Core
             .ForMember(p => p.Description, o => o.MapFrom(st => st.Description))
             .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(st => st.ThumbnailUrl))
             .ForMember(p => p.Price, o => o.MapFrom(st => st.PriceSell))
-            .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.PriceBuy));
+            .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
+            .ForMember(p=>p.CreatedAt, o=>o.Ignore());
 
             CreateMap<ProductDto, Product>();
 
-            CreateMap<Product, Product>()
-            .ForMember(p => p.Id, o => o.Ignore())
-            .ForMember(p => p.CreatedAt, o => o.Ignore())
-            .ForMember(p => p.CreatedBy, o => o.Ignore())
-            .ForMember(p => p.CategoryId, o => o.MapFrom(s => s.CategoryId))
-            .ForMember(p => p.CourtClusterId, o => o.MapFrom(s => s.CourtClusterId))
-            .ForMember(p => p.Quantity, o => o.MapFrom(st => st.Quantity))
-            .ForMember(p => p.ProductName, o => o.MapFrom(st => st.ProductName))
-            .ForMember(p => p.Description, o => o.MapFrom(st => st.Description))
-            .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(st => st.ThumbnailUrl))
-            .ForMember(p => p.Price, o => o.MapFrom(st => st.Price));
+           
 
             CreateMap<Product, ProductDto>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
             .ForMember(p => p.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName))
             .ForMember(p => p.Quantity, o => o.MapFrom(st => st.Quantity))
-            .ForMember(p => p.PriceBuy, o => o.MapFrom(st => st.ImportFee))
-            .ForMember(p => p.PriceSell, o => o.MapFrom(st => st.Price));
+            .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
+            .ForMember(p => p.Price, o => o.MapFrom(st => st.Price));
 
             CreateMap<Product, ProductDto.ProductDetails>()
-            .ForMember(p => p.PriceBuy, o => o.MapFrom(st => st.ImportFee))
-            .ForMember(p => p.PriceSell, o => o.MapFrom(st => st.Price));
+            .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
+            .ForMember(p => p.Price, o => o.MapFrom(st => st.Price));
 
             CreateMap<Booking, BookingDto>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
