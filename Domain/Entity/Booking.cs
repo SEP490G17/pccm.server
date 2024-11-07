@@ -14,8 +14,6 @@ namespace Domain.Entity
         [StringLength(100)]
         public string FullName { get; set; }
 
-        public int CourtId { get; set; }
-
         [Required]
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
 

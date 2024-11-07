@@ -58,7 +58,7 @@ namespace Application.Handler.Bookings
                 {
                     // Fetch bookings for the court on the specified date, including those with recurrence
                     var bookings = await _context.Bookings
-                        .Where(b => b.CourtId == court.Id &&
+                        .Where(b => b.Court.Id == court.Id &&
                                     (b.StartTime.Date == parsedDate.Date || b.RecurrenceRule != null))
                         .OrderBy(b => b.StartTime)
                         .ToListAsync(cancellationToken);
