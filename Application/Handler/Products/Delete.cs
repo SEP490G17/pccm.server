@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
+using Domain.Enum;
 using MediatR;
 using Persistence;
 using System.Reflection;
@@ -52,7 +53,8 @@ namespace Application.Handler.Products
                 productLog.ProductId = deleteProduct.Id;
                 productLog.CreatedBy = userName;
                 productLog.CreatedAt = vietnamTime;
-                productLog.Description = "Delete Product";
+                productLog.Description = "Product has been deleted";
+                productLog.LogType = LogType.Delete;
 
                 await _context.ProductLogs.AddAsync(productLog, cancellationToken);
 

@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
+using Domain.Enum;
 using MediatR;
 using Persistence;
 
@@ -52,7 +53,8 @@ namespace Application.Handler.Banners
                 bannerLog.BannerId = banner.Id;
                 bannerLog.CreatedBy = userName;
                 bannerLog.CreatedAt = vietnamTime;
-                bannerLog.Description = "Delete Banner";
+                bannerLog.Description = "Banner has been successfully removed";
+                bannerLog.LogType = LogType.Delete;
 
 
                 await _context.BannerLogs.AddAsync(bannerLog, cancellationToken);
