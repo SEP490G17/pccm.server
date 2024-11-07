@@ -31,7 +31,12 @@ namespace Application.DTOs
             public string Title { get; set; }
             public string CourtClusterName { get; set; }
             public string Address { get; set; }
-            public string Location { get; set; }
+            public string Province { get; set; }  //Tỉnh thành
+            public string ProvinceName { get; set; }
+            public string District { get; set; }  // Thành phố, quận 
+            public string DistrictName { get; set; }
+            public string Ward { get; set; }  // Phường
+            public string WardName { get; set; }
             public int NumbOfCourts { get; set; }
             public string Description { get; set; }
             public TimeOnly OpenTime { get; set; }
@@ -41,7 +46,7 @@ namespace Application.DTOs
             public List<ProductDto> Products { get; set; } = new List<ProductDto>();
 
         }
-        
+
         public class CourtCLusterDetails
         {
             public int Id { get; set; }
@@ -54,6 +59,6 @@ namespace Application.DTOs
             public TimeOnly CloseTime { get; set; }
             public string[] Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
         }
-        
+
     }
 }

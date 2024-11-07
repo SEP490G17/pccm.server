@@ -12,7 +12,7 @@ namespace Domain.Entity
         
         [Required]
         [StringLength(100)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = ""; //Set tạm để lưu demo
 
         [Required]
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
@@ -21,7 +21,7 @@ namespace Domain.Entity
         public DateTime EndTime { get; set; }  // Thời gian kết thúc đặt sân
 
         [Required]
-        public int Duration { get; set; }  // Thời lượng đặt sân
+        public int Duration { get; set; } = 60; // Thời lượng đặt sân
 
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
@@ -29,10 +29,10 @@ namespace Domain.Entity
         public decimal TotalPrice { get; set; }  // Tổng giá trị tiền thuê sân
 
         [Required]
-        public BookingStatus Status { get; set; }  // Trạng thái đặt sân
+        public BookingStatus Status { get; set; }  = 0;// Trạng thái đặt sân
 
         [Required]
-        public PaymentStatus PaymentStatus { get; set; }  // Trạng thái thanh toán
+        public PaymentStatus PaymentStatus { get; set; }  = 0;// Trạng thái thanh toán
 
         public virtual Court? Court { get; set; }  // Liên kết với bảng Courts
 
