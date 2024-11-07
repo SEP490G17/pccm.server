@@ -13,6 +13,7 @@ namespace Application.Core
             CreateMap<Banner, BannerInputDto>();
             CreateMap<BannerInputDto, Banner>();
             CreateMap<Banner, BannerLog>();
+            CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<Banner, Banner>()
                 .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))

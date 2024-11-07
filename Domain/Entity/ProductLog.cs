@@ -25,6 +25,6 @@ namespace Domain.Entity
         [ForeignKey("CourtClusterId")]
         public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
 
-        public virtual Product Product { get; set; } // Liên kết với bảng Products
+        public int ProductId { get; set; } 
     }
 }
