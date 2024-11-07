@@ -50,7 +50,6 @@ namespace Domain.Entity
         public string PaymentName => PaymentStatus.ToString();  // Trả về tên của trạng thái thay vì số
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>(); // Liên kết với nhiều Order
 
-         public string RecurrenceRule { get; set; }
 
     }
 }
