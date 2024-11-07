@@ -129,7 +129,7 @@ namespace Application.Handler.Bookings
                                         {
                                             StartTime = occurrenceStart,
                                             EndTime = occurrenceEnd,
-                                            CourtId = booking.Court.Id,
+                                            Court = booking.Court,
                                         });
                                     }
                                 }
