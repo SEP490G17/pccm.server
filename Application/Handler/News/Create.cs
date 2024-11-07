@@ -1,11 +1,8 @@
 using Application.Core;
-using Application.DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.News

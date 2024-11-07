@@ -1,16 +1,16 @@
 using System.Security.Claims;
+using API.DTOs;
 using API.Services;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace API.DTOs
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,44 +21,47 @@ namespace API.DTOs
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
-        private readonly IMediator _mediator;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IMediator mediator, IEmailService emailService, ISendSmsService sendSmsService)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService,  IEmailService emailService, ISendSmsService sendSmsService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
-            _mediator = mediator;
             _emailService = emailService;
             _sendSmsService = sendSmsService;
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login([FromBody]LoginDto loginDto)
+        public async Task<ActionResult<UserResponseDto>> Login([FromBody]LoginDto loginDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
-            if (user is null) return Unauthorized();
-            if(user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
+            if (user is null) return BadRequest("Tên đăng nhập/ Mật khẩu không đúng");
+            if (user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (result)
             {
                 return CreateUserObject(user);
             }
-            return Unauthorized();
+            return NotFound();
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserResponseDto>> Register(RegisterDto registerDto)
         {
             if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
             {
-                ModelState.AddModelError("Username", "Email taken");
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
                 return ValidationProblem();
             }
             if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
             {
-                ModelState.AddModelError("Email", "Email taken");
+                ModelState.AddModelError("Email", "Email đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.PhoneNumber == registerDto.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "Số điện thoại đã tồn tại");
                 return ValidationProblem();
             }
             var user = new AppUser
@@ -66,25 +69,26 @@ namespace API.DTOs
                 Email = registerDto.Email,
                 UserName = registerDto.Username,
                 FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName
-                
+                LastName = registerDto.LastName,
+                PhoneNumber = registerDto.PhoneNumber,
+                JoiningDate = DateTime.Now
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if (result.Succeeded)
             {
-                return CreateUserObject(user);
+                return Ok();
             }
             return BadRequest(result.Errors);
         }
 
-        private UserDto CreateUserObject(AppUser user)
+        private UserResponseDto CreateUserObject(AppUser user)
         {
-            return new UserDto
+            return new UserResponseDto
             {
                 DisplayName = $"{user.FirstName} {user.LastName}",
-                // Image = user?.Photos?.FirstOrDefault(p => p.IsMain)?.Url,
+                Image = user?.ImageUrl?.ToString(),
                 Token = _tokenService.CreateToken(user),
                 UserName = user.UserName
             };
@@ -92,7 +96,7 @@ namespace API.DTOs
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        public async Task<ActionResult<UserResponseDto>> GetCurrentUser()
         {
             var user = await _userManager.Users
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
@@ -101,7 +105,7 @@ namespace API.DTOs
 
         [AllowAnonymous]
         [HttpPost("Profile")]
-        public async Task<ActionResult<AppUser>> viewProfile()
+        public async Task<ActionResult<AppUser>> ViewProfile()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -174,7 +178,7 @@ namespace API.DTOs
                         <p>Hi,</p>
                         <p>You have requested to reset your password. Please click the link below to reset your password:</p>
                         <p style='text-align: center;'>
-                            <a href='http://localhost:5000/api/Account/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
+                            <a href='https://argonaut.asia/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
                         </p>
                         <p>If you didn't request this, you can safely ignore this email.</p>
                         <p>Thanks,<br>PCCM System.</p>
@@ -289,14 +293,16 @@ namespace API.DTOs
             return BadRequest(result.Errors);
         }
 
-        public class SendMessOtp{
+        public class SendMessOtp
+        {
             public string To { get; set; }
             public string Text { get; set; }
         }
         [HttpPost("test-sendsms")]
         [AllowAnonymous]
-        public async Task<IActionResult> SendSmsTest([FromBody]SendMessOtp sendMessOtp, CancellationToken cancellationToken){
-            await _sendSmsService.SendSms(sendMessOtp.To,sendMessOtp.Text, cancellationToken);
+        public async Task<IActionResult> SendSmsTest([FromBody] SendMessOtp sendMessOtp, CancellationToken cancellationToken)
+        {
+            await _sendSmsService.SendSms(sendMessOtp.To, sendMessOtp.Text, cancellationToken);
             return Ok("Send sms success");
         }
     }

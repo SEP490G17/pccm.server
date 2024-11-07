@@ -39,16 +39,6 @@ namespace API.Extensions
                       {
                           opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
                       });
-
-            services.AddIdentity<AppUser, IdentityRole>(options =>
-               {
-                   options.SignIn.RequireConfirmedAccount = true;
-                   options.Tokens.EmailConfirmationTokenProvider = "Default"; // Cung cấp token mặc định
-                                                                              // Thêm các tùy chọn khác nếu cần
-               })
-               .AddEntityFrameworkStores<DataContext>()
-               .AddDefaultTokenProviders(); // Đảm bảo đã thêm DefaultTokenProviders
-
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

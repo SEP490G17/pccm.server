@@ -9,6 +9,10 @@ namespace Domain.Entity
         [Required]
         [StringLength(12)]
         public string PhoneNumber { get; set; }
+        
+        [Required]
+        [StringLength(100)]
+        public string FullName { get; set; }
 
         public int CourtId { get; set; }
 
@@ -35,7 +39,9 @@ namespace Domain.Entity
         public virtual Court? Court { get; set; }  // Liên kết với bảng Courts
 
         public virtual AppUser? AppUser { get; set; }  // Liên kết với bảng Users
-        public virtual StaffDetail Staff { get; set; } 
+        public virtual StaffDetail Staff { get; set; }
+        
+        public string RecurrenceRule { get; set; } = string.Empty;
 
         [NotMapped]
         public string StatusName => Status.ToString();  // Trả về tên của trạng thái thay vì số

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241106124426_AddProductLog")]
+    partial class AddProductLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -269,11 +272,6 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
 
@@ -281,9 +279,6 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("varchar(12)");
-
-                    b.Property<string>("RecurrenceRule")
-                        .HasColumnType("longtext");
 
                     b.Property<int?>("StaffId")
                         .HasColumnType("int");
@@ -382,43 +377,18 @@ namespace Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("Text");
 
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                    b.Property<string>("Images")
+                        .HasColumnType("json");
 
-                    b.Property<string>("DistrictName")
+                    b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Images")
-                        .HasColumnType("json");
 
                     b.Property<TimeOnly>("OpenTime")
                         .HasColumnType("time(6)");
 
                     b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Province")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("ProvinceName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Ward")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("WardName")
-                        .IsRequired()
-                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
@@ -439,18 +409,11 @@ namespace Persistence.Migrations
                     b.Property<int?>("CourtId")
                         .HasColumnType("int");
 
-                    b.Property<string>("DisplayName")
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<TimeOnly>("FromTime")
+                    b.Property<TimeOnly>("MyProperty")
                         .HasColumnType("TIME");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
-
-                    b.Property<TimeOnly>("ToTime")
-                        .HasColumnType("TIME");
 
                     b.HasKey("Id");
 
