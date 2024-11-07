@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Application.Interfaces;
 using System.Reflection;
+using Domain.Enum;
 
 namespace Application.Handler.Products
 {
@@ -67,7 +68,8 @@ namespace Application.Handler.Products
                 productLog.CourtClusterId = product.CourtClusterId;
                 productLog.ProductId = product.Id;
                 productLog.CreatedBy = userName;
-                productLog.Description = "Create Product";
+                productLog.Description = product.Quantity + " products imported";
+                productLog.LogType = LogType.Create;
 
                 // Thêm product log vào database
                 await _context.ProductLogs.AddAsync(productLog, cancellationToken);

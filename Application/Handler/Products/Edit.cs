@@ -4,6 +4,7 @@ using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entity;
+using Domain.Enum;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +48,8 @@ namespace Application.Handler.Products
                 productLog.ProductId = productToUpdate.Id;
                 productLog.CreatedBy = userName;
                 productLog.CreatedAt = vietnamTime;
-                productLog.Description = "Update Product";
+                productLog.Description = "The price of the product has been changed from " + productToUpdate.Price + " to " + request.product.PriceSell;
+                productLog.LogType = LogType.Update;
 
                 var logRepo = unitOfWork.Repository<ProductLog>();
                 logRepo.Add(productLog);
