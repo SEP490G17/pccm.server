@@ -36,7 +36,7 @@ namespace API.DTOs
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
             if (user is null) return BadRequest("Tên đăng nhập/ Mật khẩu không đúng");
             if (user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
