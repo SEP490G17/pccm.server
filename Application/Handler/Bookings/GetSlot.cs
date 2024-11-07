@@ -30,7 +30,7 @@ namespace Application.Handler.Bookings
                 this._context = context;
                 this._mapper = mapper;
             }
-          public async Task<Result<AvailableSlotDto.AvailableSlotsResponse>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<AvailableSlotDto.AvailableSlotsResponse>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var response = new AvailableSlotDto.AvailableSlotsResponse();
 
@@ -83,7 +83,13 @@ namespace Application.Handler.Bookings
                         availableTimes.Add($"{currentTime.TimeOfDay:hh\\:mm} - {closeTime.TimeOfDay:hh\\:mm}");
                     }
 
-                    response.AvailableSlots[court.CourtName] = availableTimes;
+                    // Add the court and its available slots to the response
+                    response.AvailableSlots.Add(new AvailableSlotDto.CourtAvailableSlot
+                    {
+                        Id = court.Id,
+                        Name = court.CourtName,
+                        AvailableSlots = availableTimes
+                    });
                 }
 
                 return Result<AvailableSlotDto.AvailableSlotsResponse>.Success(response);
@@ -106,7 +112,7 @@ namespace Application.Handler.Bookings
                         var ruleParts = booking.RecurrenceRule.Split(';');
                         var freq = ruleParts.FirstOrDefault(r => r.StartsWith("FREQ="))?.Split('=')[1];
                         var untilStr = ruleParts.FirstOrDefault(r => r.StartsWith("UNTIL="))?.Split('=')[1];
-                        
+
                         if (freq == "DAILY" && DateTime.TryParseExact(untilStr, "yyyyMMdd'T'HHmmss'Z'", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var untilDate))
                         {
                             var occurrenceDate = booking.StartTime.Date;
