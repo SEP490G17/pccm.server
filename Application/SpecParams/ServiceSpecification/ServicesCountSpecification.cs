@@ -8,9 +8,10 @@ namespace Application.SpecParams.ServiceSpecification
             x => string.IsNullOrEmpty(baseSpecParam.Search) ||
             (
                 x.ServiceName.ToLower().Contains(baseSpecParam.Search)
-                || x.Description.ToLower().Contains(baseSpecParam.Search)
+            // || x.Description.ToLower().Contains(baseSpecParam.Search)
             )
             && x.DeletedAt == null
+                        && x.UpdatedAt == null
             && (baseSpecParam.Filter == null || x.CourtClusterId.Equals(baseSpecParam.Filter)))
 
         {

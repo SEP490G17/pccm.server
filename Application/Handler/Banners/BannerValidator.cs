@@ -1,9 +1,10 @@
-﻿using Domain.Entity;
+﻿using Application.DTOs;
+using Domain.Entity;
 using FluentValidation;
 
 namespace Application.Handler.Banners
 {
-    public class BannerValidator:AbstractValidator<Banner>
+    public class BannerValidator:AbstractValidator<BannerInputDto>
     {
         public BannerValidator() {
             RuleFor(x => x.LinkUrl).NotEmpty().WithMessage("Link url is required");

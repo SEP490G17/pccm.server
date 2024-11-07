@@ -22,11 +22,25 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListAll.Query(), ct));
         }
 
+        [AllowAnonymous]
+        [HttpGet("list-all-usersite")]
+        public async Task<IActionResult> GetAllCourtClustersUserSite(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListAllUserSite.Query(), ct));
+        }
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourtCluster(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
+        }
+
+        [HttpGet("usersite/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCourtClusterUserSite(int id, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new DetailUserSite.Query() { Id = id }, ct));
         }
 
         [AllowAnonymous]

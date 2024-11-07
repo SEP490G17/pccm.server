@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace Application.DTOs
 {
     public class CourtClusterDto
@@ -18,6 +23,23 @@ namespace Application.DTOs
             public TimeOnly OpenTime { get; set; }
             public TimeOnly CloseTime { get; set; }
             public string[] Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
+        }
+
+        public class CourtCLusterListPageUserSite
+        {
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string CourtClusterName { get; set; }
+            public string Address { get; set; }
+            public string Location { get; set; }
+            public int NumbOfCourts { get; set; }
+            public string Description { get; set; }
+            public TimeOnly OpenTime { get; set; }
+            public TimeOnly CloseTime { get; set; }
+            public string[] Images { get; set; }
+            public List<ServiceDto> Services { get; set; } = new List<ServiceDto>();
+            public List<ProductDto> Products { get; set; } = new List<ProductDto>();
+
         }
         
         public class CourtCLusterDetails

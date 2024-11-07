@@ -21,6 +21,6 @@ namespace Domain.Entity
         public string LinkUrl { get; set; }  // Đường dẫn khi người dùng click vào banner
         public DateTime StartDate { get; set; }  // Ngày bắt đầu hiển thị banner
         public DateTime EndDate { get; set; }  // Ngày kết thúc hiển thị banner
-        public virtual Banner Banner { get; set; }  // Liên kết với bảng Banners
+        public int BannerId { get; set; }  
     }
 }

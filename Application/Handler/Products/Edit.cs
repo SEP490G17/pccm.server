@@ -7,6 +7,8 @@ using Domain.Entity;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
+using System.Reflection;
 
 namespace Application.Handler.Products
 {
@@ -24,21 +26,48 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDto>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IUserAccessor userAccessor) : IRequestHandler<Command, Result<ProductDto>>
         {
-
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var productUpdate = request.product;
-                var id = request.Id;
+                string userName = userAccessor.GetUserName();
+
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
+
                 var repo = unitOfWork.Repository<Product>();
-                var product = await repo.GetByIdAsync(id);
-                product.UpdatedAt = DateTime.Now;
-                product.UpdatedBy = "anonymous";
-                repo.Update(product);
+                var productToUpdate = await repo.GetByIdAsync(request.Id);
+                if (productToUpdate == null)
+                {
+                    return Result<ProductDto>.Failure("Product not found");
+                }
+
+                var productLog = mapper.Map<ProductLog>(productToUpdate);
+                productLog.Id = 0; 
+                productLog.ProductId = productToUpdate.Id;
+                productLog.CreatedBy = userName;
+                productLog.CreatedAt = vietnamTime;
+                productLog.Description = "Update Product";
+
+                var logRepo = unitOfWork.Repository<ProductLog>();
+                logRepo.Add(productLog);
+
+                mapper.Map(request.product, productToUpdate);
+                productToUpdate.UpdatedAt = vietnamTime;
+                productToUpdate.UpdatedBy = userName;
+
+                repo.Update(productToUpdate);
                 var result = await unitOfWork.Complete() > 0;
-                if (!result) return Result<ProductDto>.Failure("Faild to edit product");
-                var response = await repo.QueryList(null).ProjectTo<ProductDto>(mapper.ConfigurationProvider).FirstOrDefaultAsync(p=>p.Id == product.Id);
+
+                if (!result)
+                {
+                    return Result<ProductDto>.Failure("Failed to edit product");
+                }
+
+                var response = await repo.QueryList(null)
+                    .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(p => p.Id == productToUpdate.Id);
+
                 return Result<ProductDto>.Success(response);
             }
         }

@@ -1,4 +1,5 @@
-﻿using Application.Handler.Banners;
+using Application.DTOs;
+using Application.Handler.Banners;
 using Application.Interfaces;
 using Application.SpecParams;
 using Domain.Entity;
@@ -31,6 +32,13 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("usersite")]
+        public async Task<IActionResult> GetBannerUserSite(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListUserSite.Query(), ct));
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
 
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
@@ -40,14 +48,14 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> PostBanner([FromBody] Banner banner, CancellationToken ct)
+        public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBanner(int id, Banner updatedBanner)
+        public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
             updatedBanner.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner }));

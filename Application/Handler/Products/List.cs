@@ -26,8 +26,11 @@ namespace Application.Handler.Products
                 var specCount = new ProductsCountSpecification(querySpec);
 
                 var totalElement = await _unitOfWork.Repository<Product>().CountAsync(specCount, cancellationToken);
-                var data = await _unitOfWork.Repository<Product>().QueryList(spec)
-                .ProjectTo<ProductDto>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+                var data = await _unitOfWork.Repository<Product>()
+                                            .QueryList(spec)
+                                            .Where(b => b.DeletedAt == null)
+                                            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                                            .ToListAsync(cancellationToken);
 
                 return Result<Pagination<ProductDto>>.Success(new Pagination<ProductDto>(querySpec.PageSize, totalElement, data));
             }

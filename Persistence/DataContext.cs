@@ -26,9 +26,10 @@ namespace Persistence
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Banner> Banners { get; set; }
-         public DbSet<StaffPosition> StaffPositions { get; set; }
-         public DbSet<CourtPrice> CourtPrices { get; set; }
-
+        public DbSet<StaffPosition> StaffPositions { get; set; }
+        public DbSet<CourtPrice> CourtPrices { get; set; }
+        public DbSet<BannerLog> BannerLogs { get; set; }
+        public DbSet<ProductLog> ProductLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,4 +1,5 @@
 ﻿using Application.Core;
+using Domain.Entity;
 using Domain.Enum;
 using MediatR;
 using Persistence;
@@ -8,12 +9,12 @@ namespace Application.Handler.Banners
 {
     public class ChangeStatus
     {
-        public class Command : IRequest<Result<Unit>>
+        public class Command : IRequest<Result<Banner>>
         {
             public int Id { get; set; }
             public int status { get; set; }
         }
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<Banner>>
         {
 
             private readonly DataContext _context;
@@ -22,7 +23,7 @@ namespace Application.Handler.Banners
             {
                 _context = context;
             }
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Banner>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var banner = await _context.Banners.FindAsync(request.Id);
                 if (request.status == 1)
@@ -34,8 +35,8 @@ namespace Application.Handler.Banners
                     banner.Status = BannerStatus.Hidden;
                 }
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Unit>.Failure("Faild to change status banner");
-                return Result<Unit>.Success(Unit.Value);
+                if (!result) return Result<Banner>.Failure("Faild to change status banner");
+                return Result<Banner>.Success(banner);
             }
         }
     }
