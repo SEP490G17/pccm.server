@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Application.Handler.Bookings;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,22 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateStatusBooking(int id, string status)
         {
             return HandleResult(await Mediator.Send(new Edit.Command() { Id = id, Status = status }));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("available-slots")]
+        public async Task<IActionResult> GetAvailableSlots([FromQuery] string date, [FromQuery] int courtClusterId)
+        {
+
+            return HandleResult(await Mediator.Send(new GetSlot.Query() { Date = date, CourtClusterId = courtClusterId }));
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> CreateBooking([FromBody] BookingInputDto bookingInput, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new Create.Command() { Booking = bookingInput }, ct));
         }
 
     }

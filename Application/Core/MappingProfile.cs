@@ -15,6 +15,7 @@ namespace Application.Core
             CreateMap<Banner, BannerLog>();
             CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
+             CreateMap<BookingInputDto, Booking>();
             CreateMap<Banner, Banner>()
                 .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.Title, o => o.MapFrom(s => s.Title))
@@ -66,6 +67,7 @@ namespace Application.Core
             .ForMember(p => p.Quantity, o => o.MapFrom(st => st.Quantity))
             .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
             .ForMember(p => p.Price, o => o.MapFrom(st => st.Price));
+
 
             CreateMap<Product, ProductDto.ProductDetails>()
             .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
