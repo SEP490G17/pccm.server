@@ -172,7 +172,7 @@ namespace API.Controllers
                         <p>Hi,</p>
                         <p>You have requested to reset your password. Please click the link below to reset your password:</p>
                         <p style='text-align: center;'>
-                            <a href='http://localhost:5000/api/Account/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
+                            <a href='https://argonaut.asia/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
                         </p>
                         <p>If you didn't request this, you can safely ignore this email.</p>
                         <p>Thanks,<br>PCCM System.</p>
