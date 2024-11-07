@@ -23,5 +23,7 @@ namespace Application.DTOs
         public string Status { get; set; }  // Sẽ hiển thị tên của trạng thái
         public string PaymentStatus { get; set; } // Sẽ hiển thị tên của trạng thái thanh toán
 
+         public string PhoneNumber { get; set; }
+
     }
 }

@@ -10,6 +10,8 @@ namespace Domain.Entity
         [StringLength(12)]
         public string PhoneNumber { get; set; }
 
+        public int CourtId { get; set; }
+
         [Required]
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
 
@@ -41,6 +43,8 @@ namespace Domain.Entity
         [NotMapped]
         public string PaymentName => PaymentStatus.ToString();  // Trả về tên của trạng thái thay vì số
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>(); // Liên kết với nhiều Order
+
+         public string RecurrenceRule { get; set; }
 
     }
 }
