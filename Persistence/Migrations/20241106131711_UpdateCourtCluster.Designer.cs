@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241106131711_UpdateCourtCluster")]
+    partial class UpdateCourtCluster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,7 +200,7 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BannerId")
+                    b.Property<int?>("BannerId")
                         .HasColumnType("int");
 
                     b.Property<int>("BannerInPage")
@@ -246,7 +249,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("BannerLogs");
+                    b.ToTable("BannerLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Booking", b =>
@@ -269,11 +272,6 @@ namespace Persistence.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
                     b.Property<int>("PaymentStatus")
                         .HasColumnType("int");
 
@@ -281,9 +279,6 @@ namespace Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("varchar(12)");
-
-                    b.Property<string>("RecurrenceRule")
-                        .HasColumnType("longtext");
 
                     b.Property<int?>("StaffId")
                         .HasColumnType("int");
@@ -830,7 +825,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductLogs");
+                    b.ToTable("ProductLog");
                 });
 
             modelBuilder.Entity("Domain.Entity.Review", b =>
@@ -1199,15 +1194,15 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entity.BannerLog", b =>
                 {
-                    b.HasOne("Domain.Entity.Banner", null)
+                    b.HasOne("Domain.Entity.Banner", "Banner")
                         .WithMany("BannerLogs")
-                        .HasForeignKey("BannerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BannerId");
 
                     b.HasOne("Domain.AppUser", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
+
+                    b.Navigation("Banner");
 
                     b.Navigation("Creator");
                 });

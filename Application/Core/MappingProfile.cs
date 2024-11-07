@@ -30,15 +30,7 @@ namespace Application.Core
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDto, Service>();
             CreateMap<ServiceDto, Service>();
-            CreateMap<CourtCluster, CourtClustersInputDto>()
-             .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
-                .ForMember(b => b.CourtClusterName, o => o.MapFrom(s => s.CourtClusterName))
-                .ForMember(b => b.Location, o => o.MapFrom(s => s.Location))
-                .ForMember(b => b.Address, o => o.MapFrom(s => s.Address))
-                .ForMember(b => b.OwnerId, o => o.MapFrom(s => s.OwnerId))
-                .ForMember(b => b.Description, o => o.MapFrom(s => s.Description))
-                .ForMember(b => b.Images, o => o.MapFrom(s => s.Images))
-                .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
+             
             CreateMap<CourtClustersInputDto, CourtCluster>();
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
@@ -46,11 +38,10 @@ namespace Application.Core
             CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPage>()
                 .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
-
-            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterListPageUserSite>()
+            CreateMap<CourtCluster, CourtClusterDto.CourtCLusterDetails>()
                 .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
-
+            
             CreateMap<OrderInputDto, Order>();
             CreateMap<ReviewInputDto, Review>();
             CreateMap<Review, Review>();
