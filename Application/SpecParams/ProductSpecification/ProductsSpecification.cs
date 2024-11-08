@@ -21,7 +21,7 @@ namespace Application.SpecParams.ProductSpecification
                     specParam.Category == null ||
                     x.CategoryId.Equals(specParam.Category)
                 )
-                && x.DeletedAt == null // ??m b?o ch? l?y s?n ph?m ch?a b? xóa
+                && x.DeletedAt == null // ??m b?o ch? l?y s?n ph?m ch?a b? xï¿½a
         )
         {
             ApplyPaging(specParam.Skip, specParam.PageSize);

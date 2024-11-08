@@ -31,7 +31,11 @@ namespace Application.Core
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDto, Service>();
             CreateMap<ServiceDto, Service>();
-             
+            
+            CreateMap<Court, CourtDto>()
+            .ForMember(c=>c.CourtId , o=>o.MapFrom(s=>s.Id));
+
+
             CreateMap<CourtClustersInputDto, CourtCluster>();
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();

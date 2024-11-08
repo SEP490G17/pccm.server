@@ -22,6 +22,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
+        [HttpGet("list")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCourtsList([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListByCourtCluster.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+        }
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateCourt([FromBody] Court court, CancellationToken ct)
