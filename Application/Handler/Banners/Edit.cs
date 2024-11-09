@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
+using Domain.Enum;
 using FluentValidation;
 using MediatR;
 using Persistence;
@@ -56,8 +57,10 @@ namespace Application.Handler.Banners
                 bannerLog.Id = 0;
                 bannerLog.BannerId = banner.Id;
                 bannerLog.CreatedBy = userName;
-                bannerLog.Description = "Update Banner";
+                bannerLog.Description = "Banner has been updated successfully";
                 bannerLog.CreatedAt = vietnamTime;
+                bannerLog.LogType = LogType.Update;
+
 
 
                 await _context.BannerLogs.AddAsync(bannerLog, cancellationToken);

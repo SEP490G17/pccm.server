@@ -5,6 +5,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
 using Domain.Entity;
+using Domain.Enum;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -66,7 +67,8 @@ namespace Application.Handler.Banners
                 bannerLog.Id = 0;
                 bannerLog.BannerId = banner.Id; 
                 bannerLog.CreatedBy = userName;
-                bannerLog.Description = "Create Banner";
+                bannerLog.Description = "Banner created successfully";
+                bannerLog.LogType = LogType.Create;
 
 
                 await _context.BannerLogs.AddAsync(bannerLog, cancellationToken);

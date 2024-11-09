@@ -1,3 +1,4 @@
+using Domain.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,5 +23,7 @@ namespace Domain.Entity
         public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
 
         public int ProductId { get; set; } 
+
+        public LogType LogType { get; set; }
     }
 }

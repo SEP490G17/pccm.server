@@ -15,6 +15,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
+        // [AllowAnonymous]
+        // [HttpGet("v2")]
+        // public async Task<IActionResult> GetBookingsV2([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
+        // {
+        //     return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+        // }
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBooking(int id, CancellationToken ct)

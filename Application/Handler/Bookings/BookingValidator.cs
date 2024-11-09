@@ -15,7 +15,6 @@ namespace Application.Handler.Bookings
             RuleFor(x => x.EndTime).NotEmpty().WithMessage("End time is required");
             RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage("Phone number is required");
             RuleFor(x => x.CourtId).NotEmpty().WithMessage("Court Id is required");
-            RuleFor(x => x.CourtClusterId).NotEmpty().WithMessage("CourtCluster Id is required");
         }
     }
 }
