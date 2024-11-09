@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.Entity;
 
 namespace Application.DTOs
 {
@@ -38,12 +39,15 @@ namespace Application.DTOs
             public string Ward { get; set; }  // Phường
             public string WardName { get; set; }
             public int NumbOfCourts { get; set; }
+            public int Rate { get; set; }
+            public string Price { get; set; }
             public string Description { get; set; }
             public TimeOnly OpenTime { get; set; }
             public TimeOnly CloseTime { get; set; }
             public string[] Images { get; set; }
             public List<ServiceDto> Services { get; set; } = new List<ServiceDto>();
             public List<ProductDto> Products { get; set; } = new List<ProductDto>();
+            public List<ReviewDto> Reviews { get; set; } = new List<ReviewDto>();
 
         }
 

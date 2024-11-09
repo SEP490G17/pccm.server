@@ -20,7 +20,9 @@ namespace Application.Handler.CourtClusters
         {
             public async Task<Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var courtCluster = await unitOfWork.Repository<CourtCluster>().QueryList(null)
+                var courtCluster = await unitOfWork.Repository<CourtCluster>()
+                .QueryList(null)
+                .Include(c => c.Courts)
                 .ProjectTo<CourtClusterDto.CourtCLusterListPageUserSite>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
                 return Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>.Success(courtCluster);

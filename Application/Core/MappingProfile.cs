@@ -117,6 +117,9 @@ namespace Application.Core
 
             CreateMap<AppUser, UserDto>()
             .ForMember(u => u.FullName, o => o.MapFrom(au => $"{au.FirstName} {au.LastName}"));
+
+            CreateMap<Review, ReviewDto>()
+                .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
         }
 
     }
