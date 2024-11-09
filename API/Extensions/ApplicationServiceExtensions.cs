@@ -1,7 +1,9 @@
+using API.DTOs;
 using API.Services;
 using Application.Core;
 using Application.DTOs;
 using Application.Handler.Categories;
+using Application.Handler.Payments;
 using Application.Interfaces;
 using Domain;
 using FluentValidation;
@@ -51,9 +53,11 @@ namespace API.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.AddScoped<ISendSmsService, SendSmsService>();
+            services.AddScoped<IVnPayService, VnPayService>(); 
             services.AddOptions();
             services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.Configure<VnPaySettings>(configuration.GetSection("VnPaySettings"));
             services.Configure<InfobipAPI>(configuration.GetSection("InfobipAPI"));
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
             return services;

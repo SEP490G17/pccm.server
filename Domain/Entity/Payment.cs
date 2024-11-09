@@ -6,16 +6,32 @@ namespace Domain.Entity
 {
     public class Payment : BaseEntity
     {
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Amount { get; set; }          // Số tiền thanh toán
+
+        [Required]
+        public string PaymentMethod { get; set; }    // Phương thức thanh toán (VNPay, Credit Card, etc.)
+
+        [Required]
+        public PaymentStatus Status { get; set; }    // Enum for trạng thái thanh toán (Pending, Success, Failed, etc.)
+
+        public string TransactionRef { get; set; }   // Mã giao dịch từ VNPay hoặc cổng thanh toán khác
+
+        public DateTime CreatedAt { get; set; }      // Thời gian giao dịch
+
+        // Mối quan hệ với Booking
+        [Required]
         public int BookingId { get; set; }
-        [Required]
-        public PaymentMethod PaymentMethod { get; set; }  // Phương thức thanh toán
-        [Required]
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal AmountPaid { get; set; }  // Số tiền đã thanh toán
-        [Required]
-        public DateTime PaymentDate { get; set; } = DateTime.Now;  // Thời gian thanh toán
 
         [ForeignKey("BookingId")]
-        public virtual Booking Booking { get; set; }  // Liên kết với bảng Bookings
+        public Booking Booking { get; set; }
+
+        // // Mối quan hệ với Order (có thể là optional nếu không phải thanh toán nào cũng gắn với Order)
+        // public int? OrderId { get; set; }
+
+        // [ForeignKey("OrderId")]
+        // public Order Order { get; set; }
+
     }
 }
