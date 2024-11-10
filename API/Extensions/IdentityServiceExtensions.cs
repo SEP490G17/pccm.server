@@ -12,6 +12,17 @@ namespace API.Extensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
+            // services.AddCors(opt =>
+            // {
+            //     opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000", "http://argonaut.asia", "https://argonaut.asia"));
+            // });
+
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+            });
             services.AddIdentityCore<AppUser>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = true;
@@ -38,6 +49,7 @@ namespace API.Extensions
                 };
             });
             services.AddScoped<TokenService>();
+            services.AddHttpContextAccessor();
             return services;
         }
     }

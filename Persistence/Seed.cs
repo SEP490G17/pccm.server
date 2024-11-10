@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
 {
-    public class Seed
+  public class Seed
   {
     public static async Task SeedData(DataContext context, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
@@ -68,6 +68,17 @@ namespace Persistence
         var adminId = await userManager.FindByNameAsync("adminstrator");
         CourtClusters.ForEach(c => c.OwnerId = adminId.Id);
         await context.CourtClusters.AddRangeAsync(CourtClusters);
+      }
+      if (!context.Courts.Any())
+      {
+        var courtsData = File.ReadAllText("../Persistence/SeedData/courts.json");
+        var courts = JsonSerializer.Deserialize<List<Court>>(courtsData);
+
+        var courtPrice = File.ReadAllText("../Persistence/SeedData/courtPrice.json");
+        var courtPrices = JsonSerializer.Deserialize<List<CourtPrice>>(courtPrice);
+
+        var courtClusters = context.CourtClusters.Take(10).ToList();
+        courtClusters.ForEach(c => c.Courts = courts.ToList());
       }
       if (!context.Services.Any())
       {
@@ -142,7 +153,7 @@ namespace Persistence
         }
         await context.Users.AddRangeAsync(users);
         await context.SaveChangesAsync();
-        
+
         var results = userManager.Users.Where(u => u.UserName.Contains("staff")).ToList();
         var staffs = new List<StaffDetail>(){
           new StaffDetail()

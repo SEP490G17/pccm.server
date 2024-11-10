@@ -1,0 +1,19 @@
+[
+    {
+        "CourtName": "Sân 1",
+        "Status": 1
+    },
+    {
+        "CourtName": "Sân 2",
+        "Status": 1
+    },
+    {
+        "CourtName": "Sân 3",
+        "Status": 1
+    },
+    {
+        "CourtName": "Sân 4",
+        "Status": 1
+    }
+
+]

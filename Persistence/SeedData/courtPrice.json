@@ -1,0 +1,14 @@
+[
+    {
+        "DisplayName": "Giờ sáng",
+        "Price": 100000,
+        "FromTime": "07:00:00",
+        "ToTime": "17:00:00"
+    },
+    {
+        "DisplayName": "Giờ tối",
+        "Price": 200000,
+        "FromTime": "17:00:00",
+        "ToTime": "22:00:00"
+    }
+]
