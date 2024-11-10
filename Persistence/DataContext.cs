@@ -30,6 +30,8 @@ namespace Persistence
         public DbSet<CourtPrice> CourtPrices { get; set; }
         public DbSet<BannerLog> BannerLogs { get; set; }
         public DbSet<ProductLog> ProductLogs { get; set; }
+        public DbSet<NewsLog> NewsLogs { get; set; }
+        public DbSet<ServiceLog> ServiceLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

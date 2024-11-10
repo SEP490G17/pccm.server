@@ -29,6 +29,8 @@ namespace Domain.Entity
 
         public string[] Tags { get; set; }
 
-        public virtual NewsBlog NewsBlog { get; set; }
+        public int NewsBlogId { get; set; }
+
+        public LogType LogType { get; set; }
     }
 }
