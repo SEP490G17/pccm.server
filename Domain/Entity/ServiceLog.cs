@@ -1,3 +1,4 @@
+using Domain.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +13,7 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá dịch vụ
         public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
-
-        public virtual Service Service { get; set; }
+        public int ServiceId { get; set; }
+        public LogType LogType { get; set; }
     }
 }

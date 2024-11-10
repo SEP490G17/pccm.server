@@ -10,34 +10,10 @@ namespace Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductLog_Categories_CategoryId",
-                table: "ProductLog");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductLog_CourtClusters_CourtClusterId",
-                table: "ProductLog");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductLog_Products_ProductId",
-                table: "ProductLog");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductLog_Users_CreatorId",
-                table: "ProductLog");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_ProductLog",
-                table: "ProductLog");
-
+            // Renaming table and indexes
             migrationBuilder.RenameTable(
                 name: "ProductLog",
                 newName: "ProductLogs");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_ProductLog_ProductId",
-                table: "ProductLogs",
-                newName: "IX_ProductLogs_ProductId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProductLog_CreatorId",
@@ -59,6 +35,7 @@ namespace Persistence.Migrations
                 table: "ProductLogs",
                 column: "Id");
 
+            // Adding foreign keys
             migrationBuilder.AddForeignKey(
                 name: "FK_ProductLogs_Categories_CategoryId",
                 table: "ProductLogs",
@@ -74,13 +51,6 @@ namespace Persistence.Migrations
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ProductLogs_Products_ProductId",
-                table: "ProductLogs",
-                column: "ProductId",
-                principalTable: "Products",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
                 name: "FK_ProductLogs_Users_CreatorId",
                 table: "ProductLogs",
                 column: "CreatorId",
@@ -91,16 +61,13 @@ namespace Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Reverting changes made in the Up method
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductLogs_Categories_CategoryId",
                 table: "ProductLogs");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_ProductLogs_CourtClusters_CourtClusterId",
-                table: "ProductLogs");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProductLogs_Products_ProductId",
                 table: "ProductLogs");
 
             migrationBuilder.DropForeignKey(
@@ -114,11 +81,6 @@ namespace Persistence.Migrations
             migrationBuilder.RenameTable(
                 name: "ProductLogs",
                 newName: "ProductLog");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_ProductLogs_ProductId",
-                table: "ProductLog",
-                newName: "IX_ProductLog_ProductId");
 
             migrationBuilder.RenameIndex(
                 name: "IX_ProductLogs_CreatorId",
@@ -152,13 +114,6 @@ namespace Persistence.Migrations
                 table: "ProductLog",
                 column: "CourtClusterId",
                 principalTable: "CourtClusters",
-                principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ProductLog_Products_ProductId",
-                table: "ProductLog",
-                column: "ProductId",
-                principalTable: "Products",
                 principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
