@@ -345,9 +345,6 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<decimal>("PricePerHour")
-                        .HasColumnType("decimal(10, 2)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -450,7 +447,7 @@ namespace Persistence.Migrations
                         .HasColumnType("TIME");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<TimeOnly>("ToTime")
                         .HasColumnType("TIME");

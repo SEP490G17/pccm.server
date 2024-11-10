@@ -19,7 +19,7 @@ namespace Domain.Entity
         public decimal Quantity { get; set; }  // Số lượng sản phẩm có sẵn
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal Price { get; set; }  // Giá sản phẩm
+        [Range(1000, double.MaxValue, ErrorMessage = "Giá sản phẩm ít nhất phải 1,000 VND.")] public decimal Price { get; set; }  // Giá sản phẩm
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
         public decimal ImportFee { get; set; }

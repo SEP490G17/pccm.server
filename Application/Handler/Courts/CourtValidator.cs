@@ -8,7 +8,6 @@ namespace Application.Handler.Courts
         public CourtValidator()
         {
             RuleFor(x => x.CourtName).NotEmpty().WithMessage("CourtName is required");
-            RuleFor(x => x.PricePerHour).NotEmpty().WithMessage("PricePerHour is required");
         }
     }
 }
