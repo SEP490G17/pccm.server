@@ -16,8 +16,9 @@ namespace Application.Handler.Payments
     {
         public class Command : IRequest<Result<string>>
         {
-            public int BookingId { get; set; }
+            public int BillPayId { get; set; }
             public decimal Amount { get; set; }
+            public string Type { get; set; }
         }
         public class Handler : IRequestHandler<Command, Result<string>>
         {
@@ -31,16 +32,30 @@ namespace Application.Handler.Payments
 
             public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == request.BookingId);
-                if (booking == null)
+                if (request.Type.Equals("bookingBill"))
                 {
-                    return Result<string>.Failure("Booking not found.");
-                }
 
+                    var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == request.BillPayId);
+                    if (booking == null)
+                    {
+                        return Result<string>.Failure("Booking not found.");
+                    }
+                    booking.PaymentStatus = PaymentStatus.Pending;
+                    _context.Bookings.Update(booking);
+                }
+                if (request.Type.Equals("orderBill"))
+                {
+                    var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == request.BillPayId);
+                    if (order == null)
+                    {
+                        return Result<string>.Failure("Order not found.");
+                    }
+                    // order.Status = PaymentStatus.Pending;
+                    _context.Orders.Update(order);
+                }
                 // Generate VNPay payment URL
-                var paymentUrl = _vnpayService.GeneratePaymentUrl(booking.Id, request.Amount);
-                booking.PaymentStatus = PaymentStatus.Pending;
-                _context.Bookings.Update(booking);
+                var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, request.Amount, request.Type);
+
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return Result<string>.Success(paymentUrl);

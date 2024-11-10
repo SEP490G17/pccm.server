@@ -86,7 +86,7 @@ namespace Application.Handler.Statistics
             {
                 return bookings
                     .GroupJoin(
-                        _context.Orders.Where(o => o.Status == "Đã hoàn thành").ToList(),
+                        _context.Orders.Where(o => (int)o.Status == (int)OrderStatus.Success).ToList(),
                         b => b.Id,
                         o => o.BookingId,
                         (b, orders) => new

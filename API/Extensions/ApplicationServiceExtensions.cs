@@ -8,6 +8,7 @@ using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Infrastructure.Payment;
 using Infrastructure.Photos;
 using Infrastructure.Repository;
 using Infrastructure.Security;

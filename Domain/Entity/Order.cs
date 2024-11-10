@@ -13,15 +13,32 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal TotalAmount { get; set; }  // Tổng số tiền của đơn hàng
         public float? Discount { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
         [Required]
-        public string Status { get; set; }  // Trạng thái đơn hàng: Đang chờ, Đã hoàn thành, hoặc Đã hủy
+        public OrderStatus Status { get; set; }  // Trạng thái đơn hàng: Đang chờ, Đã hoàn thành, hoặc Đã hủy
+
+        public bool IsOpen { get; set; } = true;  // Trạng thái đơn hàng: Đang chờ, Đã hoàn thành, hoặc Đã hủy
+
         public int? BookingId { get; set; }
 
         [ForeignKey("BookingId")]
-        public virtual Booking? Booking { get; set; }         
+        public virtual Booking? Booking { get; set; }
         [ForeignKey("CreatedBy")]
         public virtual StaffDetail Staff { get; set; }  // Liên kết với bảng StaffDetails
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
+        public string GetOrderStatusString()
+        {
+            switch (Status)
+            {
+                case OrderStatus.Pending:
+                    return "Đang chờ";
+                case OrderStatus.Success:
+                    return "Đã hoàn thành";
+                case OrderStatus.Failed:
+                    return "Thất bại";
+                default:
+                    return "Không xác định";
+            }
+        }
     }
 }

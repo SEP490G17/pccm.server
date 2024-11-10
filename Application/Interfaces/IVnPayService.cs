@@ -8,7 +8,7 @@ namespace Application.Interfaces
 {
     public interface IVnPayService
     {
-        string GeneratePaymentUrl(int bookingId, decimal amount);
+        string GeneratePaymentUrl(int bookingId, decimal amount, string type);
         bool VerifyVnPaySignature(VnPayCallbackDto callback);
     }
 }

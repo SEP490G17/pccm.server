@@ -48,7 +48,7 @@ namespace Application.Handler.Statistics
                 // Thống kê các dịch vụ
                 var orderDetails = await _context.OrderDetails
                     .Include(od => od.Order)
-                    .Where(od => od.Order.Status == "Đã hoàn thành" &&
+                    .Where(od => (int)od.Order.Status == (int)OrderStatus.Success &&
                                  _context.Bookings
                                      .Where(b => b.Id == od.Order.BookingId &&
                                                   b.Court.CourtClusterId == request.CourtClusterId &&

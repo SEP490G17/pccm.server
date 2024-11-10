@@ -25,7 +25,13 @@ namespace Domain.Entity
         public int BookingId { get; set; }
 
         [ForeignKey("BookingId")]
-        public Booking Booking { get; set; }
+        public Booking? Booking { get; set; }
+
+        [Required]
+        public int OrderId { get; set; }
+
+        [ForeignKey("OrderId")]
+        public Order? Order { get; set; }
 
         // // Mối quan hệ với Order (có thể là optional nếu không phải thanh toán nào cũng gắn với Order)
         // public int? OrderId { get; set; }

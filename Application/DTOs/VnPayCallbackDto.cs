@@ -10,6 +10,7 @@ namespace Application.DTOs
         public string vnp_Amount { get; set; }
         public string vnp_BankCode { get; set; }
         public string vnp_OrderInfo { get; set; }
+
         public string vnp_ResponseCode { get; set; }
         public string vnp_TmnCode { get; set; }
         public string vnp_TransactionNo { get; set; }

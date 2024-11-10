@@ -27,22 +27,22 @@ namespace API.Controllers
             _context = context;
         }
 
-        [HttpPost("{id}/process-payment")]
-        public async Task<IActionResult> ProcessPayment(int id, decimal amount, CancellationToken ct)
+        [HttpPost("{type}/{id}/process-payment")]
+        public async Task<IActionResult> ProcessPayment(string type, int id, decimal amount, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ProcessPayment.Command() { BookingId = id, Amount = amount }, ct));
+            return HandleResult(await Mediator.Send(new ProcessPayment.Command() { BillPayId = id, Amount = amount, Type = type }, ct));
         }
 
-        [HttpPost("vnpay-callback")]
+        [HttpGet("vnpay-callback")]
+        [AllowAnonymous]
         public async Task<IActionResult> VNPayCallback([FromQuery] VnPayCallbackDto callback)
         {
             var isValid = _vnpayService.VerifyVnPaySignature(callback);
-            var paymentStatus = isValid && callback.vnp_ResponseCode == "00"
+            var paymentStatus = isValid && callback.vnp_ResponseCode.Equals("00")
                                 ? PaymentStatus.Success
                                 : PaymentStatus.Failed;
 
-            // Lấy BookingId từ vnp_TxnRef (gửi từ VNPay)
-            var bookingId = int.Parse(callback.vnp_TxnRef);
+            var bookingId = int.Parse(callback.vnp_TxnRef.Split("_")[0]);
             var booking = await _context.Bookings.FindAsync(bookingId);
             if (booking == null)
             {
