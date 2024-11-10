@@ -104,10 +104,11 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("Profile")]
+        [HttpGet("Profile")]
         public async Task<ActionResult<AppUser>> ViewProfile()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
             if (user == null)
             {
                 return NotFound("User not found.");
