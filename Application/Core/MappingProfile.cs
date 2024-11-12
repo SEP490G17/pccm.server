@@ -16,6 +16,12 @@ namespace Application.Core
             CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<BookingInputDto, Booking>();
+            CreateMap<Booking, BookingDtoStatistic>()
+            .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
+                .ForMember(b => b.courtClusterName, o => o.MapFrom(s => s.Court.CourtCluster.CourtClusterName))
+                .ForMember(b => b.ImageUrl, o => o.MapFrom(s => s.AppUser.ImageUrl))
+                .ForMember(b => b.courtName, o => o.MapFrom(s => s.Court.CourtName))
+                .ForMember(b => b.FullName, o => o.MapFrom(s => s.FullName));
             CreateMap<Banner, Banner>()
                 .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.Title, o => o.MapFrom(s => s.Title))
@@ -119,6 +125,10 @@ namespace Application.Core
 
             CreateMap<Review, ReviewDto>()
                 .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
+
+            CreateMap<Expense, ExpenseDto>();
+            CreateMap<Expense, ExpenseDetailDto>();
+            CreateMap<ExpenseDto, Expense>();
         }
 
     }

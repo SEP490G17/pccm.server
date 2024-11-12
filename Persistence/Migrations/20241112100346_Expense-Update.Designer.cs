@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241112100346_Expense-Update")]
+    partial class ExpenseUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,17 +263,11 @@ namespace Persistence.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AcceptedAt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("AppUserId")
                         .HasColumnType("varchar(255)");
 
                     b.Property<int?>("CourtId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -283,8 +280,8 @@ namespace Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<bool>("IsSuccess")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -305,9 +302,6 @@ namespace Persistence.Migrations
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(10, 2)");
-
-                    b.Property<DateTime?>("UntilTime")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -662,6 +656,9 @@ namespace Persistence.Migrations
                     b.Property<bool>("IsOpen")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(10, 2)");
 
@@ -719,22 +716,17 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("BookingId")
+                    b.Property<int>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("PaidAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int?>("PaymentMethod")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PaymentUrl")
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -745,11 +737,9 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
+                    b.HasIndex("BookingId");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
                 });
@@ -1408,12 +1398,16 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.Payment", b =>
                 {
                     b.HasOne("Domain.Entity.Booking", "Booking")
-                        .WithOne("Payment")
-                        .HasForeignKey("Domain.Entity.Payment", "BookingId");
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entity.Order", "Order")
-                        .WithOne("Payment")
-                        .HasForeignKey("Domain.Entity.Payment", "OrderId");
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Booking");
 
@@ -1638,8 +1632,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.Booking", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Domain.Entity.Court", b =>
@@ -1666,8 +1658,6 @@ namespace Persistence.Migrations
             modelBuilder.Entity("Domain.Entity.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Domain.Entity.Product", b =>

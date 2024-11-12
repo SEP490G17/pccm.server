@@ -23,17 +23,46 @@ namespace Application.Handler.Statistics
 
             public async Task<Result<StatisticCount>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var totalCourtClusters = await _context.CourtClusters.CountAsync(cancellationToken);
-                var totalCourts = await _context.Courts.CountAsync(cancellationToken);
-                var totalUsers = await _context.Users.CountAsync(u => !u.IsDisabled, cancellationToken);
-                var totalStaff = await _context.StaffDetails.CountAsync(cancellationToken);
+                var currentDate = DateTime.Now;
+
+                var newUser = await _context.Users
+                .Where(u => u.JoiningDate.HasValue &&
+                u.JoiningDate.Value.Year == currentDate.Year &&
+                u.JoiningDate.Value.Month == currentDate.Month)
+                .CountAsync(cancellationToken);
+
+                var totalBookingToday = await _context.Bookings
+                .Where(u =>
+                u.StartTime.Day == currentDate.Day &&
+                u.StartTime.Year == currentDate.Year &&
+                u.StartTime.Month == currentDate.Month)
+                .CountAsync(cancellationToken);
+
+                var totalBookingMonth = await _context.Bookings
+                .Where(u =>
+                u.StartTime.Year == currentDate.Year &&
+                u.StartTime.Month == currentDate.Month)
+                .CountAsync(cancellationToken);
+
+                var productInMonth = await _context.Orders
+                .Where(u => u.CreatedAt.Month == currentDate.Month
+                && u.CreatedAt.Year == currentDate.Year)
+                .SelectMany(u => u.OrderDetails)
+                .CountAsync(od => od.ProductId != null, cancellationToken);
+
+                var serviceInMonth = await _context.Orders
+                .Where(u => u.CreatedAt.Month == currentDate.Month
+                && u.CreatedAt.Year == currentDate.Year)
+                .SelectMany(u => u.OrderDetails)
+                .CountAsync(od => od.ServiceId != null, cancellationToken);
 
                 var statisticCount = new StatisticCount
                 {
-                    TotalCourtClusters = totalCourtClusters,
-                    TotalCourts = totalCourts,
-                    TotalUsers = totalUsers,
-                    TotalStaff = totalStaff,
+                    newUser = newUser,
+                    totalBookingMonth = totalBookingMonth,
+                    totalBookingToday = totalBookingToday,
+                    productInMonth = productInMonth,
+                    serviceInMonth = serviceInMonth,
                 };
 
                 return Result<StatisticCount>.Success(statisticCount);
