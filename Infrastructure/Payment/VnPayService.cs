@@ -6,6 +6,7 @@ using API.DTOs;
 using API.Helper;
 using Application.DTOs;
 using Application.Interfaces;
+using Domain.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +21,7 @@ namespace Infrastructure.Payment
             _settings = settings.Value;
         }
 
-        public string GeneratePaymentUrl(int bookingId, decimal amount, string type)
+        public string GeneratePaymentUrl(int billPaymentId, decimal amount, PaymentType type)
         {
             var tick = DateTime.Now.ToString();
      
@@ -33,15 +34,13 @@ namespace Infrastructure.Payment
             vnPay.AddRequestData("vnp_CreateDate",createDate.ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_ExpireDate",createDate.AddMinutes(30).ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_CurrCode", "VND");
-            vnPay.AddRequestData("vnp_TxnRef", $"{bookingId}_{type}_{tick}");
+            vnPay.AddRequestData("vnp_TxnRef", $"{billPaymentId}_{type}_{tick}");
          
             vnPay.AddRequestData("vnp_Locale", "vn");
-            vnPay.AddRequestData("vnp_OrderInfo", $"Thanh toan don hang: {bookingId}");
+            vnPay.AddRequestData("vnp_OrderInfo", $"Thanh toan don hang: {billPaymentId}");
             vnPay.AddRequestData("vnp_OrderType", "bookingBill");
             vnPay.AddRequestData("vnp_ReturnUrl", _settings.ReturnUrl);
             vnPay.AddRequestData("vnp_IpAddr", "127.0.0.1");
-
-
 
             return vnPay.CreateRequestUrl(_settings.Url,_settings.HashSecret);
         }

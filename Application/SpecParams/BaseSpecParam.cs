@@ -7,7 +7,7 @@ namespace Application.SpecParams
     {
         private const int MaxPageSize = 50; // hằng số max page size
         public int Skip { get; set; } = 0; // Số bản ghi bỏ qua khi query
-        private int _pageSize = 5; // số lượng bản ghi trong 1 trang
+        private int _pageSize = 99; // số lượng bản ghi trong 1 trang
 
         public int PageSize // getter setter
         {

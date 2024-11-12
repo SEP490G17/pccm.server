@@ -35,6 +35,7 @@ namespace Application.Handler.Courts
                 .ToListAsync(cancellationToken);
                 return Result<IReadOnlyList<CourtDto>>.Success(data);
             }
+            
         }
     }
 }

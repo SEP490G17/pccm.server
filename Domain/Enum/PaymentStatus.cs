@@ -2,10 +2,9 @@ namespace Domain.Enum
 {
     public enum PaymentStatus
     {
-        Unpaid,
+        Cancel,
         Pending,
-        Paid,
         Success,
-        Failed
+        Failed,
     }
 }

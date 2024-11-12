@@ -31,7 +31,7 @@ namespace Application.Handler.Statistics
                     .Where(b => b.StartTime.Date == request.Date.Date &&
                                  b.Court.CourtClusterId == request.CourtClusterId &&
                                  b.Status == BookingStatus.Confirmed &&
-                                 b.PaymentStatus == PaymentStatus.Paid)
+                                 b.Payment.Status == PaymentStatus.Success)
                     .Include(b => b.Court) 
                     .ToListAsync(cancellationToken); 
 
@@ -48,12 +48,12 @@ namespace Application.Handler.Statistics
                 // Thống kê các dịch vụ
                 var orderDetails = await _context.OrderDetails
                     .Include(od => od.Order)
-                    .Where(od => (int)od.Order.Status == (int)OrderStatus.Success &&
+                    .Where(od => (int)od.Order.Payment.Status == (int)PaymentStatus.Success &&
                                  _context.Bookings
                                      .Where(b => b.Id == od.Order.BookingId &&
                                                   b.Court.CourtClusterId == request.CourtClusterId &&
                                                   b.Status == BookingStatus.Confirmed &&
-                                                  b.PaymentStatus == PaymentStatus.Paid)
+                                                  b.Payment.Status == PaymentStatus.Success)
                                      .Any() &&
                                  od.Order.CreatedAt.Date == request.Date.Date)
                     .GroupBy(od => od.Product.ProductName)

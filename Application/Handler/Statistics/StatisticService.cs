@@ -57,7 +57,7 @@ namespace Application.Handler.Statistics
             private async Task<List<Booking>> GetBookings(int year, int month, int? courtClusterId, CancellationToken cancellationToken)
             {
                 var bookingsQuery = _context.Bookings
-                    .Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed)
+                    .Where(b => b.Payment.Status == PaymentStatus.Success && b.Status == BookingStatus.Confirmed)
                     .AsQueryable();
 
                 if (month > 0)
@@ -86,7 +86,7 @@ namespace Application.Handler.Statistics
             {
                 return bookings
                     .GroupJoin(
-                        _context.Orders.Where(o => (int)o.Status == (int)OrderStatus.Success).ToList(),
+                        _context.Orders.Where(o => (int)o.Payment.Status == (int)PaymentStatus.Success).ToList(),
                         b => b.Id,
                         o => o.BookingId,
                         (b, orders) => new

@@ -6,6 +6,5 @@ namespace Domain.Enum
         Confirmed,
         Declined,
         Cancelled,
-        Completed
     }
 }

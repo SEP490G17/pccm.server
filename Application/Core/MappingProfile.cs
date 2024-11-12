@@ -31,9 +31,9 @@ namespace Application.Core
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDto, Service>();
             CreateMap<ServiceDto, Service>();
-            
+
             CreateMap<Court, CourtDto>()
-            .ForMember(c=>c.CourtId , o=>o.MapFrom(s=>s.Id));
+            .ForMember(c => c.CourtId, o => o.MapFrom(s => s.Id));
 
 
 
@@ -79,11 +79,11 @@ namespace Application.Core
             .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(st => st.ThumbnailUrl))
             .ForMember(p => p.Price, o => o.MapFrom(st => st.PriceSell))
             .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
-            .ForMember(p=>p.CreatedAt, o=>o.Ignore());
+            .ForMember(p => p.CreatedAt, o => o.Ignore());
 
             CreateMap<ProductDto, Product>();
 
-           
+
 
             CreateMap<Product, ProductDto>()
             .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
@@ -99,10 +99,13 @@ namespace Application.Core
 
             CreateMap<Booking, BookingDto>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
-            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.PaymentStatus.ToString()))
+            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.Payment.Status.ToString()))
             .ForMember(b => b.UserName, o => o.MapFrom(s => s.AppUser.UserName.ToString()))
             .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName.ToString()));
-
+            CreateMap<Booking, BookingDtoV1>()
+                     .ForMember(b => b.Status, o => o.MapFrom(s => (int)s.Status))
+                     .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => (int)s.Payment.Status))
+                     .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName));
 
             CreateMap<StaffDetail, StaffDto>()
                 .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))

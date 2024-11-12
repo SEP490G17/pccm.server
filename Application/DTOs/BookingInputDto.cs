@@ -13,7 +13,7 @@ namespace Application.DTOs
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
 
         public DateTime EndTime { get; set; }  // Thời gian kết thúc đặt sân
-
-        public string  RecurrenceRule { get; set; }  // Thời lượng đặt sân
+        public DateTime? UntilTime { get; set; } = null;
+        public string RecurrenceRule { get; set; }  // Thời lượng đặt sân
     }
 }

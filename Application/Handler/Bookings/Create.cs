@@ -39,10 +39,11 @@ namespace Application.Handler.Bookings
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var booking = _mapper.Map<Booking>(request.Booking);
+                booking.AcceptedAt = DateTime.Now;
+              
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create booking");
-                var newBooking = _context.Entry(booking).Entity;
                 return Result<Unit>.Success(Unit.Value);
             }
         }
