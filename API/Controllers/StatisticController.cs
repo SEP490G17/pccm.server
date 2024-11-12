@@ -46,5 +46,27 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new TopStatisticsService.Query { Month = month, Year = year }, ct));
         }
+
+        [AllowAnonymous]
+        [HttpGet("BookingRecently")]
+        public async Task<IActionResult> BookingRecently(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new BookingRecently.Query(), ct));
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> AddExpense([FromBody] ExpenseDto expenseDto, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new CreateExpense.Command() { expenseDto = expenseDto }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("ExportExcel")]
+        public async Task<IActionResult> ExportExcel([FromQuery] DateTime date, [FromQuery] int clusterId, CancellationToken ct)
+        {
+            var result = await Mediator.Send(new ExportExcel.Query() { Date = date, CourtClusterId = clusterId }, ct);
+            return HandleResult(result);
+        }
     }
 }

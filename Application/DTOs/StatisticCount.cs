@@ -2,10 +2,11 @@
 {
     public class StatisticCount
     {
-        public int TotalCourtClusters { get; set; }
-        public int TotalCourts { get; set; }
-        public int TotalUsers { get; set; }
-        public int TotalStaff { get; set; }
+        public int newUser { get; set; }
+        public int totalBookingToday { get; set; }
+        public int totalBookingMonth { get; set; }
+        public int productInMonth { get; set; }
+        public int serviceInMonth { get; set; }
 
     }
 }

@@ -57,6 +57,7 @@ namespace Application.Handler.Statistics
             private async Task<List<Booking>> GetBookings(int year, int month, int? courtClusterId, CancellationToken cancellationToken)
             {
                 var bookingsQuery = _context.Bookings
+                    .Include(b => b.Court)
                     .Where(b => b.PaymentStatus == PaymentStatus.Paid && b.Status == BookingStatus.Confirmed)
                     .AsQueryable();
 
@@ -70,16 +71,44 @@ namespace Application.Handler.Statistics
                 }
                 if (courtClusterId == 0)
                 {
-                    bookingsQuery = bookingsQuery.Where(b => b.Court != null);
+                    bookingsQuery = bookingsQuery.Where(b => b.Court.CourtClusterId != null);
                 }
 
                 else if (courtClusterId.HasValue)
                 {
-                    bookingsQuery = bookingsQuery.Where(b => b.Court != null && b.Court.CourtClusterId == courtClusterId.Value);
+                    bookingsQuery = bookingsQuery.Where(b => b.Court.CourtClusterId != null && b.Court.CourtClusterId == courtClusterId.Value);
                 }
 
 
                 return await bookingsQuery.ToListAsync(cancellationToken);
+            }
+
+            private async Task<decimal> GetExpense(int year, int month, int? courtClusterId, CancellationToken cancellationToken)
+            {
+                var query = _context.Expenses.AsQueryable();
+
+                if (month > 0)
+                {
+                    query = query.Where(b => b.ExpenseAt.Year == year && b.ExpenseAt.Month == month);
+                }
+                else
+                {
+                    query = query.Where(b => b.ExpenseAt.Year == year);
+                }
+                if (courtClusterId == 0)
+                {
+                    query = query.Where(b => b.CourtClusterId != null);
+                }
+
+                else if (courtClusterId.HasValue)
+                {
+                    query = query.Where(b => b.CourtClusterId == courtClusterId);
+                }
+                var data = await query.ToListAsync(cancellationToken);
+
+                decimal totalPrice = data.Sum(e => e.TotalPrice);
+
+                return totalPrice;
             }
 
             private async Task<IEnumerable<dynamic>> GetTotalAmounts(List<Booking> bookings)
@@ -92,7 +121,7 @@ namespace Application.Handler.Statistics
                         (b, orders) => new
                         {
                             Booking = b,
-                            TotalOrderAmount = orders.Sum(x => (decimal)x.TotalAmount), 
+                            TotalOrderAmount = orders.Sum(x => (decimal)x.TotalAmount),
                             TotalBooking = 1
                         }
                     );
@@ -122,7 +151,7 @@ namespace Application.Handler.Statistics
                         Month = g.Key,
                         TotalImportFee = g.Sum(p => p.ImportFee * p.Quantity) / 1_000_000m
                     })
-                    .Cast<dynamic>() 
+                    .Cast<dynamic>()
                     .ToListAsync(cancellationToken);
             }
 
@@ -137,9 +166,9 @@ namespace Application.Handler.Statistics
                     .Select(day => new StatisticResult
                     {
                         Date = $"{day:D2}/{month:D2}",
-                        TotalAmount = 0m,  
+                        TotalAmount = 0m,
                         TotalBooking = 0,
-                        TotalImportFee = 0m  
+                        TotalImportFee = 0m
                     })
                     .ToList();
 
@@ -177,7 +206,7 @@ namespace Application.Handler.Statistics
                     .Select(m => new StatisticResult
                     {
                         Date = $"Tháng {m:D2}",
-                        TotalAmount = 0m, 
+                        TotalAmount = 0m,
                         TotalBooking = 0,
                         TotalImportFee = totalImportFees.FirstOrDefault(x => x.Month == m)?.TotalImportFee ?? 0m  // Ensure this is decimal
                     })
@@ -204,7 +233,7 @@ namespace Application.Handler.Statistics
                         match.TotalImportFee = monthIncome.TotalImportFee;
                     }
                 }
-                
+
                 return Result<IEnumerable<StatisticResult>>.Success(defaultIncomeByMonth);
             }
 

@@ -32,6 +32,7 @@ namespace Persistence
         public DbSet<ProductLog> ProductLogs { get; set; }
         public DbSet<NewsLog> NewsLogs { get; set; }
         public DbSet<ServiceLog> ServiceLogs { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
