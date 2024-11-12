@@ -1,0 +1,147 @@
+using API.Extensions;
+using Application.Core;
+using Application.DTOs;
+using Application.Handler.Products;
+using AutoMapper;
+using Domain.Entity;
+using Domain.Enum;
+using FluentAssertions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Moq;
+using NUnit.Framework;
+using Persistence;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Pccm.UnitTest.Products
+{
+    public class EditProductHandlerTests
+    {
+        private readonly IMediator Mediator;
+
+        public EditProductHandlerTests()
+        {
+            var builder = Host.CreateEmptyApplicationBuilder(new());
+            builder.Configuration.AddJsonFile("appsettings.json");
+            builder.Services.AddApplicationService(builder.Configuration);
+
+            var host = builder.Build();
+            Mediator = host.Services.GetRequiredService<IMediator>();
+        }
+
+
+        [TestCase(1, 1, 1, "Premium Product", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = true)]
+        public async Task<bool> Handle_EditProduct_WhenValid(
+             int id,
+         int CategoryId,
+         int CourtClusterId,
+         string ProductName,
+         string Description,
+         int Quantity,
+         decimal PriceSell,
+         decimal ImportFee,
+         string ThumbnailUrl)
+        {
+            try
+            {
+                var productInputDto = new ProductInputDto
+                {
+                    CategoryId = CategoryId,
+                    CourtClusterId = CourtClusterId,
+                    ProductName = ProductName,
+                    Description = Description,
+                    Quantity = Quantity,
+                    PriceSell = PriceSell,
+                    ImportFee = ImportFee,
+                    ThumbnailUrl = ThumbnailUrl
+                };
+
+                var result = await Mediator.Send(new Edit.Command { product = productInputDto, Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+
+        [TestCase(1, 100, 1, "Premium Product", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
+        public async Task<bool> Handle_EditProduct_WhenNotExistCategory(
+            int id,
+            int CategoryId,
+            int CourtClusterId,
+            string ProductName,
+            string Description,
+            int Quantity,
+            decimal PriceSell,
+            decimal ImportFee,
+            string ThumbnailUrl)
+        {
+            try
+            {
+                var productInputDto = new ProductInputDto
+                {
+                    CategoryId = CategoryId,
+                    CourtClusterId = CourtClusterId,
+                    ProductName = ProductName,
+                    Description = Description,
+                    Quantity = Quantity,
+                    PriceSell = PriceSell,
+                    ImportFee = ImportFee,
+                    ThumbnailUrl = ThumbnailUrl
+                };
+
+                var result = await Mediator.Send(new Edit.Command { product = productInputDto, Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [TestCase(1, 1, 100, "Premium Product", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
+        public async Task<bool> Handle_EditProduct_WhenNotExistCourtCluster(
+           int id,
+           int CategoryId,
+           int CourtClusterId,
+           string ProductName,
+           string Description,
+           int Quantity,
+           decimal PriceSell,
+           decimal ImportFee,
+           string ThumbnailUrl)
+        {
+            try
+            {
+                var productInputDto = new ProductInputDto
+                {
+                    CategoryId = CategoryId,
+                    CourtClusterId = CourtClusterId,
+                    ProductName = ProductName,
+                    Description = Description,
+                    Quantity = Quantity,
+                    PriceSell = PriceSell,
+                    ImportFee = ImportFee,
+                    ThumbnailUrl = ThumbnailUrl
+                };
+
+                var result = await Mediator.Send(new Edit.Command { product = productInputDto, Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+    }
+}

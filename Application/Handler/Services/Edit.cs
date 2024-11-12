@@ -13,7 +13,7 @@ namespace Application.Handler.Services
     {
         public class Command : IRequest<Result<ServiceDto>>
         {
-            public ServiceDto Service { get; set; }
+            public ServiceInputDto Service { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {

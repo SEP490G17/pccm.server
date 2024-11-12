@@ -19,6 +19,7 @@ namespace Application.Handler.Products
         {
             public ProductInputDto product { get; set; }
             public int Id { get; set; }
+            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -27,12 +28,10 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IUserAccessor userAccessor) : IRequestHandler<Command, Result<ProductDto>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDto>>
         {
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = userAccessor.GetUserName();
-
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
 
@@ -46,7 +45,7 @@ namespace Application.Handler.Products
                 var productLog = mapper.Map<ProductLog>(productToUpdate);
                 productLog.Id = 0; 
                 productLog.ProductId = productToUpdate.Id;
-                productLog.CreatedBy = userName;
+                productLog.CreatedBy = request.userName;
                 productLog.CreatedAt = vietnamTime;
                 productLog.Description = "The price of the product has been changed from " + productToUpdate.Price + " to " + request.product.PriceSell;
                 productLog.LogType = LogType.Update;
@@ -56,7 +55,7 @@ namespace Application.Handler.Products
 
                 mapper.Map(request.product, productToUpdate);
                 productToUpdate.UpdatedAt = vietnamTime;
-                productToUpdate.UpdatedBy = userName;
+                productToUpdate.UpdatedBy = request.userName;
 
                 repo.Update(productToUpdate);
                 var result = await unitOfWork.Complete() > 0;
