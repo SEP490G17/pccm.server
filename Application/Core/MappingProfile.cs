@@ -35,7 +35,12 @@ namespace Application.Core
             CreateMap<Service, Service>()
             .ForMember(s => s.UpdatedAt, o => o.MapFrom(s => (DateTime?)null))
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
-            CreateMap<ServiceInputDto, Service>();
+            CreateMap<ServiceInputDto, Service>()
+              .ForMember(dest => dest.CourtClusterId, 
+               opt => opt.MapFrom(src => src.CourtClusterId != null && src.CourtClusterId.Any() 
+                                        ? (int?)src.CourtClusterId.First() 
+                                        : null));
+            CreateMap<Service, ServiceInputDto>();
             CreateMap<ServiceDto, Service>();
 
             CreateMap<Court, CourtDto>()

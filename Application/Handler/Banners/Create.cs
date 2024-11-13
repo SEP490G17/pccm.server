@@ -20,6 +20,7 @@ namespace Application.Handler.Banners
         public class Command : IRequest<Result<BannerInputDto>>
         {
             public BannerInputDto Banner { get; set; }
+            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -31,27 +32,22 @@ namespace Application.Handler.Banners
         public class Handler : IRequestHandler<Command, Result<BannerInputDto>>
         {
             private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IUserAccessor userAccessor, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper)
             {
-                _userAccessor = userAccessor;
                 _mapper = mapper;
                 _context = context;
             }
             public async Task<Result<BannerInputDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = _userAccessor.GetUserName();
                 if (request.Banner == null)
                 {
                     return Result<BannerInputDto>.Failure("Banner data is required.");
                 }
 
                 var banner = _mapper.Map<Banner>(request.Banner);
-                if (!string.IsNullOrEmpty(userName))
-                {
-                    banner.CreatedBy = userName;
-                }
+
+                banner.CreatedBy = request.userName;
 
                 await _context.Banners.AddAsync(banner, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -65,8 +61,8 @@ namespace Application.Handler.Banners
                 }
 
                 bannerLog.Id = 0;
-                bannerLog.BannerId = banner.Id; 
-                bannerLog.CreatedBy = userName;
+                bannerLog.BannerId = banner.Id;
+                bannerLog.CreatedBy = request.userName;
                 bannerLog.Description = "Banner created successfully";
                 bannerLog.LogType = LogType.Create;
 

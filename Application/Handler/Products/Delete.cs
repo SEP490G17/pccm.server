@@ -14,31 +14,24 @@ namespace Application.Handler.Products
         public class Command : IRequest<Result<Unit>>
         {
             public int Id { get; set; }
+              public string userName { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IUserAccessor userAccessor,IMapper mapper)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _context = context;
-                _userAccessor = userAccessor;
                 _mapper = mapper;
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = _userAccessor.GetUserName();
-
                 var deleteProduct = await _context.Products.FindAsync(request.Id);
                 if (deleteProduct is null) return null;
-
-                if (userName != null)
-                {
-                    deleteProduct.DeletedBy = userName;
-                }
+     
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
                 deleteProduct.DeletedAt = vietnamTime;
@@ -51,7 +44,7 @@ namespace Application.Handler.Products
 
                 productLog.Id = 0;
                 productLog.ProductId = deleteProduct.Id;
-                productLog.CreatedBy = userName;
+                productLog.CreatedBy = request.userName;
                 productLog.CreatedAt = vietnamTime;
                 productLog.Description = "Product has been deleted";
                 productLog.LogType = LogType.Delete;
