@@ -83,7 +83,7 @@ namespace Application.Core
             .ForMember(p => p.ProductName, o => o.MapFrom(st => st.ProductName))
             .ForMember(p => p.Description, o => o.MapFrom(st => st.Description))
             .ForMember(p => p.ThumbnailUrl, o => o.MapFrom(st => st.ThumbnailUrl))
-            .ForMember(p => p.Price, o => o.MapFrom(st => st.PriceSell))
+            .ForMember(p => p.Price, o => o.MapFrom(st => st.Price))
             .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
             .ForMember(p => p.CreatedAt, o => o.Ignore());
 

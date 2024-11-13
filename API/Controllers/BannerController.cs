@@ -22,7 +22,7 @@ namespace API.Controllers
             7. UnitOfWork
         */
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();

@@ -17,7 +17,7 @@ namespace Application.DTOs
         public int Quantity { get; set; }  // Số lượng sản phẩm có sẵn
         [Required]
         [Range(1, double.MaxValue)]
-        public decimal PriceSell { get; set; } // Giá bán sản phẩm
+        public decimal Price { get; set; } // Giá bán sản phẩm
         [Required]
         [Range(1, double.MaxValue)]
         public decimal ImportFee { get; set; }  // Giá nhập sản phẩm

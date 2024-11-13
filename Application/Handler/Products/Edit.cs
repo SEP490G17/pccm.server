@@ -48,7 +48,7 @@ namespace Application.Handler.Products
                 productLog.ProductId = productToUpdate.Id;
                 productLog.CreatedBy = userName;
                 productLog.CreatedAt = vietnamTime;
-                productLog.Description = "The price of the product has been changed from " + productToUpdate.Price + " to " + request.product.PriceSell;
+                productLog.Description = "The price of the product has been changed from " + productToUpdate.Price + " to " + request.product.Price;
                 productLog.LogType = LogType.Update;
 
                 var logRepo = unitOfWork.Repository<ProductLog>();
