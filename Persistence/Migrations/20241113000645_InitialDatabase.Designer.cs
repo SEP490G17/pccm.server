@@ -12,8 +12,8 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241111170007_PaymentFix")]
-    partial class PaymentFix
+    [Migration("20241113000645_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -309,7 +309,7 @@ namespace Persistence.Migrations
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(10, 2)");
 
-                    b.Property<DateTime?>("UtilTime")
+                    b.Property<DateTime?>("UntilTime")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
@@ -469,6 +469,35 @@ namespace Persistence.Migrations
                     b.HasIndex("CourtId");
 
                     b.ToTable("CourtPrices");
+                });
+
+            modelBuilder.Entity("Domain.Entity.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CourtClusterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpenseAt")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExpenseName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourtClusterId");
+
+                    b.ToTable("Expenses");
                 });
 
             modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
@@ -693,19 +722,19 @@ namespace Persistence.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("BookingId")
+                    b.Property<int?>("BookingId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("PaymentMethod")
+                    b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentUrl")
@@ -1296,6 +1325,15 @@ namespace Persistence.Migrations
                     b.Navigation("Court");
                 });
 
+            modelBuilder.Entity("Domain.Entity.Expense", b =>
+                {
+                    b.HasOne("Domain.Entity.CourtCluster", "CourtCluster")
+                        .WithMany()
+                        .HasForeignKey("CourtClusterId");
+
+                    b.Navigation("CourtCluster");
+                });
+
             modelBuilder.Entity("Domain.Entity.NewsBlog", b =>
                 {
                     b.HasOne("Domain.AppUser", "Creator")
@@ -1374,15 +1412,11 @@ namespace Persistence.Migrations
                 {
                     b.HasOne("Domain.Entity.Booking", "Booking")
                         .WithOne("Payment")
-                        .HasForeignKey("Domain.Entity.Payment", "BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Domain.Entity.Payment", "BookingId");
 
                     b.HasOne("Domain.Entity.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("Domain.Entity.Payment", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Domain.Entity.Payment", "OrderId");
 
                     b.Navigation("Booking");
 

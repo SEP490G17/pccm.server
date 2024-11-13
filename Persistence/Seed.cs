@@ -66,19 +66,21 @@ namespace Persistence
         var courtClustersData = File.ReadAllText("../Persistence/SeedData/courtCluster.json");
         var CourtClusters = JsonSerializer.Deserialize<List<CourtCluster>>(courtClustersData);
         var adminId = await userManager.FindByNameAsync("adminstrator");
-        CourtClusters.ForEach(c => c.OwnerId = adminId.Id);
-        await context.CourtClusters.AddRangeAsync(CourtClusters);
-      }
-      if (!context.Courts.Any())
-      {
+
         var courtsData = File.ReadAllText("../Persistence/SeedData/courts.json");
         var courts = JsonSerializer.Deserialize<List<Court>>(courtsData);
 
         var courtPrice = File.ReadAllText("../Persistence/SeedData/courtPrice.json");
         var courtPrices = JsonSerializer.Deserialize<List<CourtPrice>>(courtPrice);
 
-        var courtClusters = context.CourtClusters.Take(10).ToList();
-        courtClusters.ForEach(c => c.Courts = courts.ToList());
+
+
+        CourtClusters.ForEach(c => { c.OwnerId = adminId.Id; c.Courts = courts.ToList();});
+        await context.CourtClusters.AddRangeAsync(CourtClusters);
+      }
+      if (!context.Courts.Any())
+      {
+
       }
       if (!context.Services.Any())
       {
