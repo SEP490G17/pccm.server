@@ -78,11 +78,11 @@ namespace Application.Handler.Statistics
                                      .Where(b => b.Id == od.Order.BookingId &&
                                                   b.Court.CourtClusterId == request.CourtClusterId &&
                                                   b.Status == BookingStatus.Confirmed &&
-                                                  b.PaymentStatus == PaymentStatus.Paid)
+                                                  b.Payment.Status == PaymentStatus.Success)
                                      .Any() &&
                                  od.Order.CreatedAt.Date == request.Date.Date)
-                    .GroupBy(od => od.Product.ProductName)
-                    .Select(g => new OrderProductDetailDto
+                    .GroupBy(od => od.Service.ServiceName)
+                    .Select(g => new OrderServiceDetailDto
                     {
                         ServiceName = g.Key,
                         Quantity = g.Sum(od => od.Quantity),
