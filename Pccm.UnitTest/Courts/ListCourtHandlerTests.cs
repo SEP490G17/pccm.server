@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Courts
         }
 
 
-       
+
         [TestCase(0, 5, ExpectedResult = 4)]
         public async Task<int?> Handle_ShouldListCout_WhenValid(int skip, int pageSize)
         {
@@ -40,5 +40,23 @@ namespace Pccm.UnitTest.Courts
 
             return response.Value.Data.Count();
         }
+
+        [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListCout_WhenSearch(int skip, int pageSize)
+        {
+            if (this.Mediator is null) return null;
+            var response = await this.Mediator.Send(new Application.Handler.Courts.List.Query()
+            {
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
+                {
+                    Search = "Sân 3",
+                    Skip = 0,
+                    PageSize = 5
+                }
+            });
+
+            return response.Value.Data.Count();
+        }
+
     }
 }

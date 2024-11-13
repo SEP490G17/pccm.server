@@ -11,15 +11,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Handler.Orders;
+using Application.Handler.Banners;
 
-namespace Pccm.UnitTest.Orders
+
+namespace Pccm.UnitTest.Banners
 {
-    public class DeleteOrderHandlerTests
+    public class DeleteBannerHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteOrderHandlerTests()
+        public DeleteBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -30,8 +31,8 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteOrder_WhenValid(
+        [TestCase(200, ExpectedResult = false)]
+        public async Task<bool> Handle_DeleteBanner_WhenNotExistId(
             int id)
         {
             try
@@ -42,14 +43,13 @@ namespace Pccm.UnitTest.Orders
             }
             catch (Exception ex)
             {
-                // Log or inspect the exception as needed
                 return false;
             }
         }
 
-        [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteOrder_WhenIdNotExist(
-        int id)
+        [TestCase(4, ExpectedResult = true)]
+        public async Task<bool> Handle_DeleteService_WhenExistBanner(
+           int id)
         {
             try
             {

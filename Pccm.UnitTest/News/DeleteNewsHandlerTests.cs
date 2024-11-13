@@ -17,7 +17,7 @@ namespace Pccm.UnitTest.News
 {
     public class DeleteNewsHandlerTests
     {
-          private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
         public DeleteNewsHandlerTests()
         {
@@ -43,6 +43,23 @@ namespace Pccm.UnitTest.News
             catch (Exception ex)
             {
                 // Log or inspect the exception as needed
+                return false;
+            }
+        }
+
+
+        [TestCase(122, ExpectedResult = false)]
+        public async Task<bool> Handle_DeleteNewsBlog_WhenIdNotExist(
+            int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
                 return false;
             }
         }

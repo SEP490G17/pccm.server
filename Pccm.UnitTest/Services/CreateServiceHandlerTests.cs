@@ -21,11 +21,11 @@ using Application.Handler.Services;
 namespace Pccm.UnitTest.Services
 {
     [TestFixture]
-    public class CreateServiceHandlerTests
+    public class CreateBannerHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public CreateServiceHandlerTests()
+        public CreateBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");

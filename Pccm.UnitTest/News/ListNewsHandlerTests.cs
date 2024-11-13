@@ -1,4 +1,4 @@
-using Application.SpecParams.ProductSpecification;
+﻿using Application.SpecParams.ProductSpecification;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +32,23 @@ namespace Pccm.UnitTest.News
                 BaseSpecParam = new BaseSpecParam()
                 {
                     Search = "",
+                    Skip = 0,
+                    PageSize = 5
+                }
+            });
+
+            return response.Value.Data.Count();
+        }
+
+        [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListNewsBlog_WhenSearchByName(int skip, int pageSize)
+        {
+            if (this.Mediator is null) return null;
+            var response = await this.Mediator.Send(new Application.Handler.News.List.Query()
+            {
+                BaseSpecParam = new BaseSpecParam()
+                {
+                    Search = "Giải đấu Pickleball nữ",
                     Skip = 0,
                     PageSize = 5
                 }

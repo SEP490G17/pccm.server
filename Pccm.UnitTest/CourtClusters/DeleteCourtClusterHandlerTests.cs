@@ -11,15 +11,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Handler.Orders;
+using Application.Handler.CourtClusters;
 
-namespace Pccm.UnitTest.Orders
+
+namespace Pccm.UnitTest.CourtClusters
 {
-    public class DeleteOrderHandlerTests
+    public class DeleteCourtClusterHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteOrderHandlerTests()
+        public DeleteCourtClusterHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -30,8 +31,8 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteOrder_WhenValid(
+        [TestCase(200, ExpectedResult = false)]
+        public async Task<bool> Handle_DeleteCourtCluster_WhenNotExistCourtCluster(
             int id)
         {
             try
@@ -42,14 +43,13 @@ namespace Pccm.UnitTest.Orders
             }
             catch (Exception ex)
             {
-                // Log or inspect the exception as needed
                 return false;
             }
         }
 
-        [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteOrder_WhenIdNotExist(
-        int id)
+        [TestCase(5, ExpectedResult = true)]
+        public async Task<bool> Handle_DeleteCourtCluster_WhenExistCourtCluster(
+           int id)
         {
             try
             {

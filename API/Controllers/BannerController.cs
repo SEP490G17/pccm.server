@@ -21,6 +21,7 @@ namespace API.Controllers
             6. SpecificationEvaluator
             7. UnitOfWork
         */
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
@@ -50,22 +51,37 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner }, ct));
+            string userName = userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner, userName = userName }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
+            string userName = userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
             updatedBanner.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner }));
+            return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner, userName = userName }));
         }
 
         [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBanner(int id)
         {
-            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+            string userName = userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
         }
 
         [AllowAnonymous]

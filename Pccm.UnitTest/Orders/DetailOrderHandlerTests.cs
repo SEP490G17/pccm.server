@@ -13,7 +13,7 @@ namespace Pccm.UnitTest.Orders
 {
     public class DetailOrderHandlerTests
     {
-            private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
         public DetailOrderHandlerTests()
         {
@@ -29,6 +29,22 @@ namespace Pccm.UnitTest.Orders
         [TestCase(7, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailOrder_WhenValidId(
             int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [TestCase(117, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDetailOrder_WhenIdNotExist(
+           int id)
         {
             try
             {

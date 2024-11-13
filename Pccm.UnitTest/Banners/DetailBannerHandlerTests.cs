@@ -1,25 +1,21 @@
-using MediatR;
-using NUnit.Framework;
-using Persistence;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Application.Core;
-using Domain.Entity;
-using Moq;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using API.Extensions;
+using Application.Handler.Banners;
+using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Handler.Orders;
+using Microsoft.Extensions.Hosting;
 
-namespace Pccm.UnitTest.Orders
+namespace Pccm.UnitTest.Banners
 {
-    public class DeleteOrderHandlerTests
+    public class DetailBannerHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteOrderHandlerTests()
+        public DetailBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -30,30 +26,29 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteOrder_WhenValid(
+        [TestCase(4, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDetailBanner_WhenValidId(
             int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new Details.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }
             catch (Exception ex)
             {
-                // Log or inspect the exception as needed
                 return false;
             }
         }
 
-        [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteOrder_WhenIdNotExist(
-        int id)
+        [TestCase(130, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDetailBanner_WhenNotExistId(
+           int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new Details.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }

@@ -6,13 +6,13 @@ using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using Application.SpecParams;
 
-namespace Pccm.UnitTest.Services
+namespace Pccm.UnitTest.CourtClusters
 {
-    public class ListBannerHandlerTests
+    public class ListCourtClusterHandlerTests
     {
         public readonly IMediator Mediator;
 
-        public ListBannerHandlerTests()
+        public ListCourtClusterHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -24,13 +24,13 @@ namespace Pccm.UnitTest.Services
 
 
 
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenValid(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = 5)]
+        public async Task<int?> Handle_ShouldListCoutCluster_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.CourtClusters.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
                     Search = "",
                     Skip = 0,
@@ -42,14 +42,14 @@ namespace Pccm.UnitTest.Services
         }
 
         [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenSearchByName(int skip, int pageSize)
+        public async Task<int?> Handle_ShouldListCoutCluster_WhenSearchByCourtClusterName(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.CourtClusters.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
-                    Search = "Cho thuê vợt pickleball",
+                    Search = "Cụm Sân 4",
                     Skip = 0,
                     PageSize = 5
                 }
@@ -57,5 +57,6 @@ namespace Pccm.UnitTest.Services
 
             return response.Value.Data.Count();
         }
+
     }
 }

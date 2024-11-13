@@ -13,7 +13,7 @@ namespace Pccm.UnitTest.News
 {
     public class DetailNewsHandlerTests
     {
-            private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
         public DetailNewsHandlerTests()
         {
@@ -29,6 +29,22 @@ namespace Pccm.UnitTest.News
         [TestCase(5, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailNewsBlog_WhenValidId(
             int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        [TestCase(115, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDetailNewsBlog_WhenNotExistNews(
+           int id)
         {
             try
             {

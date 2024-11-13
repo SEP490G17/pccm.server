@@ -1,4 +1,4 @@
-﻿using Application.SpecParams.ProductSpecification;
+using Application.SpecParams.ProductSpecification;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using Application.SpecParams;
 
-namespace Pccm.UnitTest.Services
+namespace Pccm.UnitTest.Banners
 {
     public class ListBannerHandlerTests
     {
@@ -24,11 +24,11 @@ namespace Pccm.UnitTest.Services
 
 
 
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenValid(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = 5)]
+        public async Task<int?> Handle_ShouldListBanner_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Banners.List.Query()
             {
                 BaseSpecParam = new BaseSpecWithFilterParam()
                 {
@@ -42,14 +42,14 @@ namespace Pccm.UnitTest.Services
         }
 
         [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenSearchByName(int skip, int pageSize)
+        public async Task<int?> Handle_ShouldListBanner_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Banners.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecParam = new BaseSpecParam()
                 {
-                    Search = "Cho thuê vợt pickleball",
+                    Search = "Banner 5",
                     Skip = 0,
                     PageSize = 5
                 }

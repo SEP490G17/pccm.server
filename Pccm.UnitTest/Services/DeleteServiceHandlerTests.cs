@@ -16,11 +16,11 @@ using Application.Handler.Services;
 
 namespace Pccm.UnitTest.Services
 {
-    public class DeleteServiceHandlerTests
+    public class DeleteBannerHandlerTests
     {
           private readonly IMediator Mediator;
 
-        public DeleteServiceHandlerTests()
+        public DeleteBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");

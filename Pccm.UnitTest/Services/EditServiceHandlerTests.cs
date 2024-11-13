@@ -19,11 +19,11 @@ using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Services
 {
-    public class EditServiceHandlerTests
+    public class EditBannerHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public EditServiceHandlerTests()
+        public EditBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");

@@ -15,6 +15,7 @@ namespace Application.Handler.Banners
         public class Command : IRequest<Result<BannerInputDto>>
         {
             public BannerInputDto Banner { get; set; }
+            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -28,19 +29,15 @@ namespace Application.Handler.Banners
 
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            private readonly IUserAccessor _userAccessor;
 
-            public Handler(DataContext context, IUserAccessor userAccessor, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _mapper = mapper;
                 _context = context;
-                _userAccessor = userAccessor;
 
             }
             public async Task<Result<BannerInputDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = _userAccessor.GetUserName();
-
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
 
@@ -56,7 +53,7 @@ namespace Application.Handler.Banners
 
                 bannerLog.Id = 0;
                 bannerLog.BannerId = banner.Id;
-                bannerLog.CreatedBy = userName;
+                bannerLog.CreatedBy = request.userName;
                 bannerLog.Description = "Banner has been updated successfully";
                 bannerLog.CreatedAt = vietnamTime;
                 bannerLog.LogType = LogType.Update;
@@ -67,10 +64,7 @@ namespace Application.Handler.Banners
 
                 _mapper.Map(request.Banner, banner);
 
-                if (userName != null)
-                {
-                    banner.UpdatedBy = userName;
-                }
+                banner.UpdatedBy = request.userName;
 
                 banner.UpdatedAt = vietnamTime;
 
