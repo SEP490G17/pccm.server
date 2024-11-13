@@ -20,9 +20,9 @@ namespace API.Controllers
         [AllowAnonymous]
         [HttpGet("{id}")]
 
-        public async Task<IActionResult> GetReview(int id, CancellationToken ct)
+        public async Task<IActionResult> GetReviewByCourtClusterId(int id, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
+            return HandleResult(await Mediator.Send(new ListCourtCluster.Query() { Id = id }, ct));
         }
 
         [AllowAnonymous]
