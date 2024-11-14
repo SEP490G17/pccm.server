@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Handler.Products;
+using Application.Interfaces;
 using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +9,10 @@ namespace API.Controllers
 {
     public class ProductController : BaseApiController
     {
-        public ProductController()
+        private readonly IUserAccessor _userAccessor;
+        public ProductController(IUserAccessor userAccessor)
         {
+            _userAccessor = userAccessor;
         }
 
         [AllowAnonymous]
@@ -22,7 +25,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProducts([FromRoute] Details.Query query , CancellationToken ct)
+        public async Task<IActionResult> GetProducts([FromRoute] Details.Query query, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(query, ct));
 
@@ -32,21 +35,36 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> PostProduct([FromBody] ProductInputDto product, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Create.Command() { product = product }, ct));
+            string userName = _userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                 return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Create.Command() { product = product, userName = userName }, ct));
         }
 
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute]int id, ProductInputDto updatedProduct, CancellationToken ct)
+        public async Task<IActionResult> UpdateProduct([FromRoute] int id, ProductInputDto updatedProduct, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id }, ct));
+            string userName = _userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                 return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id, userName = userName }, ct));
         }
 
         [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+            string userName = _userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                 return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
         }
     }
 }

@@ -41,7 +41,6 @@ namespace Application.DTOs
             public string[] Images { get; set; }
             public List<ServiceDto> Services { get; set; } = new List<ServiceDto>();
             public List<ProductDto> Products { get; set; } = new List<ProductDto>();
-            public List<ReviewDto> Reviews { get; set; } = new List<ReviewDto>();
 
         }
 

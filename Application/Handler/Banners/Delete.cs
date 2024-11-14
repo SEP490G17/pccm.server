@@ -13,30 +13,24 @@ namespace Application.Handler.Banners
         public class Command : IRequest<Result<Unit>>
         {
             public int Id { get; set; }
+            public string userName { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IUserAccessor userAccessor, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _context = context;
-                _userAccessor = userAccessor;
                 _mapper = mapper;
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = _userAccessor.GetUserName();
                 var banner = await _context.Banners.FindAsync(request.Id);
                 if (banner is null) return null;
-
-                if (userName != null)
-                {
-                    banner.DeletedBy = userName;
-                }
+                banner.DeletedBy = request.userName;
 
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
@@ -50,7 +44,7 @@ namespace Application.Handler.Banners
 
                 bannerLog.Id = 0;
                 bannerLog.BannerId = banner.Id;
-                bannerLog.CreatedBy = userName;
+                bannerLog.CreatedBy = request.userName;
                 bannerLog.CreatedAt = vietnamTime;
                 bannerLog.Description = "Banner has been successfully removed";
                 bannerLog.LogType = LogType.Delete;

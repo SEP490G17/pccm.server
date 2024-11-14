@@ -17,6 +17,7 @@ namespace Application.Handler.Products
         public class Command : IRequest<Result<ProductDto>>
         {
             public ProductInputDto product { get; set; }
+            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -28,17 +29,15 @@ namespace Application.Handler.Products
         public class Handler : IRequestHandler<Command, Result<ProductDto>>
         {
             private readonly DataContext _context;
-            private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _mapper = mapper;
                 this._context = context;
-                this._userAccessor = userAccessor;
             }
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                string userName = _userAccessor.GetUserName();
+                
                 if (request.product == null)
                 {
                     return Result<ProductDto>.Failure("Product data is required.");
@@ -50,11 +49,7 @@ namespace Application.Handler.Products
                 var courtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == product.CourtClusterId);
                 product.Category = category;
                 product.CourtCluster = courtCluster;
-
-                if (!string.IsNullOrEmpty(userName))
-                {
-                    product.CreatedBy = userName;
-                }
+          
                 // Thêm product vào database
                 await _context.AddAsync(product, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -66,7 +61,7 @@ namespace Application.Handler.Products
                 productLog.CategoryId = product.CategoryId;
                 productLog.CourtClusterId = product.CourtClusterId;
                 productLog.ProductId = product.Id;
-                productLog.CreatedBy = userName;
+                productLog.CreatedBy = request.userName;
                 productLog.Description = product.Quantity + " products imported";
                 productLog.LogType = LogType.Create;
 
