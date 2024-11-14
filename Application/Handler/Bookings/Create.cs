@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Bookings
@@ -35,6 +36,7 @@ namespace Application.Handler.Bookings
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var booking = _mapper.Map<Booking>(request.Booking);
+                booking.Court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == request.Booking.CourtId);
                 booking.AcceptedAt = DateTime.Now;
               
                 await _context.AddAsync(booking, cancellationToken);

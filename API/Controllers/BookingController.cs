@@ -60,7 +60,7 @@ namespace API.Controllers
         }
 
         [HttpGet("v1/{id}")]
-         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
+        public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, ct));
         }
@@ -99,6 +99,13 @@ namespace API.Controllers
         public async Task<IActionResult> CreateBookingForAdmin([FromBody] BookingInputDto bookingInput, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new StaffCreate.Command() { Booking = bookingInput }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("priceCourt")]
+        public async Task<IActionResult> GetListPriceCourtByCourtClusterId([FromQuery] int courtClusterId, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetCourtPrice.Query() { Id = courtClusterId }, ct));
         }
 
     }
