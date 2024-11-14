@@ -16,7 +16,8 @@ namespace Application.Core
             CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<BookingInputDto, Booking>();
-
+            CreateMap<AppUser, ProfileInputDto>();
+            CreateMap<ProfileInputDto, AppUser>();
             CreateMap<Booking, BookingDtoV2>()
                .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName))
                .ForMember(dest => dest.PlayTime,
