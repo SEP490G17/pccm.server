@@ -69,4 +69,17 @@ namespace API.Helper
         }
     }
 
+    public static class TimeExtensions
+    {
+        public static string To24HourFormat(this string time)
+        {
+            if (DateTime.TryParseExact(time, "h:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime))
+            {
+                return dateTime.ToString("HH:mm");
+            }
+            return time;
+        }
+    }
+
+
 }

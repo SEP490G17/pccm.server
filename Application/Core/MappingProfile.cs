@@ -67,9 +67,9 @@ namespace Application.Core
             .ForMember(s => s.UpdatedAt, o => o.MapFrom(s => (DateTime?)null))
                 .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDto, Service>()
-              .ForMember(dest => dest.CourtClusterId, 
-               opt => opt.MapFrom(src => src.CourtClusterId != null && src.CourtClusterId.Any() 
-                                        ? (int?)src.CourtClusterId.First() 
+              .ForMember(dest => dest.CourtClusterId,
+               opt => opt.MapFrom(src => src.CourtClusterId != null && src.CourtClusterId.Any()
+                                        ? (int?)src.CourtClusterId.First()
                                         : null));
             CreateMap<Service, ServiceInputDto>();
             CreateMap<ServiceDto, Service>();
@@ -165,6 +165,11 @@ namespace Application.Core
             CreateMap<Expense, ExpenseDto>();
             CreateMap<Expense, ExpenseDetailDto>();
             CreateMap<ExpenseDto, Expense>();
+
+            CreateMap<CourtPrice, PriceCourtDto>()
+            .ForMember(c => c.CourtName, o => o.MapFrom(s => s.Court.CourtName))
+            .ForMember(c => c.CourtId, o => o.MapFrom(s => s.Court.Id))
+            .ForMember(c => c.Time, o => o.MapFrom(s => $"{s.FromTime.ToString("HH:mm")} - {s.ToTime.ToString("HH:mm")}"));
         }
 
     }
