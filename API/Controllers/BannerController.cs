@@ -2,8 +2,6 @@ using Application.DTOs;
 using Application.Handler.Banners;
 using Application.Interfaces;
 using Application.SpecParams;
-using Domain.Entity;
-using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

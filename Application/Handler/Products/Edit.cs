@@ -8,8 +8,6 @@ using Domain.Enum;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Persistence;
-using System.Reflection;
 
 namespace Application.Handler.Products
 {

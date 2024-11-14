@@ -3,15 +3,12 @@ using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain;
 using Domain.Entity;
 using Domain.Enum;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using System.Security.Claims;
 
 namespace Application.Handler.Banners
 {

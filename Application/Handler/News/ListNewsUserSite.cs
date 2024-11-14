@@ -2,7 +2,6 @@ using Application.Core;
 using MediatR;
 using Application.DTOs;
 using AutoMapper;
-using Domain.Entity;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Persistence;

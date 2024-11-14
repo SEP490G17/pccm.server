@@ -10,12 +10,12 @@ namespace Application.SpecParams.BookingSpecification
                 x.AppUser.UserName.ToLower().Contains(baseSpecParam.Search)
             ))
             && (baseSpecParam.Filter == null ||
-                x.StatusName.Equals(baseSpecParam.Filter)
+                (int)x.Status == baseSpecParam.Filter
             )
         )
         {
             ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);
-
+            AddOrderByDescending(x=>x.CreatedAt);
         }
     }
 }

@@ -1,10 +1,6 @@
-using System.Data;
 using Application.Core;
-using Application.DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using ClosedXML.Excel;
-using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

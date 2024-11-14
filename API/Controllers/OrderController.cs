@@ -23,6 +23,13 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost("v1")]
+        public async Task<IActionResult> CreateOrderV1([FromBody] OrderCreateV1.Command command, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(command, ct));
+        }
+
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, OrderInputDto orderInput)
         {

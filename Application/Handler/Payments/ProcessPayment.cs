@@ -1,10 +1,7 @@
 ﻿using Application.Core;
-using Application.DTOs;
 using Application.Interfaces;
-using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -32,7 +29,6 @@ namespace Application.Handler.Payments
 
             public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, request.Amount, request.Type);
 
                 if ((int)request.Type == (int)PaymentType.Booking)
                 {
@@ -41,6 +37,8 @@ namespace Application.Handler.Payments
                     {
                         return Result<string>.Failure("Booking not found.");
                     }
+                    var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, booking.TotalPrice, request.Type);
+
                     if (booking.Payment == null)
                     {
                         booking.Payment = new Payment()
@@ -57,6 +55,9 @@ namespace Application.Handler.Payments
                         booking.Payment.PaymentMethod = PaymentMethod.VNPay;
                     }
                     _context.Bookings.Update(booking);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    return Result<string>.Success(paymentUrl);
+
                 }
                 if ((int)request.Type == (int)PaymentType.Order)
                 {
@@ -65,7 +66,9 @@ namespace Application.Handler.Payments
                     {
                         return Result<string>.Failure("Order not found.");
                     }
-                    if(order.Payment == null){
+                    var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, order.TotalAmount, request.Type);
+                    if (order.Payment == null)
+                    {
                         order.Payment = new Payment()
                         {
                             Amount = order.TotalAmount,
@@ -73,17 +76,20 @@ namespace Application.Handler.Payments
                             PaymentUrl = paymentUrl,
                             Status = PaymentStatus.Pending,
                         };
-                    }else{
+                    }
+                    else
+                    {
                         order.Payment.PaymentUrl = paymentUrl;
                         order.Payment.PaymentMethod = PaymentMethod.VNPay;
                     }
                     _context.Orders.Update(order);
+                    await _context.SaveChangesAsync(cancellationToken);
                 }
                 // Generate VNPay payment URL
 
-                await _context.SaveChangesAsync(cancellationToken);
+                return Result<string>.Failure("Không đúng định dạng");
 
-                return Result<string>.Success(paymentUrl);
+
             }
         }
     }

@@ -5,7 +5,6 @@ using Domain.Entity;
 using Domain.Enum;
 using MediatR;
 using Persistence;
-using System.Reflection;
 
 namespace Application.Handler.Products
 {

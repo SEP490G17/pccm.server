@@ -1,17 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Domain.Enum;
 
 namespace Application.SpecParams.BookingSpecification
 {
-    public class BookingSpecParam:BaseSpecParam
+    public class BookingSpecParam : BaseSpecParam
     {
-        public DateTime? FromDate { get; set; }
-
-        public DateTime? ToDate { get; set;}
-        public BookingStatus BookingStatus{ get; set; } = BookingStatus.Confirmed;
-
+        public int CourtClusterId { get; set; }
+        public BookingStatus? Status { get; set; } = null;
     }
 }

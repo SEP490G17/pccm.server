@@ -16,10 +16,16 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
+        /// <summary>
+        ///  Hàm này dùng để lấy về lịch booking theo ngày, theo tuần => dùng cho lịch
+        /// </summary>
+        /// <param name="bookingSpecParam"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns> <summary>
 
         [AllowAnonymous]
         [HttpGet("v1")]
-        public async Task<IActionResult> GetBookingsV1([FromQuery] BookingSpecParam bookingSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetBookingsV1([FromQuery] BookingV1SpecParam bookingSpecParam, CancellationToken ct)
         {
             if (bookingSpecParam.FromDate == null)
             {
@@ -32,6 +38,20 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListV1.Query() { BookingSpecParam = bookingSpecParam }, ct));
         }
 
+        /// <summary>
+        ///  Hàm này dùng để lấy và trả về booking theo cụm sân
+        /// </summary>
+        /// <param name="bookingSpecParam"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet("v2")]
+        public async Task<IActionResult> GetBookingV2([FromQuery] BookingSpecParam bookingSpecParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListV2.Query() { BookingSpecParam = bookingSpecParam }, ct));
+        }
+
+
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetBooking(int id, CancellationToken ct)
@@ -39,6 +59,11 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
+        [HttpGet("v1/{id}")]
+         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, ct));
+        }
         [AllowAnonymous]
         [HttpPut("{id}/{status}")]
         public async Task<IActionResult> UpdateStatusBooking(int id, string status)
@@ -60,6 +85,13 @@ namespace API.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] BookingInputDto bookingInput, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Booking = bookingInput }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpPut("completed/{id}")]
+        public async Task<IActionResult> CompletedBooking(int id)
+        {
+            return HandleResult(await Mediator.Send(new CompletedBooking.Command() { Id = id }));
         }
 
         [AllowAnonymous]

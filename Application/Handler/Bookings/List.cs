@@ -32,9 +32,6 @@ namespace Application.Handler.Bookings
                
                 var data = await _unitOfWork.Repository<Booking>()
                     .QueryList(spec) 
-                    .Include(a => a.Court) 
-                    .Include(a=>a.AppUser)
-                    .Include(a=>a.Staff)
                     .ProjectTo<BookingDto>(_mapper.ConfigurationProvider) 
                     .ToListAsync(cancellationToken);
 

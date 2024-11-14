@@ -2,6 +2,10 @@ namespace Application.DTOs
 {
     public class Pagination<T> where T : class
     {
+        public Pagination()
+        {
+            
+        }
         public Pagination( int pageSize, int count, IReadOnlyList<T> data)
         {
             PageSize = pageSize;

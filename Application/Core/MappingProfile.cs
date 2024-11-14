@@ -16,6 +16,36 @@ namespace Application.Core
             CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<BookingInputDto, Booking>();
+
+            CreateMap<Booking, BookingDtoV2>()
+               .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName))
+               .ForMember(dest => dest.PlayTime,
+                           opt => opt.MapFrom(src => $"{src.StartTime.AddHours(7):HH:mm} - {src.EndTime.AddHours(7):HH:mm}"))
+               .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
+               .ForMember(dest => dest.EndDay,
+                           opt => opt.MapFrom(src => src.UntilTime != null ? src.UntilTime : src.EndTime))
+               .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Payment.Status))
+               .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl));
+
+
+            CreateMap<Booking, BookingDtoV2ForDetails>()
+                         .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName))
+                         .ForMember(dest => dest.PlayTime,
+                                     opt => opt.MapFrom(src => $"{src.StartTime.AddHours(7):HH:mm} - {src.EndTime.AddHours(7):HH:mm}"))
+                         .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
+                         .ForMember(dest => dest.EndDay,
+                                     opt => opt.MapFrom(src => src.UntilTime != null ? src.UntilTime : src.EndTime))
+                         .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Payment.Status))
+                         .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
+                         .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id))
+                         .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId))
+                         .ForMember(dest => dest.Address, opt =>
+                         opt.MapFrom(src => $"{src.Court.CourtCluster.Address}, {src.Court.CourtCluster.WardName}, {src.Court.CourtCluster.DistrictName}, {src.Court.CourtCluster.ProvinceName}"))
+                         ;
+
+            CreateMap<Order, OrderOfBookingDto>()
+            .ForMember(o => o.PaymentStatus, src => src.MapFrom(s => s.Payment.Status));
+
             CreateMap<Booking, BookingDtoStatistic>()
             .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.courtClusterName, o => o.MapFrom(s => s.Court.CourtCluster.CourtClusterName))

@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Domain;
-using Domain.Entity;
 
 namespace Application.DTOs
 {

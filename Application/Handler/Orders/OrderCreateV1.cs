@@ -1,0 +1,91 @@
+using Application.Core;
+using Application.DTOs;
+using AutoMapper;
+using Domain.Entity;
+using Domain.Enum;
+using FluentValidation;
+using MediatR;
+using Persistence;
+
+namespace Application.Handler.Orders
+{
+    public class OrderCreateV1
+    {
+        public class Command : IRequest<Result<OrderOfBookingDto>>
+        {
+            public int BookingId { get; set; }
+            public List<OrderForProductCreateDto> OrderForProducts { get; set; }
+            public List<OrderForServiceCreteDto> OrderForServices { get; set; }
+
+        }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x).SetValidator(new OrderValidatorV1());
+
+
+            }
+        }
+
+
+        public class Handler(DataContext _context, IMapper _mapper) : IRequestHandler<Command, Result<OrderOfBookingDto>>
+        {
+            public async Task<Result<OrderOfBookingDto>> Handle(Command request, CancellationToken cancellationToken)
+            {
+                var order = new Order();
+                decimal sum = 0;
+                var booking = _context.Bookings.FirstOrDefault(b=>b.Id == request.BookingId);
+                request.OrderForProducts.ForEach(orderItem =>
+                {
+                    var orderDetails = new OrderDetail();
+
+                    var product = _context.Products.Find(orderItem.ProductId);
+                    if (product != null)
+                    {
+                        orderDetails.Product = product;
+                        orderDetails.ProductId = product.Id;
+                        orderDetails.Price = product.Price;
+                        orderDetails.Quantity = orderItem.Quantity;
+                        order.OrderDetails.Add(orderDetails);
+                        sum += product.Price * orderItem.Quantity;
+                    }
+
+                    order.OrderDetails.Add(orderDetails);
+                });
+
+                request.OrderForServices.ForEach(orderItem =>
+               {
+                   var orderDetails = new OrderDetail();
+
+                   var service = _context.Services.Find(orderItem.ServiceId);
+                   if (service != null)
+                   {
+                       orderDetails.Service = service;
+                       orderDetails.ServiceId = service.Id;
+                       orderDetails.Price = service.Price;
+                       orderDetails.Quantity = booking.Duration/60;
+                       order.OrderDetails.Add(orderDetails);
+                       sum += service.Price * booking.Duration/60;
+                   }
+                   order.OrderDetails.Add(orderDetails);
+               });
+
+                var payment = new Payment()
+                {
+                    Amount = sum,
+                    Status = PaymentStatus.Pending,
+                };
+                order.BookingId = request.BookingId;
+                order.TotalAmount = sum;
+                order.Payment = payment;
+                await _context.AddAsync(order);
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result) return Result<OrderOfBookingDto>.Failure("Fail to create order");
+                var entity = _context.Entry(order).Entity;
+                return Result<OrderOfBookingDto>.Success(_mapper.Map<OrderOfBookingDto>(order));
+            }
+        }
+    }
+}

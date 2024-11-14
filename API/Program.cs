@@ -2,9 +2,7 @@ using System.Text.Json.Serialization;
 using API.Extensions;
 using API.Middleware;
 using Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 

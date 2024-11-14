@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
 using Application.SpecParams;
-using Application.SpecParams.CourtCountSpecification;
 using Application.SpecParams.CourtSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;

@@ -8,7 +8,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Application.Interfaces;
-using System.Reflection;
 using Domain.Enum;
 
 namespace Application.Handler.Products
