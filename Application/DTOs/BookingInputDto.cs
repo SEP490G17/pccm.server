@@ -6,7 +6,6 @@ namespace Application.DTOs
         public string FullName { get; set; } = string.Empty;
         public int CourtId { get; set; }
         public DateTime StartTime { get; set; }  // Thời gian bắt đầu đặt sân
-        public decimal TotalPrice {get; set;}
         public DateTime EndTime { get; set; }  // Thời gian kết thúc đặt sân
         public DateTime? UntilTime { get; set; } = null;
         public string RecurrenceRule { get; set; }  // Thời lượng đặt sân
