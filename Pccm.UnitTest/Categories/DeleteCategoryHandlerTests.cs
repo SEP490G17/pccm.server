@@ -1,3 +1,4 @@
+using Application.Handler.Categories;
 using MediatR;
 using NUnit.Framework;
 using Persistence;
@@ -11,16 +12,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Handler.CourtClusters;
 
-
-namespace Pccm.UnitTest.CourtClusters
+namespace Pccm.UnitTest.Categories
 {
-    public class DeleteCourtClusterHandlerTests
+    public class DeleteCategoryHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteCourtClusterHandlerTests()
+        public DeleteCategoryHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -31,8 +30,8 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-        [TestCase(200, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteCourtCluster_WhenNotExistCourtCluster(
+        [TestCase(3, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDeleteCategory_WhenValidId(
             int id)
         {
             try
@@ -47,9 +46,10 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-        [TestCase(9, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDeleteCourtCluster_WhenExistCourtCluster(
-           int id)
+
+        [TestCase(1, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeleteCategoryFail_WhenCategoryIsUsed(
+            int id)
         {
             try
             {
