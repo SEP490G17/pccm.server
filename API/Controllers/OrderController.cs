@@ -14,6 +14,12 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
+        [HttpGet("v1/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetOrderV1(int id, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new DetailV1.Query() { Id = id }, ct));
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -36,6 +42,21 @@ namespace API.Controllers
             orderInput.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));
         }
+
+        [AllowAnonymous]
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelOrder(int id, OrderInputDto orderInput)
+        {
+            orderInput.Id = id;
+            return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));
+        }
+        [AllowAnonymous]
+        [HttpPut("v1/edit")]
+        public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
+        {
+            return HandleResult(await Mediator.Send(command));
+        }
+
 
         [AllowAnonymous]
         [HttpDelete("{id}")]

@@ -6,7 +6,7 @@ namespace Application.DTOs
         public decimal Quantity { get; set; }
     }
 
-    public class OrderForServiceCreteDto
+    public class OrderForServiceCreateDto
     {
         public int ServiceId { get; set; }
     }

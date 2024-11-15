@@ -18,7 +18,6 @@ namespace Infrastructure.Payment
         public string GeneratePaymentUrl(int billPaymentId, decimal amount, PaymentType type)
         {
             var tick = DateTime.Now.ToString();
-     
             var createDate = DateTime.Now;
             var vnPay = new VnPayLibrary();
             vnPay.AddRequestData("vnp_Version", "2.1.1");
@@ -28,11 +27,11 @@ namespace Infrastructure.Payment
             vnPay.AddRequestData("vnp_CreateDate",createDate.ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_ExpireDate",createDate.AddMinutes(30).ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_CurrCode", "VND");
-            vnPay.AddRequestData("vnp_TxnRef", $"{billPaymentId}_{type}_{tick}");
+            vnPay.AddRequestData("vnp_TxnRef", $"{billPaymentId}_{(int)type}_{tick}");
          
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", $"Thanh toan don hang: {billPaymentId}");
-            vnPay.AddRequestData("vnp_OrderType", "bookingBill");
+            vnPay.AddRequestData("vnp_OrderType", $"{type.ToString()}");
             vnPay.AddRequestData("vnp_ReturnUrl", _settings.ReturnUrl);
             vnPay.AddRequestData("vnp_IpAddr", "127.0.0.1");
 

@@ -8,6 +8,8 @@ namespace Application.DTOs
         public string PhoneNumber { get; set; }
         public string FullName { get; set; }
         public string CourtName { get; set; }
+        public string CourtClusterName { get; set; }
+
         public string PlayTime { get; set; } // Thời gian bắt đầu đặt sân
         public DateTime StartDay { get; set; }
         public DateTime EndDay { get; set; }

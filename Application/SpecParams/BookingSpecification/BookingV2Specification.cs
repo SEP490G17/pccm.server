@@ -6,7 +6,7 @@ namespace Application.SpecParams.BookingSpecification
     {
         public BookingV2Specification(BookingSpecParam baseSpecParam) : base(
            x => (baseSpecParam.Status == null || (int)x.Status == (int)baseSpecParam.Status)
-         && x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
+         && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId))
         {
             AddOrderByDescending(x => x.CreatedAt);
             ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);

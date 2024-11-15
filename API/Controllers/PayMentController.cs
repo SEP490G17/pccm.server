@@ -24,9 +24,9 @@ namespace API.Controllers
         }
 
         [HttpPost("{type}/{id}/process-payment")]
-        public async Task<IActionResult> ProcessPayment(PaymentType type, int id, decimal amount, CancellationToken ct)
+        public async Task<IActionResult> ProcessPayment(PaymentType type, int id, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ProcessPayment.Command() { BillPayId = id, Amount = amount, Type = type }, ct));
+            return HandleResult(await Mediator.Send(new ProcessPayment.Command() { BillPayId = id, Type = type }, ct));
         }
 
         [HttpGet("vnpay-callback")]

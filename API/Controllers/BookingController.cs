@@ -35,6 +35,9 @@ namespace API.Controllers
             {
                 bookingSpecParam.ToDate = DateTime.Now.EndOfWeek(DayOfWeek.Sunday).ToUniversalTime();
             }
+            if(bookingSpecParam.ToDate < bookingSpecParam.FromDate){
+                return BadRequest("Thời gian tìm kiếm không hợp lệ");
+            }
             return HandleResult(await Mediator.Send(new ListV1.Query() { BookingSpecParam = bookingSpecParam }, ct));
         }
 
@@ -60,7 +63,7 @@ namespace API.Controllers
         }
 
         [HttpGet("v1/{id}")]
-         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
+        public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, ct));
         }
@@ -86,13 +89,52 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Booking = bookingInput }, ct));
         }
-
+        /// <summary>
+        ///  Dùng để xác thực 1 booking đã được hoàn thành, và sẽ bị đóng lại
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
         [AllowAnonymous]
         [HttpPut("completed/{id}")]
         public async Task<IActionResult> CompletedBooking(int id)
         {
             return HandleResult(await Mediator.Send(new CompletedBooking.Command() { Id = id }));
         }
+
+        /// <summary>
+        /// Dùng để xác thực chấp nhận lịch booking từ ngừoi dngf 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
+        [AllowAnonymous]
+        [HttpPut("accepted/{id}")]
+        public async Task<IActionResult> AcceptedBooking(int id)
+        {
+            return HandleResult(await Mediator.Send(new AcceptedBooking.Command() { Id = id }));
+        }
+        /// <summary>
+        ///  Dùng để huỷ lịch đặt
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPut("cancel/{id}")]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            return HandleResult(await Mediator.Send(new CancelBooking.Command() { Id = id }));
+        }
+        /// <summary>
+        /// Dùng để từ chối lịch đặt
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPut("deny/{id}")]
+        public async Task<IActionResult> DenyBooking(int id)
+        {
+            return HandleResult(await Mediator.Send(new DenyBooking.Command() { Id = id }));
+        }
+
 
         [AllowAnonymous]
         [HttpPost("v2")]

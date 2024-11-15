@@ -1,6 +1,7 @@
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
+using Domain.Entity;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using Persistence;
 
 namespace Application.Handler.Bookings
 {
-    public class CompletedBooking
+    public class AcceptedBooking
     {
         public class Command : IRequest<Result<BookingDtoV2>>
         {
@@ -29,25 +30,32 @@ namespace Application.Handler.Bookings
             public async Task<Result<BookingDtoV2>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var booking = await _context.Bookings
-                .Include(b=>b.Payment)
+                .Include(b => b.Payment)
                 .Include(b=>b.Court)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (booking == null)
                 {
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
                 }
-                if((int)booking.Payment.Status != (int)PaymentStatus.Success){
-                    return Result<BookingDtoV2>.Failure("Booking chưa được thanh toán");
+                var checkSlot = await _context.Bookings.AnyAsync(x =>
+                    (int)x.Status == (int)BookingStatus.Confirmed
+                    && ((booking.StartTime <= x.StartTime && booking.EndTime > x.StartTime)
+                    || (booking.StartTime < x.EndTime && booking.EndTime > x.EndTime)
+                    || (booking.StartTime >= x.StartTime && booking.EndTime <= x.EndTime))
+                );
+                if (checkSlot){
+                    return Result<BookingDtoV2>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
                 }
-                var pendingOrder = booking.Orders.Any(o=>o.BookingId == booking.Id && (int)o.Payment.Status == (int)PaymentStatus.Pending);
-                if (pendingOrder){
-                    return Result<BookingDtoV2>.Failure("Còn đơn Order chưa được thanh toán");
-                }
-                booking.IsSuccess = true;
-
+                booking.Status = BookingStatus.Confirmed;
+                var payment = new Payment()
+                {
+                    Amount = booking.TotalPrice,
+                    Status = PaymentStatus.Pending,
+                };
+                booking.Payment = payment;
                 _context.Bookings.Update(booking);
                 var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
+                if (!result) return Result<BookingDtoV2>.Failure("Accept booking failed.");
                 return Result<BookingDtoV2>.Success(_mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity));
             }
         }

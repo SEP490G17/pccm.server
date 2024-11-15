@@ -15,7 +15,7 @@ namespace Application.Handler.Orders
         {
             public int BookingId { get; set; }
             public List<OrderForProductCreateDto> OrderForProducts { get; set; }
-            public List<OrderForServiceCreteDto> OrderForServices { get; set; }
+            public List<OrderForServiceCreateDto> OrderForServices { get; set; }
 
         }
 
@@ -34,9 +34,13 @@ namespace Application.Handler.Orders
         {
             public async Task<Result<OrderOfBookingDto>> Handle(Command request, CancellationToken cancellationToken)
             {
+                if (request.OrderForProducts.Count() == 0 && request.OrderForServices.Count() == 0)
+                {
+                    return Result<OrderOfBookingDto>.Failure("Danh sách sản phẩm không được rỗng");
+                }
                 var order = new Order();
                 decimal sum = 0;
-                var booking = _context.Bookings.FirstOrDefault(b=>b.Id == request.BookingId);
+                var booking = _context.Bookings.FirstOrDefault(b => b.Id == request.BookingId);
                 request.OrderForProducts.ForEach(orderItem =>
                 {
                     var orderDetails = new OrderDetail();
@@ -65,9 +69,9 @@ namespace Application.Handler.Orders
                        orderDetails.Service = service;
                        orderDetails.ServiceId = service.Id;
                        orderDetails.Price = service.Price;
-                       orderDetails.Quantity = booking.Duration/60;
+                       orderDetails.Quantity = booking.Duration / 60;
                        order.OrderDetails.Add(orderDetails);
-                       sum += service.Price * booking.Duration/60;
+                       sum += service.Price * booking.Duration / 60;
                    }
                    order.OrderDetails.Add(orderDetails);
                });

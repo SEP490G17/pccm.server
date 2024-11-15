@@ -14,7 +14,6 @@ namespace Application.Handler.Payments
         public class Command : IRequest<Result<string>>
         {
             public int BillPayId { get; set; }
-            public decimal Amount { get; set; }
             public PaymentType Type { get; set; }
         }
         public class Handler : IRequestHandler<Command, Result<string>>
@@ -84,6 +83,8 @@ namespace Application.Handler.Payments
                     }
                     _context.Orders.Update(order);
                     await _context.SaveChangesAsync(cancellationToken);
+                    return Result<string>.Success(paymentUrl);
+
                 }
                 // Generate VNPay payment URL
 
