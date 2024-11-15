@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using API.DTOs;
 using API.Services;
 using Application.DTOs;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 
 namespace API.Controllers
@@ -101,19 +101,6 @@ namespace API.Controllers
             var user = await _userManager.Users
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
             return CreateUserObject(user);
-        }
-
-        [AllowAnonymous]
-        [HttpGet("Profile")]
-        public async Task<ActionResult<AppUser>> ViewProfile()
-        {
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-            return user;
         }
 
         [AllowAnonymous]
@@ -306,5 +293,6 @@ namespace API.Controllers
             await _sendSmsService.SendSms(sendMessOtp.To, sendMessOtp.Text, cancellationToken);
             return Ok("Send sms success");
         }
+
     }
 }

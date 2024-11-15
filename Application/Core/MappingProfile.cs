@@ -16,7 +16,8 @@ namespace Application.Core
             CreateMap<Product, ProductLog>();
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<BookingInputDto, Booking>();
-
+            CreateMap<AppUser, ProfileInputDto>();
+            CreateMap<ProfileInputDto, AppUser>();
             CreateMap<Booking, BookingDtoV2>()
             .ForMember(dest => dest.CourtClusterName, opt => opt.MapFrom(src => src.Court.CourtCluster.CourtClusterName))
                .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName))
@@ -175,6 +176,11 @@ namespace Application.Core
             CreateMap<Expense, ExpenseDto>();
             CreateMap<Expense, ExpenseDetailDto>();
             CreateMap<ExpenseDto, Expense>();
+
+            CreateMap<CourtPrice, PriceCourtDto>()
+            .ForMember(c => c.CourtName, o => o.MapFrom(s => s.Court.CourtName))
+            .ForMember(c => c.CourtId, o => o.MapFrom(s => s.Court.Id))
+            .ForMember(c => c.Time, o => o.MapFrom(s => $"{s.FromTime.ToString("HH:mm")} - {s.ToTime.ToString("HH:mm")}"));
         }
 
     }

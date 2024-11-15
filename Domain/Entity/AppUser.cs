@@ -22,5 +22,11 @@ namespace Domain
         public bool IsDisabled { get; set; } = false;
 
         public DateTime? JoiningDate { get; set; } = new DateTime();
+
+        public bool? Gender { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public string? Address { get; set; }
+
+
     }
 }

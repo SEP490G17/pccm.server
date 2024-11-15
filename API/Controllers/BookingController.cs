@@ -143,5 +143,12 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new StaffCreate.Command() { Booking = bookingInput }, ct));
         }
 
+        [AllowAnonymous]
+        [HttpGet("priceCourt")]
+        public async Task<IActionResult> GetListPriceCourtByCourtClusterId([FromQuery] int courtClusterId, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetCourtPrice.Query() { Id = courtClusterId }, ct));
+        }
+
     }
 }
