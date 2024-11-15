@@ -111,7 +111,7 @@ namespace Pccm.UnitTest.News
         public async Task<bool> Handle_ShouldEditNewsBlog_WhenThumbnailIsNull(
            int id,
            string? Title,
-           string Thumbnail,
+           string? Thumbnail,
            string Description,
            string StartTime,
            string EndTime,

@@ -40,5 +40,40 @@ namespace Pccm.UnitTest.Products
 
             return response.Value.Data.Count();
         }
+
+         [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListProduct_WhenSearch(int skip, int pageSize)
+        {
+            if (this.Mediator is null) return null;
+            var response = await this.Mediator.Send(new Application.Handler.Products.List.Query()
+            {
+                SpecParam = new ProductSpecParams()
+                {
+                    Search = "Sandwich",
+                    Skip = 0,
+                    PageSize = 5
+                }
+            });
+
+            return response.Value.Data.Count();
+        }
+        
+         [TestCase(0, 5, ExpectedResult = 0)]
+        public async Task<int?> Handle_ShouldListProduct_WhenFilterByCourtClusterID(int skip, int pageSize)
+        {
+            if (this.Mediator is null) return null;
+            var response = await this.Mediator.Send(new Application.Handler.Products.List.Query()
+            {
+                SpecParam = new ProductSpecParams()
+                {
+                    Search = "",
+                    CourtCluster = 2,
+                    Skip = 0,
+                    PageSize = 5
+                }
+            });
+
+            return response.Value.Data.Count();
+        }
     }
 }

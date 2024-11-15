@@ -1,26 +1,31 @@
-using MediatR;
+using Application.Core;
+using Application.Handler.Bookings;
+using AutoMapper;
+using Domain.Entity;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
 using Persistence;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Application.Core;
-using Domain.Entity;
-using Moq;
+using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Handler.CourtClusters;
+using Application.DTOs;
 
-
-namespace Pccm.UnitTest.CourtClusters
+namespace Pccm.UnitTest.Bookings
 {
-    public class DeleteCourtClusterHandlerTests
+    [TestFixture]
+    public class DenyBookingHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteCourtClusterHandlerTests()
+        public DenyBookingHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -31,13 +36,13 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-        [TestCase(200, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteCourtCluster_WhenNotExistCourtCluster(
+        [TestCase(37, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDeclineBooking_WhenValidData(
             int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new DenyBooking.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -47,13 +52,13 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-        [TestCase(9, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDeleteCourtCluster_WhenExistCourtCluster(
-           int id)
+      [TestCase(111, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeclineBookingFail_WhenNotExistBooking(
+            int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new DenyBooking.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -62,5 +67,7 @@ namespace Pccm.UnitTest.CourtClusters
                 return false;
             }
         }
+
+       
     }
 }
