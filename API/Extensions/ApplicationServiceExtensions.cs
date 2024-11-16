@@ -14,8 +14,8 @@ using Infrastructure.SendMessage;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repository;
-using DinkToPdf;
-using DinkToPdf.Contracts;
+// using DinkToPdf;
+// using DinkToPdf.Contracts;
 using System.Runtime.InteropServices;
 
 namespace API.Extensions
@@ -50,19 +50,19 @@ namespace API.Extensions
             services.Configure<InfobipAPI>(configuration.GetSection("InfobipAPI"));
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
 
-            services.AddControllersWithViews();
-            var context = new CustomAssemblyLoadContext();
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
+            // services.AddControllersWithViews();
+            // var context = new CustomAssemblyLoadContext();
+            // if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            // {
 
-                context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.so"));
-            }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
-            }
+            //     context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.so"));
+            // }
+            // if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // {
+            //     context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
+            // }
 
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+            // services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
             return services;
         }
