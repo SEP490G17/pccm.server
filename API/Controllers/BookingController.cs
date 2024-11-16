@@ -1,4 +1,3 @@
-using API.Extensions;
 using Application.DTOs;
 using Application.Handler.Bookings;
 using Application.SpecParams;
@@ -24,20 +23,10 @@ namespace API.Controllers
         /// <returns></returns> <summary>
 
         [AllowAnonymous]
-        [HttpGet("v1")]
-        public async Task<IActionResult> GetBookingsV1([FromQuery] BookingV1SpecParam bookingSpecParam, CancellationToken ct)
+        [HttpPost("v1")]
+        public async Task<IActionResult> GetBookingsV1([FromBody] BookingV1SpecParam bookingSpecParam, CancellationToken ct)
         {
-            if (bookingSpecParam.FromDate == null)
-            {
-                bookingSpecParam.FromDate = DateTime.Now.StartOfWeek(DayOfWeek.Sunday).ToUniversalTime();
-            }
-            if (bookingSpecParam.ToDate == null)
-            {
-                bookingSpecParam.ToDate = DateTime.Now.EndOfWeek(DayOfWeek.Sunday).ToUniversalTime();
-            }
-            if(bookingSpecParam.ToDate < bookingSpecParam.FromDate){
-                return BadRequest("Thời gian tìm kiếm không hợp lệ");
-            }
+           
             return HandleResult(await Mediator.Send(new ListV1.Query() { BookingSpecParam = bookingSpecParam }, ct));
         }
 
@@ -135,7 +124,12 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new DenyBooking.Command() { Id = id }));
         }
 
-
+        /// <summary>
+        /// Tạo booking nhưng phải có role là admin hoặc manager booking
+        /// </summary>
+        /// <param name="bookingInput"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("v2")]
         public async Task<IActionResult> CreateBookingForAdmin([FromBody] BookingInputDto bookingInput, CancellationToken ct)

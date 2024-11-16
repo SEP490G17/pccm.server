@@ -61,45 +61,6 @@ namespace Persistence
           }
         }
       }
-      if (!context.CourtClusters.Any())
-      {
-        var courtClustersData = File.ReadAllText("../Persistence/SeedData/courtCluster.json");
-        var CourtClusters = JsonSerializer.Deserialize<List<CourtCluster>>(courtClustersData);
-        var adminId = await userManager.FindByNameAsync("adminstrator");
-
-        var courtsData = File.ReadAllText("../Persistence/SeedData/courts.json");
-        var courts = JsonSerializer.Deserialize<List<Court>>(courtsData);
-
-        var courtPrice = File.ReadAllText("../Persistence/SeedData/courtPrice.json");
-        var courtPrices = JsonSerializer.Deserialize<List<CourtPrice>>(courtPrice);
-
-
-
-        CourtClusters.ForEach(c => { c.OwnerId = adminId.Id; c.Courts = courts.ToList();});
-        await context.CourtClusters.AddRangeAsync(CourtClusters);
-      }
-      if (!context.Courts.Any())
-      {
-
-      }
-      if (!context.Services.Any())
-      {
-        var servicesData = File.ReadAllText("../Persistence/SeedData/services.json");
-        var services = JsonSerializer.Deserialize<List<Service>>(servicesData);
-        await context.Services.AddRangeAsync(services);
-      }
-      if (!context.Categories.Any())
-      {
-        var categoriesData = File.ReadAllText("../Persistence/SeedData/categories.json");
-        var categories = JsonSerializer.Deserialize<List<Category>>(categoriesData);
-        await context.Categories.AddRangeAsync(categories);
-      }
-      if (!context.Products.Any())
-      {
-        var productsData = File.ReadAllText("../Persistence/SeedData/products.json");
-        var products = JsonSerializer.Deserialize<List<Product>>(productsData);
-        await context.Products.AddRangeAsync(products);
-      }
 
       if (context.StaffPositions.Count() == 0)
       {
@@ -134,6 +95,45 @@ namespace Persistence
         await context.SaveChangesAsync();
 
       }
+
+      if (!context.Categories.Any())
+      {
+        var categoriesData = File.ReadAllText("../Persistence/SeedData/categories.json");
+        var categories = JsonSerializer.Deserialize<List<Category>>(categoriesData);
+        await context.Categories.AddRangeAsync(categories);
+      }
+
+      if (!context.CourtClusters.Any())
+      {
+        var courtClustersData = File.ReadAllText("../Persistence/SeedData/courtCluster.json");
+        var CourtClusters = JsonSerializer.Deserialize<List<CourtCluster>>(courtClustersData);
+        var adminId = await userManager.FindByNameAsync("adminstrator");
+
+        CourtClusters.ForEach(c =>
+        {
+          var servicesData = File.ReadAllText("../Persistence/SeedData/services.json");
+          var services = JsonSerializer.Deserialize<List<Service>>(servicesData);
+          var productsData = File.ReadAllText("../Persistence/SeedData/products.json");
+          var products = JsonSerializer.Deserialize<List<Product>>(productsData);
+
+          c.OwnerId = adminId.Id;
+          var courtsData = File.ReadAllText("../Persistence/SeedData/courts.json");
+          var courts = JsonSerializer.Deserialize<List<Court>>(courtsData);
+          courts.ForEach(c =>
+          {
+            var courtPrice = File.ReadAllText("../Persistence/SeedData/courtPrice.json");
+            var courtPrices = JsonSerializer.Deserialize<List<CourtPrice>>(courtPrice);
+            c.CourtPrices = courtPrices;
+          });
+          c.Courts = courts.ToList();
+          c.Services = services;
+          c.Products = products;
+        });
+        await context.CourtClusters.AddRangeAsync(CourtClusters);
+      }
+
+
+
       if (!context.StaffDetails.Any())
       {
         var users = new List<AppUser>();

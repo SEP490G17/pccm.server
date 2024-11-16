@@ -1,5 +1,4 @@
-﻿using Application.SpecParams.ProductSpecification;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

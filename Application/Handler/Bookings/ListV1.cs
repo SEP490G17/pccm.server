@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using Domain.Entity;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Application.Extensions;
 
 namespace Application.Handler.Bookings
 {
@@ -21,8 +22,17 @@ namespace Application.Handler.Bookings
         {
             public async Task<Result<IReadOnlyList<BookingDtoV1>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var querySpec = request.BookingSpecParam;
-                var spec = new BookingV1Specification(querySpec);
+                DateTime selectedDate = DateTime.Today;
+                if(request.BookingSpecParam.SelectedDate != null){
+                    selectedDate = request.BookingSpecParam.SelectedDate.Value;
+                }
+                
+                var fromDate = selectedDate.StartOfWeek(DayOfWeek.Sunday).ToUniversalTime();
+                var toDate = selectedDate.EndOfWeek(DayOfWeek.Sunday).ToUniversalTime();
+                var bookingStatus = request.BookingSpecParam.BookingStatus;
+                var courtClusterId = request.BookingSpecParam.CourtClusterId;
+                var spec = new BookingV1Specification(fromDate,toDate,bookingStatus,courtClusterId);
+
                 var data = await _unitOfWork.Repository<Booking>()
                     .QueryList(spec)
                     .ProjectTo<BookingDtoV1>(_mapper.ConfigurationProvider)
@@ -30,5 +40,11 @@ namespace Application.Handler.Bookings
                 return Result<IReadOnlyList<BookingDtoV1>>.Success(data);
             }
         }
+
+
+
     }
+
+
+
 }

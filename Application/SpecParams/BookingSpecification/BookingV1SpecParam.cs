@@ -4,15 +4,18 @@ namespace Application.SpecParams.BookingSpecification
 {
     public class BookingV1SpecParam
     {
-        /// <summary>
-        ///  Từ ngày
-        /// </summary> 
-        public DateTime? FromDate { get; set; }
+        // /// <summary>
+        // ///  Từ ngày
+        // /// </summary> 
+        // public DateTime? FromDate { get; set; }
 
-        /// <summary>
-        ///  Đến ngày
-        /// </summary>
-        public DateTime? ToDate { get; set; }
+        // /// <summary>
+        // ///  Đến ngày
+        // /// </summary>
+        // public DateTime? ToDate { get; set; }
+
+
+        public DateTime? SelectedDate { get; set; }
         /// <summary>
         ///  Trạng thái booking
         /// </summary>

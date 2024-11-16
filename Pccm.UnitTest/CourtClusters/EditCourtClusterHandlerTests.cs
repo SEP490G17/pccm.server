@@ -1,22 +1,11 @@
 using API.Extensions;
-using Application.Core;
-using Application.DTOs;
 using Application.Handler.Courts;
-using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
-using FluentAssertions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Moq;
-using NUnit.Framework;
-using Persistence;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.CourtClusters
 {

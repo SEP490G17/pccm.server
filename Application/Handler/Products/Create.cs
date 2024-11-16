@@ -7,7 +7,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using Application.Interfaces;
 using Domain.Enum;
 
 namespace Application.Handler.Products

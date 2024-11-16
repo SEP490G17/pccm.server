@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Domain.Enum;
 
 namespace Application.DTOs

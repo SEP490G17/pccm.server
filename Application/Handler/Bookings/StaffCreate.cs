@@ -36,33 +36,47 @@ namespace Application.Handler.Bookings
             }
             public async Task<Result<BookingDtoV1>> Handle(Command request, CancellationToken cancellationToken)
             {
-                try
-                {
-                    var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
-                    var courtPrice = court.CourtPrices.ToList();
 
-                    var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
+                var checkSlot = await _context.Bookings.AnyAsync(
+                    x =>
+                        (int)x.Status == (int)BookingStatus.Confirmed
+                        && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
+                        || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
+                        || (request.Booking.StartTime >= x.StartTime && request.Booking.EndTime <= x.EndTime))
+                    );
 
-                    var booking = _mapper.Map<Booking>(request.Booking);
-                    booking.Status = BookingStatus.Confirmed;
-                    booking.TotalPrice = amout;
-                    booking.Court = court;
-                    var payment = new Payment()
-                    {
-                        Amount = amout,
-                        Status = PaymentStatus.Pending,
-                    };
-                    booking.Payment = payment;
-                    await _context.AddAsync(booking, cancellationToken);
-                    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                    if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
-                    var entity = _context.Entry(booking).Entity;
-                    return Result<BookingDtoV1>.Success(_mapper.Map<BookingDtoV1>(booking));
-                }
-                catch (Exception ex)
+                if (checkSlot)
                 {
-                    return Result<BookingDtoV1>.Failure(ex.Message);
+                    return Result<BookingDtoV1>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
                 }
+
+                if(request.Booking.StartTime.Date < DateTime.Today.Date){
+                    return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
+                }
+
+                var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
+                var courtPrice = court.CourtPrices.ToList();
+
+                var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
+
+                var booking = _mapper.Map<Booking>(request.Booking);
+                booking.Status = BookingStatus.Confirmed;
+                booking.TotalPrice = amout;
+                booking.Court = court;
+                booking.Duration = (int)booking.EndTime.Subtract(booking.StartTime).TotalMinutes;
+                var payment = new Payment()
+                {
+                    Amount = amout,
+                    Status = PaymentStatus.Pending,
+                };
+                booking.Payment = payment;
+                await _context.AddAsync(booking, cancellationToken);
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
+                var entity = _context.Entry(booking).Entity;
+                return Result<BookingDtoV1>.Success(_mapper.Map<BookingDtoV1>(booking));
+
+
             }
 
             public decimal CalculateCourtPrice(DateTime fromTime, DateTime toTime, List<CourtPrice> courtPrices)
