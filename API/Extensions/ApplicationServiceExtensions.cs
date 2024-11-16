@@ -14,6 +14,8 @@ using Infrastructure.SendMessage;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repository;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 namespace API.Extensions
 {
@@ -27,7 +29,7 @@ namespace API.Extensions
                     opt.UseMySql(configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(10, 11, 9)));
                 }
             );
-      
+
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
@@ -39,13 +41,20 @@ namespace API.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             services.AddScoped<ISendSmsService, SendSmsService>();
-            services.AddScoped<IVnPayService, VnPayService>(); 
+            services.AddScoped<IVnPayService, VnPayService>();
             services.AddOptions();
             services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.Configure<VnPaySettings>(configuration.GetSection("VnPaySettings"));
             services.Configure<InfobipAPI>(configuration.GetSection("InfobipAPI"));
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+
+            services.AddControllersWithViews();
+            var context = new CustomAssemblyLoadContext();
+            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
+
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
             return services;
         }
     }

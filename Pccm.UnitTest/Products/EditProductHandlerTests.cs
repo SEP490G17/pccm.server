@@ -56,7 +56,7 @@ namespace Pccm.UnitTest.Products
                     ProductName = ProductName,
                     Description = Description,
                     Quantity = Quantity,
-                    PriceSell = PriceSell,
+                    Price = PriceSell,
                     ImportFee = ImportFee,
                     ThumbnailUrl = ThumbnailUrl
                 };
@@ -93,7 +93,7 @@ namespace Pccm.UnitTest.Products
                     ProductName = ProductName,
                     Description = Description,
                     Quantity = Quantity,
-                    PriceSell = PriceSell,
+                    Price = PriceSell,
                     ImportFee = ImportFee,
                     ThumbnailUrl = ThumbnailUrl
                 };
@@ -129,7 +129,7 @@ namespace Pccm.UnitTest.Products
                     ProductName = ProductName,
                     Description = Description,
                     Quantity = Quantity,
-                    PriceSell = PriceSell,
+                    Price = PriceSell,
                     ImportFee = ImportFee,
                     ThumbnailUrl = ThumbnailUrl
                 };

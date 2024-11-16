@@ -50,12 +50,15 @@ namespace API.Controllers
             orderInput.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));
         }
-        [AllowAnonymous]
-        [HttpPut("v1/edit")]
-        public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
-        {
-            return HandleResult(await Mediator.Send(command));
-        }
+
+        // chạy swagger bị lỗi nên cmt lại
+
+        // [AllowAnonymous]
+        // [HttpPut("v1/edit")]
+        // public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
+        // {
+        //     return HandleResult(await Mediator.Send(command));
+        // }
 
 
         [AllowAnonymous]

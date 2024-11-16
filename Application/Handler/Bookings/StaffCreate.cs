@@ -53,6 +53,7 @@ namespace Application.Handler.Bookings
                         Status = PaymentStatus.Pending,
                     };
                     booking.Payment = payment;
+                    booking.Duration = booking.EndTime.Subtract(booking.EndTime).Hours;
                     await _context.AddAsync(booking, cancellationToken);
                     var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                     if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
