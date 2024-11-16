@@ -1,4 +1,4 @@
-﻿using Application.SpecParams.ProductSpecification;
+using Application.SpecParams.ProductSpecification;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,17 +6,18 @@ using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using Application.SpecParams;
 
-namespace Pccm.UnitTest.Services
+namespace Pccm.UnitTest.Staffs
 {
-    public class ListBannerHandlerTests
+    public class ListStaffHandlerTests
     {
         public readonly IMediator Mediator;
 
-        public ListBannerHandlerTests()
+        public ListStaffHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
@@ -24,13 +25,13 @@ namespace Pccm.UnitTest.Services
 
 
 
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenValid(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = 5)]
+        public async Task<int?> Handle_ShouldListStaff(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Staffs.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
                     Search = "",
                     Skip = 0,
@@ -41,15 +42,15 @@ namespace Pccm.UnitTest.Services
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenSearchByName(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = 2)]
+        public async Task<int?> Handle_ShouldListStaff_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Staffs.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
-                    Search = "Cho thuê vợt pickleball",
+                    Search = "staff1",
                     Skip = 0,
                     PageSize = 5
                 }
@@ -58,22 +59,23 @@ namespace Pccm.UnitTest.Services
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListService_WhenFilterByCourtClusterID(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListStaff_WhenFilterByShiftID(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Staffs.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
                     Search = "",
+                    Filter = 1,
                     Skip = 0,
-                    Filter = 2,
                     PageSize = 5
                 }
             });
 
             return response.Value.Data.Count();
         }
+
     }
 }

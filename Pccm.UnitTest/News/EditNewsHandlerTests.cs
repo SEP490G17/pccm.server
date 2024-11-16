@@ -107,42 +107,40 @@ namespace Pccm.UnitTest.News
         }
 
 
-        // chạy swagger bị lỗi nên cmt lại
+        [TestCase(1, "Tin tuc ve san 1", null, "ngich ngu", "2024-11-11T10:00:00", "2024-11-11T12:00:00", "Hanoi", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditNewsBlog_WhenThumbnailIsNull(
+           int id,
+           string? Title,
+           string? Thumbnail,
+           string Description,
+           string StartTime,
+           string EndTime,
+           string Location)
+        {
+            try
+            {
+                var newsBlogInputDto = new NewsBlog()
+                {
+                    Id = id,
+                    Title = Title,
+                    Thumbnail = Thumbnail,
+                    Description = Description,
+                    StartTime = DateTime.Parse(StartTime),
+                    EndTime = DateTime.Parse(EndTime),
+                    Location = Location,
+                    Tags = new string[] { "Tag1", "Tag2" },
+                    Status = Domain.Enum.BannerStatus.Display
+                };
 
-        // [TestCase(1, "Tin tuc ve san 1", null, "ngich ngu", "2024-11-11T10:00:00", "2024-11-11T12:00:00", "Hanoi", ExpectedResult = false)]
-        // public async Task<bool> Handle_ShouldEditNewsBlog_WhenThumbnailIsNull(
-        //    int id,
-        //    string? Title,
-        //    string Thumbnail,
-        //    string Description,
-        //    string StartTime,
-        //    string EndTime,
-        //    string Location)
-        // {
-        //     try
-        //     {
-        //         var newsBlogInputDto = new NewsBlog()
-        //         {
-        //             Id = id,
-        //             Title = Title,
-        //             Thumbnail = Thumbnail,
-        //             Description = Description,
-        //             StartTime = DateTime.Parse(StartTime),
-        //             EndTime = DateTime.Parse(EndTime),
-        //             Location = Location,
-        //             Tags = new string[] { "Tag1", "Tag2" },
-        //             Status = Domain.Enum.BannerStatus.Display
-        //         };
+                var result = await Mediator.Send(new Edit.Command() { Event = newsBlogInputDto }, default);
 
-        //         var result = await Mediator.Send(new Edit.Command() { Event = newsBlogInputDto }, default);
-
-        //         // Return if the operation was successful
-        //         return result.IsSuccess;
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return false;
-        //     }
-        // }
+                // Return if the operation was successful
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
