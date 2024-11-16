@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "612c71e2-a43e-426f-86c6-75820d61b36f", ExpectedResult = true)]
+        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = true)]
         public async Task<bool> Handle_CreateCourtCluster_WhenValid(
             string title,
             string province,
@@ -67,7 +67,7 @@ namespace Pccm.UnitTest.CourtClusters
 
 
 
-        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "612c71e2-a43e-426f-86c6-75820d61b36ftt", ExpectedResult = false)]
+        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b01", ExpectedResult = false)]
         public async Task<bool> Handle_CreateCourtCluster_WhenNotExistOwnerId(
             string title,
             string province,
@@ -109,7 +109,7 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-        [TestCase(null, "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "612c71e2-a43e-426f-86c6-75820d61b36f", ExpectedResult = false)]
+        [TestCase(null, "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = false)]
         public async Task<bool> Handle_CreateCourtCluster_WhenTitleIsNull(
            string? title,
            string province,

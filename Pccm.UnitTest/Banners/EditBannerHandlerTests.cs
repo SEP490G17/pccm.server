@@ -9,11 +9,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace Pccm.UnitTest.Banners
 {
-    public class EditServiceHandlerTests
+    public class EditBannerHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public EditServiceHandlerTests()
+        public EditBannerHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");

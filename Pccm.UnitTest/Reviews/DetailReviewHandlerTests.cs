@@ -27,7 +27,7 @@ namespace Pccm.UnitTest.Reviews
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new ListCourtCluster.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }

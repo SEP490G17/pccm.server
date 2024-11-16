@@ -30,7 +30,7 @@ namespace Application.Handler.Bookings
                 .Include(c => c.Court)
                 .Where(p => p.Court.CourtClusterId == request.Id)
                 .OrderBy(p => p.Court.CourtName)
-                .ThenBy(p => p.Price)
+                .ThenBy(p => p.FromTime)
                 .ToListAsync();
 
                 if (prices == null) return Result<List<PriceCourtDto>>.Failure("Booking not found");

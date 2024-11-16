@@ -1,5 +1,8 @@
 using API.Extensions;
+using Application.Core;
+using Application.DTOs;
 using Application.Handler.Courts;
+using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
 using MediatR;
@@ -24,24 +27,39 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-       [TestCase(4, "Premium Court 2", 1, CourtStatus.Available, ExpectedResult = true)]
-        public async Task<bool> Handle_EditCourt_WhenValid(
-            int id,
-                string CourtName,
-                int? CourtClusterId,
-                CourtStatus Status)
+        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldEditCourtCluster_WhenValid(
+             string title,
+             string province,
+             string provinceName,
+             string district,
+             string districtName,
+             string ward,
+             string wardName,
+             string address,
+             string ownerId)
         {
             try
             {
-                var courtInputDto = new Court
+                var courtClusterInputDto = new CourtClustersInputDto
                 {
-                    Id = id,
-                    CourtName = CourtName, 
-                    CourtClusterId = CourtClusterId, 
-                    Status = Status
+                    Title = title,
+                    Province = province,
+                    ProvinceName = provinceName,
+                    District = district,
+                    DistrictName = districtName,
+                    Ward = ward,
+                    WardName = wardName,
+                    Address = address,
+                    OwnerId = ownerId,
+                    OpenTime = new TimeOnly(6, 0),
+                    CloseTime = new TimeOnly(22, 0),
+                    CreatedAt = DateTime.Now,
+                    Description = "Mô tả chi tiết về cụm sân",
+                    Images = new string[] { "image1.jpg", "image2.jpg" }
                 };
 
-                var result = await Mediator.Send(new Edit.Command() { court = courtInputDto }, default);
+                var result = await Mediator.Send(new Edit.Command { courtCluster = courtClusterInputDto }, default);
 
                 return result.IsSuccess;
             }
@@ -51,31 +69,5 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-          [TestCase(14, "Premium Court 2", 1, CourtStatus.Available, ExpectedResult = false)]
-        public async Task<bool> Handle_EditCourt_WhenNotExistCourt(
-            int id,
-                string CourtName,
-                int? CourtClusterId,
-                CourtStatus Status)
-        {
-            try
-            {
-                var courtInputDto = new Court
-                {
-                    Id = id,
-                    CourtName = CourtName, 
-                    CourtClusterId = CourtClusterId, 
-                    Status = Status
-                };
-
-                var result = await Mediator.Send(new Edit.Command() { court = courtInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
     }
 }

@@ -39,8 +39,8 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-        [TestCase(5, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteCourtCluster_WhenExistCourtCluster(
+        [TestCase(9, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDeleteCourtCluster_WhenExistCourtCluster(
            int id)
         {
             try

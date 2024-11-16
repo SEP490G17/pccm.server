@@ -181,6 +181,14 @@ namespace Application.Core
             .ForMember(c => c.CourtName, o => o.MapFrom(s => s.Court.CourtName))
             .ForMember(c => c.CourtId, o => o.MapFrom(s => s.Court.Id))
             .ForMember(c => c.Time, o => o.MapFrom(s => $"{s.FromTime.ToString("HH:mm")} - {s.ToTime.ToString("HH:mm")}"));
+
+            CreateMap<Booking, BookingBillDto>()
+            .ForMember(c => c.CourtName, o => o.MapFrom(s => s.Court.CourtName));
+            CreateMap<CourtCluster, CourtClusterBillDto>();
+            CreateMap<OrderDetail, ProductBillDto>()
+            .ForMember(c => c.ProductName, o => o.MapFrom(s => s.Product.ProductName));
+            CreateMap<OrderDetail, ServiceBillDto>()
+            .ForMember(c => c.ServiceName, o => o.MapFrom(s => s.Service.ServiceName));
         }
 
     }

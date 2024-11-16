@@ -56,5 +56,23 @@ namespace Pccm.UnitTest.Services
 
             return response.Value.Data.Count();
         }
+
+         [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListService_WhenFilterByCourtClusterID(int skip, int pageSize)
+        {
+            if (this.Mediator is null) return null;
+            var response = await this.Mediator.Send(new Application.Handler.Services.List.Query()
+            {
+                BaseSpecParam = new BaseSpecWithFilterParam()
+                {
+                    Search = "",
+                    Skip = 0,
+                    Filter = 2,
+                    PageSize = 5
+                }
+            });
+
+            return response.Value.Data.Count();
+        }
     }
 }

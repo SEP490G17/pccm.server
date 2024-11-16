@@ -36,8 +36,8 @@ namespace Application.Handler.Statistics
                                  b.Court.CourtClusterId == request.CourtClusterId &&
                                  b.Status == BookingStatus.Confirmed &&
                                  b.Payment.Status == PaymentStatus.Success)
-                    .Include(b => b.Court) 
-                    .ToListAsync(cancellationToken); 
+                    .Include(b => b.Court)
+                    .ToListAsync(cancellationToken);
 
                 var bookingDetailsGrouped = bookingDetails
                     .GroupBy(b => b.Court.CourtName)
@@ -55,9 +55,9 @@ namespace Application.Handler.Statistics
                     .Where(od => (int)od.Order.Payment.Status == (int)PaymentStatus.Success &&
                                  _context.Bookings
                                      .Where(b => b.Id == od.Order.BookingId &&
-                                                  b.Court.CourtClusterId == request.CourtClusterId &&
-                                                  b.Status == BookingStatus.Confirmed &&
-                                                  b.Payment.Status == PaymentStatus.Success)
+                                                b.Court.CourtClusterId == request.CourtClusterId &&
+                                                b.Status == BookingStatus.Confirmed &&
+                                                b.Payment.Status == PaymentStatus.Success)
                                      .Any() &&
                                  od.Order.CreatedAt.Date.Month == request.Date.Date.Month &&
                                  od.Order.CreatedAt.Date.Year == request.Date.Date.Year
@@ -80,7 +80,8 @@ namespace Application.Handler.Statistics
                                                   b.Status == BookingStatus.Confirmed &&
                                                   b.Payment.Status == PaymentStatus.Success)
                                      .Any() &&
-                                 od.Order.CreatedAt.Date == request.Date.Date)
+                                 od.Order.CreatedAt.Date == request.Date.Date
+                                 && od.ServiceId != null && od.ProductId == null)
                     .GroupBy(od => od.Service.ServiceName)
                     .Select(g => new OrderServiceDetailDto
                     {
