@@ -16,6 +16,7 @@ using Persistence;
 using Persistence.Repository;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using System.Runtime.InteropServices;
 
 namespace API.Extensions
 {
@@ -51,7 +52,15 @@ namespace API.Extensions
 
             services.AddControllersWithViews();
             var context = new CustomAssemblyLoadContext();
-            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+
+                context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.so"));
+            }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox.dll"));
+            }
 
             services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
