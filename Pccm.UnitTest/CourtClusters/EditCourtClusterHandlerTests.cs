@@ -59,7 +59,7 @@ namespace Pccm.UnitTest.CourtClusters
                     Images = new string[] { "image1.jpg", "image2.jpg" }
                 };
 
-                var result = await Mediator.Send(new Edit.Command { courtCluster = courtClusterInputDto }, default);
+                var result = await Mediator.Send(new Edit.Command { court = courtClusterInputDto }, default);
 
                 return result.IsSuccess;
             }
