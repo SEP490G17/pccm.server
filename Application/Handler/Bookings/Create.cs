@@ -75,6 +75,7 @@ namespace Application.Handler.Bookings
                 var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
                 booking.Court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == request.Booking.CourtId);
                 booking.AcceptedAt = DateTime.Now;
+                booking.TotalPrice = amout;
                 var payment = new Payment()
                 {
                     Amount = amout,
