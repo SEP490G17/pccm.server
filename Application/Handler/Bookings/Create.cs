@@ -71,22 +71,21 @@ namespace Application.Handler.Bookings
 
                 var booking = _mapper.Map<Booking>(request.Booking);
                 var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
-                if (court == null || court.Status == CourtStatus.Closed)
+                var courtPrice = court.CourtPrices.ToList();
+                var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
+                booking.Court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == request.Booking.CourtId);
+                booking.AcceptedAt = DateTime.Now;
+                var payment = new Payment()
                 {
-                    return Result<Unit>.Failure("Sân không tồn tại hoặc đã dừng hoạt động");
-                }
-                var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, court.CourtPrices.ToList());
-                booking.Status = BookingStatus.Pending;
-                booking.TotalPrice = amout;
-                booking.Court = court;
-                booking.Duration = (int)booking.EndTime.Subtract(booking.StartTime).TotalMinutes;
-                booking.AppUser = user;
+                    Amount = amout,
+                    Status = PaymentStatus.Pending,
+                };
+                booking.Payment = payment;
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create booking");
                 return Result<Unit>.Success(Unit.Value);
             }
-
 
             public decimal CalculateCourtPrice(DateTime fromTime, DateTime toTime, List<CourtPrice> courtPrices)
             {
