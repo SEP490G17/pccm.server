@@ -53,6 +53,7 @@ namespace Application.Handler.Bookings
                 }
                 var checkSlot = await _context.Bookings.AnyAsync(
                   x =>
+                  x.Court.Id != request.Booking.CourtId &&
                       (int)x.Status == (int)BookingStatus.Confirmed
                       && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
                       || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
