@@ -77,12 +77,7 @@ namespace Application.Handler.Bookings
                 booking.Court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == request.Booking.CourtId);
                 booking.AcceptedAt = DateTime.Now;
                 booking.TotalPrice = amout;
-                var payment = new Payment()
-                {
-                    Amount = amout,
-                    Status = PaymentStatus.Pending,
-                };
-                booking.Payment = payment;
+                
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create booking");
