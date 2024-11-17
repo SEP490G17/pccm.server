@@ -23,6 +23,7 @@ namespace Application.Handler.CourtClusters
                 var court = await _context.CourtClusters
                     .Include(x => x.Services)
                     .Include(x => x.Products)
+                    .Include(x=>x.Courts)
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
                 var numberOfCourts = await _context.Courts.Where(c => c.CourtCluster.Id == request.Id).ToListAsync();
                 if (court is null)

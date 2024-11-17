@@ -29,13 +29,25 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListAllUserSite.Query(), ct));
         }
 
+        /// <summary>
+        ///  Trả về thông tin chi tiết của 1 cụm sân
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns> 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourtCluster(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
-
+        /// <summary>
+        /// Trả về thông tin chi tiết của 1 cụm sân phía user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns> 
+       
         [HttpGet("usersite/{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourtClusterUserSite(int id, CancellationToken ct)

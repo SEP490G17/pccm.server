@@ -1,13 +1,8 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Interfaces;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using DinkToPdf;
 using DinkToPdf.Contracts;
-using Domain.Entity;
-using Domain.Enum;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

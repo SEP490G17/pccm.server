@@ -26,20 +26,28 @@ namespace Application.Core
                .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
                .ForMember(dest => dest.EndDay,
                            opt => opt.MapFrom(src => src.UntilTime != null ? src.UntilTime : src.EndTime))
-               .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Payment.Status))
-               .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl));
+               .ForMember(dest => dest.PaymentStatus, opt =>
+               {
+                   opt.Condition(src => src.Payment != null);
+                   opt.MapFrom(src => src.Payment.Status);
+               })
+               .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
+               .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id));
 
             CreateMap<Order, OrderDetailsResponse>()
-                    .ForMember(o => o.PaymentStatus, opt => opt.MapFrom(src => src.Payment.Status))
-                    .ForMember(o => o.OrderForProducts, opt => opt.MapFrom(src =>
-                        src.OrderDetails
+                .ForMember(dest => dest.PaymentStatus, opt =>
+                    {
+                        opt.Condition(src => src.Payment != null);
+                        opt.MapFrom(src => src.Payment.Status);
+                    })
+                .ForMember(o => o.OrderForProducts, opt => opt.MapFrom(src => src.OrderDetails
                             .Where(od => od.ProductId != null)
                             .Select(od => new OrderForProductCreateDto
                             {
                                 ProductId = od.ProductId.Value,
                                 Quantity = od.Quantity
                             })))
-                    .ForMember(o => o.OrderForServices, opt => opt.MapFrom(src =>
+                .ForMember(o => o.OrderForServices, opt => opt.MapFrom(src =>
                         src.OrderDetails
                             .Where(od => od.ServiceId != null)
                             .Select(od => new OrderForServiceCreateDto
@@ -47,8 +55,22 @@ namespace Application.Core
                                 ServiceId = od.ServiceId.Value
                             })));
 
-
-
+            CreateMap<Booking, BookingUserHistoryDto>()
+                        .ForMember(dest => dest.Address, opt =>
+                                    opt.MapFrom(src => $"{src.Court.CourtCluster.DistrictName}, {src.Court.CourtCluster.ProvinceName}"))
+                        .ForMember(dest => dest.TimePlay,
+                                     opt => opt.MapFrom(src => $"{src.StartTime.AddHours(7):HH:mm} - {src.EndTime.AddHours(7):HH:mm}"))
+                        .ForMember(dest => dest.EndTime,
+                                     opt => opt.MapFrom(src => src.UntilTime != null ? src.UntilTime : src.EndTime))
+                        .ForMember(dest => dest.PaymentStatus, opt =>
+                                {
+                                    opt.Condition(src => src.Payment != null);
+                                    opt.MapFrom(src => src.Payment.Status);
+                                })
+                        .ForMember(dest => dest.CourtClusterName, opt => opt.MapFrom(src => src.Court.CourtCluster.CourtClusterName))
+                        .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId))
+                         .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName));
+            ;
             CreateMap<Booking, BookingDtoV2ForDetails>()
                          .ForMember(dest => dest.CourtName, opt => opt.MapFrom(src => src.Court.CourtName))
                          .ForMember(dest => dest.PlayTime,
@@ -56,8 +78,12 @@ namespace Application.Core
                          .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
                          .ForMember(dest => dest.EndDay,
                                      opt => opt.MapFrom(src => src.UntilTime != null ? src.UntilTime : src.EndTime))
-                         .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.Payment.Status))
-                         .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
+                         .ForMember(dest => dest.PaymentStatus, opt =>
+                                {
+                                    opt.Condition(src => src.Payment != null);
+                                    opt.MapFrom(src => src.Payment.Status);
+                                })
+                                .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
                          .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id))
                          .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId))
                          .ForMember(dest => dest.Address, opt =>
@@ -65,8 +91,11 @@ namespace Application.Core
                          ;
 
             CreateMap<Order, OrderOfBookingDto>()
-            .ForMember(o => o.PaymentStatus, src => src.MapFrom(s => s.Payment.Status));
-
+            .ForMember(dest => dest.PaymentStatus, opt =>
+                                {
+                                    opt.Condition(src => src.Payment != null);
+                                    opt.MapFrom(src => src.Payment.Status);
+                                });
             CreateMap<Booking, BookingDtoStatistic>()
             .ForMember(b => b.Id, o => o.MapFrom(s => s.Id))
                 .ForMember(b => b.courtClusterName, o => o.MapFrom(s => s.Court.CourtCluster.CourtClusterName))
@@ -109,7 +138,13 @@ namespace Application.Core
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.CourtClusterName))
             .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count))
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services.Select(s => new ServiceDto { ServiceName = s.ServiceName }).ToList()))
-            .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products.Select(p => new ProductDto { ProductName = p.ProductName }).ToList()));
+            .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products.Select(p => new ProductDto { ProductName = p.ProductName }).ToList()))
+            .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts.Select(x => new CourtDto
+            {
+                CourtId = x.Id,
+                CourtName = x.CourtName,
+            })))
+            ;
 
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListAll>();
 
@@ -118,7 +153,8 @@ namespace Application.Core
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
             CreateMap<CourtCluster, CourtClusterDto.CourtCLusterDetails>()
                 .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
-                .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName));
+                .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName))
+                .ForMember(c => c.Address, o => o.MapFrom(src => $"{src.Address},{src.WardName},{src.DistrictName},{src.ProvinceName}"));
 
             CreateMap<OrderInputDto, Order>();
             CreateMap<ReviewInputDto, Review>();
@@ -152,12 +188,20 @@ namespace Application.Core
 
             CreateMap<Booking, BookingDto>()
             .ForMember(b => b.Status, o => o.MapFrom(s => s.Status.ToString()))
-            .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => s.Payment.Status.ToString()))
-            .ForMember(b => b.UserName, o => o.MapFrom(s => s.AppUser.UserName.ToString()))
+            .ForMember(dest => dest.PaymentStatus, opt =>
+                 {
+                     opt.Condition(src => src.Payment != null);
+                     opt.MapFrom(src => src.Payment.Status.ToString());
+                 }).ForMember(b => b.UserName, o => o.MapFrom(s => s.AppUser.UserName.ToString()))
+
             .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName.ToString()));
             CreateMap<Booking, BookingDtoV1>()
                      .ForMember(b => b.Status, o => o.MapFrom(s => (int)s.Status))
-                     .ForMember(b => b.PaymentStatus, o => o.MapFrom(s => (int)s.Payment.Status))
+                     .ForMember(dest => dest.PaymentStatus, opt =>
+                                {
+                                    opt.Condition(src => src.Payment != null);
+                                    opt.MapFrom(src => src.Payment.Status);
+                                })
                      .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName));
 
             CreateMap<StaffDetail, StaffDto>()

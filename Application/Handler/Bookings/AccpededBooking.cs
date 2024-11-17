@@ -32,6 +32,7 @@ namespace Application.Handler.Bookings
                 var booking = await _context.Bookings
                 .Include(b => b.Payment)
                 .Include(b=>b.Court)
+                .ThenInclude(b=>b.CourtCluster)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (booking == null)
                 {

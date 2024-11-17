@@ -1,10 +1,6 @@
 using API.Extensions;
-using Application.Core;
 using Application.DTOs;
 using Application.Handler.Courts;
-using AutoMapper;
-using Domain.Entity;
-using Domain.Enum;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

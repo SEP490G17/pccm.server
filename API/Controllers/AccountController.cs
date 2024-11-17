@@ -40,7 +40,7 @@ namespace API.Controllers
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (result)
             {
-                return CreateUserObject(user);
+                return await CreateUserObject(user);
             }
             return NotFound();
         }
@@ -83,14 +83,16 @@ namespace API.Controllers
             return BadRequest(result.Errors);
         }
 
-        private UserResponseDto CreateUserObject(AppUser user)
+        private async Task<UserResponseDto> CreateUserObject(AppUser user)
         {
             return new UserResponseDto
             {
                 DisplayName = $"{user.FirstName} {user.LastName}",
                 Image = user?.ImageUrl?.ToString(),
                 Token = _tokenService.CreateToken(user),
-                UserName = user.UserName
+                UserName = user.UserName,
+                PhoneNumber = user?.PhoneNumber,
+                Roles = await _userManager.GetRolesAsync(user),
             };
         }
 
@@ -100,7 +102,7 @@ namespace API.Controllers
         {
             var user = await _userManager.Users
                 .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
-            return CreateUserObject(user);
+            return await CreateUserObject(user);
         }
 
         [AllowAnonymous]

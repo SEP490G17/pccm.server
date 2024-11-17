@@ -34,7 +34,9 @@ namespace Domain.Entity
         public BookingStatus Status { get; set; } = 0;// Trạng thái đặt sân
 
         public virtual Court? Court { get; set; }  // Liên kết với bảng Courts
-
+        public string AppUserId { get; set; }
+        
+        [ForeignKey("AppUserId")]
         public virtual AppUser? AppUser { get; set; }  // Liên kết với bảng Users
         public virtual StaffDetail Staff { get; set; }
         public string RecurrenceRule { get; set; } = string.Empty;
