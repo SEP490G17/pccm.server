@@ -2,7 +2,6 @@ using Application.DTOs;
 using Application.Handler.Bookings;
 using Application.SpecParams;
 using Application.SpecParams.BookingSpecification;
-using Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

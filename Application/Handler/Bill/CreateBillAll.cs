@@ -1,10 +1,6 @@
 ﻿using Application.Core;
 using Application.DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Domain.Entity;
-using Domain.Enum;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

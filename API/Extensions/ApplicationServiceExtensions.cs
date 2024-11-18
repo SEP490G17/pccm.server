@@ -14,7 +14,6 @@ using Infrastructure.SendMessage;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Persistence.Repository;
-using System.Runtime.InteropServices;
 
 namespace API.Extensions
 {

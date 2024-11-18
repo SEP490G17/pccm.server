@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Bill
 {

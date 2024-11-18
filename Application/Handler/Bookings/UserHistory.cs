@@ -1,7 +1,6 @@
 using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
-using Application.SpecParams;
 using Application.SpecParams.BookingSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;

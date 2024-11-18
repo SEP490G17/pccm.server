@@ -39,7 +39,7 @@ namespace Application.Handler.Bookings
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
                 }
                 var checkSlot = await _context.Bookings.AnyAsync(x =>
-                    x.Court.Id != booking.Court.Id &&
+                    x.Court.Id == booking.Court.Id &&
                     (int)x.Status == (int)BookingStatus.Confirmed
                     && ((booking.StartTime <= x.StartTime && booking.EndTime > x.StartTime)
                     || (booking.StartTime < x.EndTime && booking.EndTime > x.EndTime)

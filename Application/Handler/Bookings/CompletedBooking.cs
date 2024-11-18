@@ -40,7 +40,7 @@ namespace Application.Handler.Bookings
                 if((int)booking.Payment.Status != (int)PaymentStatus.Success){
                     return Result<BookingDtoV2>.Failure("Booking chưa được thanh toán");
                 }
-                var pendingOrder = booking.Orders.Any(o=>o.BookingId == booking.Id && (int)o.Payment.Status == (int)PaymentStatus.Pending);
+                var pendingOrder = _context.Orders.Any(o=>o.BookingId == booking.Id && (int)o.Payment.Status == (int)PaymentStatus.Pending);
                 if (pendingOrder){
                     return Result<BookingDtoV2>.Failure("Còn đơn Order chưa được thanh toán");
                 }
