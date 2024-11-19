@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.DTOs;
 using AutoMapper;
 using Domain;
@@ -13,7 +14,10 @@ namespace Application.Core
             CreateMap<Banner, BannerInputDto>();
             CreateMap<BannerInputDto, Banner>();
             CreateMap<Banner, BannerLog>();
-            CreateMap<Product, ProductLog>();
+            CreateMap<Product, ProductLog>()
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
             CreateMap<NewsBlog, NewsBlogDto>();
             CreateMap<BookingInputDto, Booking>();
             CreateMap<AppUser, ProfileInputDto>();
@@ -83,9 +87,6 @@ namespace Application.Core
                 .ForMember(b => b.CreatedAt, o => o.MapFrom(s => s.CreatedAt));
             CreateMap<Service, ServiceDto>()
              .ForMember(s => s.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
-            CreateMap<Service, Service>()
-            .ForMember(s => s.UpdatedAt, o => o.MapFrom(s => (DateTime?)null))
-                .ForMember(s => s.UpdatedBy, o => o.MapFrom(s => (string)null));
             CreateMap<ServiceInputDto, Service>()
               .ForMember(dest => dest.CourtClusterId,
                opt => opt.MapFrom(src => src.CourtClusterId != null && src.CourtClusterId.Any()
@@ -189,6 +190,24 @@ namespace Application.Core
             .ForMember(c => c.ProductName, o => o.MapFrom(s => s.Product.ProductName));
             CreateMap<OrderDetail, ServiceBillDto>()
             .ForMember(c => c.ServiceName, o => o.MapFrom(s => s.Service.ServiceName));
+
+            CreateMap<ProductLog, ProductLogDto>()
+            .ForMember(c => c.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
+            .ForMember(c => c.CreateBy, o => o.MapFrom(s => s.CreatedBy))
+            .ForMember(c => c.CreateAt, o => o.MapFrom(s => s.CreatedAt))
+            .ForMember(c => c.LogType, o => o.MapFrom(s => s.LogType.ToString()))
+            .ForMember(c => c.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+
+            CreateMap<ServiceLog, ServiceLogDto>()
+            .ForMember(c => c.LogType, o => o.MapFrom(s => s.LogType.ToString()))
+            .ForMember(c => c.CreateBy, o => o.MapFrom(s => s.CreatedBy))
+            .ForMember(c => c.CreateAt, o => o.MapFrom(s => s.CreatedAt))
+            .ForMember(c => c.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+
+            CreateMap<Service, ServiceLog>()
+            .ForMember(c => c.ServiceId, o => o.MapFrom(s => s.Id))
+            .ForMember(c => c.ServiceName, o => o.MapFrom(s => s.ServiceName))
+            .ForMember(c => c.Price, o => o.MapFrom(s => s.Price));
         }
 
     }

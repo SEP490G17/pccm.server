@@ -48,6 +48,7 @@ namespace Application.Handler.Bookings
                     Status = PaymentStatus.Pending,
                 };
                 booking.Payment = payment;
+                booking.TotalPrice = amout;
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create booking");

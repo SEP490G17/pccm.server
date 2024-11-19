@@ -2,8 +2,9 @@
 {
     public enum LogType
     {
-        Create,
-        Update,
-        Delete
+        Create = 1,
+        Update = 2,
+        Order = 3,
+        Delete = 4
     }
 }

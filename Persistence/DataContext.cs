@@ -33,6 +33,7 @@ namespace Persistence
         public DbSet<NewsLog> NewsLogs { get; set; }
         public DbSet<ServiceLog> ServiceLogs { get; set; }
         public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Revenue> Revenues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -41,11 +42,11 @@ namespace Persistence
             builder.Entity<CourtCluster>()
                 .Property(c => c.Images)
                 .HasColumnType("json"); // Đặt kiểu cột là JSON
-            
+
             builder.Entity<NewsBlog>().ToTable("News")
                 .Property(c => c.Tags)
                 .HasColumnType("json"); // Đặt kiểu cột là JSON
-                
+
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
                 var tableName = entityType.GetTableName();
