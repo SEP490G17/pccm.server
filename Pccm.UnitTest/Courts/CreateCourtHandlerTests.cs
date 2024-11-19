@@ -64,7 +64,7 @@ namespace Pccm.UnitTest.Courts
 
 
         [TestCase("Premium Service 2", 100, CourtStatus.Available, ExpectedResult = false)]
-        public async Task<bool> Handle_CreateCourt_WhenNotExistCourtCluster(
+        public async Task<bool> Handle_ShouldCreateCourtFail_WhenNotExistCourtCluster(
                 string CourtName,
                 int? CourtClusterId,
                 CourtStatus Status)

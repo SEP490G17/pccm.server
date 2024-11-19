@@ -35,8 +35,9 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-        [TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = true)]
+        [TestCase(1, "Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = true)]
         public async Task<bool> Handle_ShouldEditCourtCluster_WhenValid(
+            int id,
              string title,
              string province,
              string provinceName,
@@ -67,7 +68,7 @@ namespace Pccm.UnitTest.CourtClusters
                     Images = new string[] { "image1.jpg", "image2.jpg" }
                 };
 
-                var result = await Mediator.Send(new Edit.Command { courtCluster = courtClusterInputDto }, default);
+                var result = await Mediator.Send(new Edit.Command { courtCluster = courtClusterInputDto, id = id }, default);
 
                 return result.IsSuccess;
             }

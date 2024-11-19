@@ -1,4 +1,5 @@
-﻿using Application.Core;
+using Application.Core;
+using Application.Handler.Bookings;
 using AutoMapper;
 using Domain.Entity;
 using FluentAssertions;
@@ -16,16 +17,15 @@ using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Application.DTOs;
-using Application.Handler.Categories;
 
-namespace Pccm.UnitTest.Categories
+namespace Pccm.UnitTest.Bookings
 {
     [TestFixture]
-    public class CreateCategoryHandlerTests
+    public class CancelBookingHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public CreateCategoryHandlerTests()
+        public CancelBookingHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -36,18 +36,13 @@ namespace Pccm.UnitTest.Categories
         }
 
 
-        [TestCase("Sports", ExpectedResult = true)]
-        public async Task<bool> Handle_CreateCategory_WhenValid(
-          string CategoryName)
+        [TestCase(4, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldCancelBooking_WhenValidData(
+            int id)
         {
             try
             {
-                var category = new Category
-                {
-                    CategoryName = CategoryName
-                };
-
-                var result = await Mediator.Send(new Create.Command() { Category = category }, default);
+                var result = await Mediator.Send(new CancelBooking.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -57,19 +52,13 @@ namespace Pccm.UnitTest.Categories
             }
         }
 
-
-        [TestCase(null, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateCategoryFail_WhenNameIsNull(
-          string? CategoryName)
+      [TestCase(111, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldCancelBookingFail_WhenNotExistBooking(
+            int id)
         {
             try
             {
-                var category = new Category
-                {
-                    CategoryName = CategoryName
-                };
-
-                var result = await Mediator.Send(new Create.Command() { Category = category }, default);
+                var result = await Mediator.Send(new CancelBooking.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -78,5 +67,22 @@ namespace Pccm.UnitTest.Categories
                 return false;
             }
         }
+
+         [TestCase(3, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldCancelBookingFail_WhenBookingIsSuccess(
+            int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new CancelBooking.Command() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+       
     }
 }

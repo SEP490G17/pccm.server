@@ -49,7 +49,7 @@ namespace Pccm.UnitTest.News
 
 
         [TestCase(122, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteNewsBlog_WhenIdNotExist(
+        public async Task<bool> Handle_ShouldDeleteNewsBlogFail_WhenIdNotExist(
             int id)
         {
             try

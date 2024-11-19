@@ -64,7 +64,7 @@ namespace Pccm.UnitTest.Services
         }
 
         [TestCase(140, new int[] { 2 }, "Premium Service", "High-quality tennis court rental", 150.00, ExpectedResult = false)]
-        public async Task<bool> Handle_EditService_WhenNotExistID(
+        public async Task<bool> Handle_ShouldEditServiceFail_WhenNotExistID(
             int Id,
             int[] CourtClusterId,
             string ServiceName,

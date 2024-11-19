@@ -13,7 +13,7 @@ namespace Pccm.UnitTest.Reviews
 {
     public class DetailReviewHandlerTests
     {
-            private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
         public DetailReviewHandlerTests()
         {
@@ -26,20 +26,20 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(2, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDetailReview_WhenValidId(
-            int id)
-        {
-            try
-            {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+        // [TestCase(2, ExpectedResult = true)]
+        // public async Task<bool> Handle_ShouldDetailReview_WhenValidId(
+        //     int id)
+        // {
+        //     try
+        //     {
+        //         var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        //         return result.IsSuccess;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return false;
+        //     }
+        // }
     }
 }

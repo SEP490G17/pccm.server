@@ -72,7 +72,7 @@ namespace Pccm.UnitTest.News
         }
 
         [TestCase(1, null, "link anh", "ngich ngu", "2024-11-11T10:00:00", "2024-11-11T12:00:00", "Hanoi", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldEditNewsBlog_WhenTitleIsNull(
+        public async Task<bool> Handle_ShouldEditNewsBlogFail_WhenTitleIsNull(
            int id,
            string? Title,
            string Thumbnail,
@@ -108,7 +108,7 @@ namespace Pccm.UnitTest.News
 
 
         [TestCase(1, "Tin tuc ve san 1", null, "ngich ngu", "2024-11-11T10:00:00", "2024-11-11T12:00:00", "Hanoi", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldEditNewsBlog_WhenThumbnailIsNull(
+        public async Task<bool> Handle_ShouldEditNewsBlogFail_WhenThumbnailIsNull(
            int id,
            string? Title,
            string? Thumbnail,

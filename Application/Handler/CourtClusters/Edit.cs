@@ -14,6 +14,7 @@ namespace Application.Handler.CourtClusters
         public class Command : IRequest<Result<CourtCluster>>
         {
             public CourtClustersInputDto courtCluster { get; set; }
+            public int id { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -36,18 +37,24 @@ namespace Application.Handler.CourtClusters
             }
             public async Task<Result<CourtCluster>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var courtCluster = _mapper.Map<CourtCluster>(request.courtCluster);
-                var existingCourtCluster  = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == courtCluster.Id);
-                if (existingCourtCluster  == null)
+                var existingCourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == request.id, cancellationToken);
+
+                if (existingCourtCluster == null)
                 {
-                    return Result<CourtCluster>.Failure("Not found court cluster.");
+                    return Result<CourtCluster>.Failure("Court cluster not found.");
                 }
 
-                _context.Entry(existingCourtCluster).State = EntityState.Detached;
-                _context.CourtClusters.Update(courtCluster);
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<CourtCluster>.Failure("Faild to edit court cluster.");
-                return Result<CourtCluster>.Success(_context.Entry(courtCluster).Entity);
+                _mapper.Map(request.courtCluster, existingCourtCluster);
+
+                // Update the entity in the database
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+
+                if (!result)
+                {
+                    return Result<CourtCluster>.Failure("Failed to edit court cluster. Changes were not saved.");
+                }
+
+                return Result<CourtCluster>.Success(_context.Entry(existingCourtCluster).Entity);
             }
         }
     }

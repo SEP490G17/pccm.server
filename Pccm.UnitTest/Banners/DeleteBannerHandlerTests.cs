@@ -32,7 +32,7 @@ namespace Pccm.UnitTest.Banners
 
 
         [TestCase(200, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteBanner_WhenNotExistId(
+        public async Task<bool> Handle_ShouldDeleteBannerFail_WhenNotExistId(
             int id)
         {
             try

@@ -78,7 +78,7 @@ namespace Pccm.UnitTest.Banners
 
 
         [TestCase(null, "High-qualitl", 150, "https://example.com/image.jpg", "https://example.com", "2024-11-01", "2024-12-01", BannerStatus.Display, BannerType.Banner, BannerInPage.HomePage, ExpectedResult = false)]
-        public async Task<bool> Handle_CreateBanner_WhenNotInputTitle(
+        public async Task<bool> Handle_ShouldCreateBannerFail_WhenNotInputTitle(
              string? Title,
              string Description,
              decimal Price,

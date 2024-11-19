@@ -43,7 +43,7 @@ namespace Pccm.UnitTest.Orders
         }
 
         [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailOrder_WhenIdNotExist(
+        public async Task<bool> Handle_ShouldDetailOrderFail_WhenIdNotExist(
            int id)
         {
             try

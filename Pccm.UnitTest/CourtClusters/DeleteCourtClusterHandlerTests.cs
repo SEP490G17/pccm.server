@@ -32,7 +32,7 @@ namespace Pccm.UnitTest.CourtClusters
 
 
         [TestCase(200, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteCourtCluster_WhenNotExistCourtCluster(
+        public async Task<bool> Handle_ShouldDeleteCourtClusterFail_WhenNotExistCourtCluster(
             int id)
         {
             try

@@ -73,7 +73,7 @@ namespace Pccm.UnitTest.Products
 
 
         [TestCase(1, 100, 1, "Premium Product", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
-        public async Task<bool> Handle_EditProduct_WhenNotExistCategory(
+        public async Task<bool> Handle_ShouldEditProductFail_WhenNotExistCategory(
             int id,
             int CategoryId,
             int CourtClusterId,
@@ -109,7 +109,7 @@ namespace Pccm.UnitTest.Products
         }
 
         [TestCase(1, 1, 100, "Premium Product", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
-        public async Task<bool> Handle_EditProduct_WhenNotExistCourtCluster(
+        public async Task<bool> Handle_ShouldEditProductFail_WhenNotExistCourtCluster(
            int id,
            int CategoryId,
            int CourtClusterId,
