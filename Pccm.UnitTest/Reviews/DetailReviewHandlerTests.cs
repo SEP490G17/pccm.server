@@ -1,4 +1,5 @@
 using API.Extensions;
+using Application.Handler.Reviews;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,18 +24,18 @@ namespace Pccm.UnitTest.Reviews
 
         [TestCase(2, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailReview_WhenValidId(
-            int id)
+           int id)
         {
-            try
-            {
-                var result = await Mediator.Send(new ListCourtCluster.Query() { Id = id }, default);
+           try
+           {
+               var result = await Mediator.Send(new ListCourtCluster.Query() { Id = id }, default);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+               return result.IsSuccess;
+           }
+           catch (Exception ex)
+           {
+               return false;
+           }
         }
     }
 }

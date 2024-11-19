@@ -15,12 +15,12 @@ namespace Application.Handler.Statistics
 {
     public class SaveRevenue
     {
-        public class Command : IRequest<Result<Unit>>
+        public class Command : IRequest<Result<Revenue>>
         {
-            public ClusterStatisticsDto revenue { get; set; }
+            public SaveRevenueDto revenue { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>
+        public class Handler : IRequestHandler<Command, Result<Revenue>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -29,19 +29,21 @@ namespace Application.Handler.Statistics
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Revenue>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var data = request.revenue;
                 var revenueEntity = new Revenue
                 {
-                    courtClusterId = 1,
-                    revenueAt = DateTime.Now,
-                    BookingDetail = JsonSerializer.Serialize(data.BookingDetails),
-                    ProductDetail = JsonSerializer.Serialize(data.OrderProductDetails),
-                    ServiceDetail = JsonSerializer.Serialize(data.OrderServiceDetails),
-                    ExpenseDetail = JsonSerializer.Serialize(data.ExpenseDetails)
+                    courtClusterId = request.revenue.courtClusterId,
+                    revenueAt = request.revenue.Date,
+                    BookingDetail = JsonSerializer.Serialize(request.revenue.BookingDetails),
+                    ProductDetail = JsonSerializer.Serialize(request.revenue.OrderProductDetails),
+                    ServiceDetail = JsonSerializer.Serialize(request.revenue.OrderServiceDetails),
+                    ExpenseDetail = JsonSerializer.Serialize(request.revenue.ExpenseDetails)
                 };
-                return Result<Unit>.Failure("Failed to save revenue");
+                await _context.Revenues.AddAsync(revenueEntity);
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result) return Result<Revenue>.Failure("Fail to create or update expense");
+                return Result<Revenue>.Success(revenueEntity);
             }
         }
     }

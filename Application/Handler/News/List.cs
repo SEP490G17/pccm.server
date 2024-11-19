@@ -15,7 +15,7 @@ namespace Application.Handler.News
     {
         public class Query : IRequest<Result<Pagination<NewsBlogDto>>>
         {
-            public BaseSpecParam BaseSpecParam { get; set; }
+            public BaseSpecWithFilterParam BaseSpecParam { get; set; }
         }
 
         public class Handler(IUnitOfWork _unitOfWork, IMapper _mapper) : IRequestHandler<Query, Result<Pagination<NewsBlogDto>>>
