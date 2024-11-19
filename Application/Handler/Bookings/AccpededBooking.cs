@@ -31,19 +31,22 @@ namespace Application.Handler.Bookings
             {
                 var booking = await _context.Bookings
                 .Include(b => b.Payment)
-                .Include(b=>b.Court)
+                .Include(b => b.Court)
+                .ThenInclude(b => b.CourtCluster)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (booking == null)
                 {
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
                 }
                 var checkSlot = await _context.Bookings.AnyAsync(x =>
+                    x.Court.Id == booking.Court.Id &&
                     (int)x.Status == (int)BookingStatus.Confirmed
                     && ((booking.StartTime <= x.StartTime && booking.EndTime > x.StartTime)
                     || (booking.StartTime < x.EndTime && booking.EndTime > x.EndTime)
                     || (booking.StartTime >= x.StartTime && booking.EndTime <= x.EndTime))
                 );
-                if (checkSlot){
+                if (checkSlot)
+                {
                     return Result<BookingDtoV2>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
                 }
                 booking.Status = BookingStatus.Confirmed;

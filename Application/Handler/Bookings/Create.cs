@@ -1,10 +1,13 @@
 using Application.Core;
 using Application.DTOs;
+using Application.Interfaces;
 using AutoMapper;
+using Domain;
 using Domain.Entity;
 using Domain.Enum;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -29,26 +32,52 @@ namespace Application.Handler.Bookings
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IUserAccessor _userAccessor;
+            private readonly UserManager<AppUser> _userManager;
+
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor, UserManager<AppUser> userManager)
             {
                 _mapper = mapper;
                 _context = context;
+                _userAccessor = userAccessor;
+                _userManager = userManager;
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
+
+                var userClaims = _userAccessor.GetUserName();
+                var user = await _userManager.FindByNameAsync(userClaims);
+                if (user == null)
+                {
+                    return Result<Unit>.Failure("Username không tồn tại");
+                }
+                var checkSlot = await _context.Bookings.AnyAsync(
+                  x =>
+                  x.Court.Id == request.Booking.CourtId &&
+                      (int)x.Status == (int)BookingStatus.Confirmed
+                      && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
+                      || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
+                      || (request.Booking.StartTime >= x.StartTime && request.Booking.EndTime <= x.EndTime))
+                  );
+
+                if (checkSlot)
+                {
+                    return Result<Unit>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
+                }
+
+                if (request.Booking.StartTime.Date < DateTime.Today.Date)
+                {
+                    return Result<Unit>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
+                }
+
                 var booking = _mapper.Map<Booking>(request.Booking);
                 var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
                 var courtPrice = court.CourtPrices.ToList();
                 var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
                 booking.Court = await _context.Courts.FirstOrDefaultAsync(c => c.Id == request.Booking.CourtId);
                 booking.AcceptedAt = DateTime.Now;
-                var payment = new Payment()
-                {
-                    Amount = amout,
-                    Status = PaymentStatus.Pending,
-                };
-                booking.Payment = payment;
                 booking.TotalPrice = amout;
+                
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<Unit>.Failure("Fail to create booking");

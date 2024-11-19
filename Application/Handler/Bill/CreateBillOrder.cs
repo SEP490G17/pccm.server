@@ -1,6 +1,5 @@
 ﻿using Application.Core;
 using Application.DTOs;
-using Application.Interfaces;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Application.Handler.Bill
 {

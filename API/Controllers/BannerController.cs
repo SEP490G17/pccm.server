@@ -21,7 +21,6 @@ namespace API.Controllers
         */
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();
@@ -45,7 +44,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Details.Query() { Id = id }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
@@ -57,7 +55,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner, userName = userName }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
@@ -70,7 +67,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner, userName = userName }));
         }
 
-        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBanner(int id)
         {
@@ -82,7 +78,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
         }
 
-        [AllowAnonymous]
         [HttpPut]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {

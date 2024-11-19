@@ -9,6 +9,7 @@ namespace API.Controllers
 {
     public class BookingController : BaseApiController
     {
+
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetBookings([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
@@ -26,7 +27,7 @@ namespace API.Controllers
         [HttpPost("v1")]
         public async Task<IActionResult> GetBookingsV1([FromBody] BookingV1SpecParam bookingSpecParam, CancellationToken ct)
         {
-           
+
             return HandleResult(await Mediator.Send(new ListV1.Query() { BookingSpecParam = bookingSpecParam }, ct));
         }
 
@@ -52,11 +53,12 @@ namespace API.Controllers
         }
 
         [HttpGet("v1/{id}")]
+        [AllowAnonymous]
+
         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, ct));
         }
-        [AllowAnonymous]
         [HttpPut("{id}/{status}")]
         public async Task<IActionResult> UpdateStatusBooking(int id, string status)
         {
@@ -72,7 +74,6 @@ namespace API.Controllers
         }
 
 
-        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingInputDto bookingInput, CancellationToken ct)
         {
@@ -83,7 +84,6 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
-        [AllowAnonymous]
         [HttpPut("completed/{id}")]
         public async Task<IActionResult> CompletedBooking(int id)
         {
@@ -95,7 +95,6 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
-        [AllowAnonymous]
         [HttpPut("accepted/{id}")]
         public async Task<IActionResult> AcceptedBooking(int id)
         {
@@ -106,7 +105,6 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
@@ -117,7 +115,6 @@ namespace API.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPut("deny/{id}")]
         public async Task<IActionResult> DenyBooking(int id)
         {
@@ -130,15 +127,25 @@ namespace API.Controllers
         /// <param name="bookingInput"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("v2")]
         public async Task<IActionResult> CreateBookingForAdmin([FromBody] BookingInputDto bookingInput, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new StaffCreate.Command() { Booking = bookingInput }, ct));
         }
 
-        [AllowAnonymous]
+        /// <summary>
+        /// Lịch sử đặt sân của user
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistoryBookingOfUser([FromQuery] BookingUserHistorySpecParam baseSpecParam)
+        {
+            return HandleResult(await Mediator.Send(new UserHistory.Query(){BookingSpecParam = baseSpecParam}));
+        }
+
         [HttpGet("priceCourt")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetListPriceCourtByCourtClusterId([FromQuery] int courtClusterId, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new GetCourtPrice.Query() { Id = courtClusterId }, ct));
