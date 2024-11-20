@@ -33,6 +33,7 @@ namespace Persistence
         public DbSet<NewsLog> NewsLogs { get; set; }
         public DbSet<ServiceLog> ServiceLogs { get; set; }
         public DbSet<Expense> Expenses { get; set; }
+        public DbSet<CourtCombo> CourtCombos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -10,26 +10,26 @@ namespace Application.Handler.CourtClusters
 {
     public class Detail
     {
-        public class Query : IRequest<Result<CourtClusterDto.CourtCLusterDetails>>
+        public class Query : IRequest<Result<CourtClusterDto.CourtClusterDetails>>
         {
             public int Id { get; set; }
         }
 
         public class Handler(DataContext _context, IMapper _mapper)
-            : IRequestHandler<Query, Result<CourtClusterDto.CourtCLusterDetails>>
+            : IRequestHandler<Query, Result<CourtClusterDto.CourtClusterDetails>>
         {
-            public async Task<Result<CourtClusterDto.CourtCLusterDetails>> Handle(
+            public async Task<Result<CourtClusterDto.CourtClusterDetails>> Handle(
                 Query request, CancellationToken cancellationToken)
             {
                 var court = await _context.CourtClusters
-                    .ProjectTo<CourtClusterDto.CourtCLusterDetails>(_mapper.ConfigurationProvider)
+                    .ProjectTo<CourtClusterDto.CourtClusterDetails>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (court is null)
-                    return Result<CourtClusterDto.CourtCLusterDetails>.Failure(
+                    return Result<CourtClusterDto.CourtClusterDetails>.Failure(
                         "Court cluster not found");
-                var courtClusterMap = _mapper.Map<CourtClusterDto.CourtCLusterDetails>(court);
+                var courtClusterMap = _mapper.Map<CourtClusterDto.CourtClusterDetails>(court);
 
-                return Result<CourtClusterDto.CourtCLusterDetails>.Success(courtClusterMap);
+                return Result<CourtClusterDto.CourtClusterDetails>.Success(courtClusterMap);
             }
         }
     }

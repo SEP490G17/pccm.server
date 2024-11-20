@@ -42,7 +42,7 @@ namespace API.Controllers
             {
                 return await CreateUserObject(user);
             }
-            return NotFound();
+            return Unauthorized();
         }
 
         [AllowAnonymous]

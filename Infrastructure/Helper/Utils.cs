@@ -64,7 +64,7 @@ namespace API.Helper
             if (x == y) return 0;
             if (x == null) return -1;
             if (y == null) return 1;
-            var vnpCompare = CompareInfo.GetCompareInfo("en-US");
+            var vnpCompare = CultureInfo.InvariantCulture.CompareInfo;
             return vnpCompare.Compare(x, y, CompareOptions.Ordinal);
         }
     }

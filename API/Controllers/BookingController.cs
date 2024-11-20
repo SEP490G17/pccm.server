@@ -16,13 +16,13 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
+
         /// <summary>
         ///  Hàm này dùng để lấy về lịch booking theo ngày, theo tuần => dùng cho lịch
         /// </summary>
         /// <param name="bookingSpecParam"></param>
         /// <param name="ct"></param>
         /// <returns></returns> <summary>
-
         [AllowAnonymous]
         [HttpPost("v1")]
         public async Task<IActionResult> GetBookingsV1([FromBody] BookingV1SpecParam bookingSpecParam, CancellationToken ct)

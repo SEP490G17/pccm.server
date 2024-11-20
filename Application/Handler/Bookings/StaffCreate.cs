@@ -51,12 +51,15 @@ namespace Application.Handler.Bookings
                     return Result<BookingDtoV1>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
                 }
 
-                if (request.Booking.StartTime.Date < DateTime.Today.Date)
+                var todayDate = DateTime.UtcNow;
+
+                if (request.Booking.StartTime < todayDate)
                 {
                     return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
                 }
 
                 var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
+                
                 var courtPrice = court.CourtPrices.ToList();
                 if (court == null || court.Status == CourtStatus.Closed)
                 {

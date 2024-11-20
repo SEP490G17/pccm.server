@@ -1,3 +1,4 @@
+using Application.Handler.CourtPrices;
 using Application.Handler.Courts;
 using Application.SpecParams;
 using Domain.Entity;
@@ -20,6 +21,25 @@ namespace API.Controllers
         public async Task<IActionResult> GetCourt(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
+        }
+
+
+        /// <summary>
+        /// Get Court list of a cluster 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        [HttpGet("cluster/{id}")]
+        public async Task<IActionResult> GetCourtOfCluster([FromRoute(Name = "id")] int id, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetListCourtOfCluster.Query() { CourtClusterId = id }, ct));
+        }
+
+        [HttpGet("{id}/prices")]
+        public async Task<IActionResult> GetPriceOfCourt([FromRoute(Name = "id")] int id, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetCourtPricesOfCourt.Query() { CourtId = id }, ct));
         }
 
         [HttpGet("list")]
@@ -64,6 +84,12 @@ namespace API.Controllers
         public async Task<IActionResult> FilterCourt(string valueFilter, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Filter.Query() { value = valueFilter }, ct));
+        }
+
+        [HttpPut("toggle/{id}")]
+        public async Task<IActionResult> ToggleCourt([FromRoute]int id,[FromQuery] int status ,CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ToggleCourt.Command() { Id = id, Status = status },ct));
         }
     }
 }

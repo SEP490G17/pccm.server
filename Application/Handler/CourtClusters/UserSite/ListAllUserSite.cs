@@ -11,18 +11,18 @@ namespace Application.Handler.CourtClusters
 {
     public class ListAllUserSite
     {
-        public class Query : IRequest<Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>> { }
+        public class Query : IRequest<Result<List<CourtClusterDto.CourtClusterListPageUserSite>>> { }
 
-        public class Handler(IMapper mapper, IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>>
+        public class Handler(IMapper mapper, IUnitOfWork unitOfWork) : IRequestHandler<Query, Result<List<CourtClusterDto.CourtClusterListPageUserSite>>>
         {
-            public async Task<Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<CourtClusterDto.CourtClusterListPageUserSite>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var courtCluster = await unitOfWork.Repository<CourtCluster>()
                 .QueryList(null)
                 .Include(c => c.Courts)
-                .ProjectTo<CourtClusterDto.CourtCLusterListPageUserSite>(mapper.ConfigurationProvider)
+                .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
-                return Result<List<CourtClusterDto.CourtCLusterListPageUserSite>>.Success(courtCluster);
+                return Result<List<CourtClusterDto.CourtClusterListPageUserSite>>.Success(courtCluster);
             }
         }
     }
