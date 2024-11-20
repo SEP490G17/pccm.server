@@ -44,7 +44,7 @@ namespace Application.Handler.Bookings
                         && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
                         || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
                         || (request.Booking.StartTime >= x.StartTime && request.Booking.EndTime <= x.EndTime))
-                    );
+                );
 
                 if (checkSlot)
                 {

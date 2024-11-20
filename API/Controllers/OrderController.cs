@@ -53,12 +53,12 @@ namespace API.Controllers
 
         // chạy swagger bị lỗi nên cmt lại
 
-        // [AllowAnonymous]
-        // [HttpPut("v1/edit")]
-        // public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
-        // {
-        //     return HandleResult(await Mediator.Send(command));
-        // }
+        [AllowAnonymous]
+        [HttpPut("v1/edit")]
+        public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
+        {
+            return HandleResult(await Mediator.Send(command));
+        }
 
 
         [AllowAnonymous]

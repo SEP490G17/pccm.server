@@ -9,7 +9,7 @@ namespace Domain.Entity
         public int? ProductId { get; set; }
         public int? ServiceId { get; set; }
         [Required]
-        public decimal Quantity { get; set; }  // Số lượng sản phẩm hoặc dịch vụ
+        public double Quantity { get; set; }  // Số lượng sản phẩm hoặc dịch vụ
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá của sản phẩm hoặc dịch vụ

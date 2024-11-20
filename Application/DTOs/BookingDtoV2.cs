@@ -16,14 +16,13 @@ namespace Application.DTOs
         public DateTime EndDay { get; set; }
         public PaymentStatus? PaymentStatus { get; set; }
         public string RecurrenceRule { get; set; }
-        public string? PaymentUrl { get; set; } = null;
+        public string PaymentUrl { get; set; } = null;
         public BookingStatus Status { get; set; }
         public bool IsSuccess { get; set; }
         public decimal TotalPrice { get; set; }
     }
 
     public class BookingDtoV2ForDetails:BookingDtoV2{
-        public int CourtId { get; set; }
         public int CourtClusterId { get; set; }
         public string Address { get; set; }
     }

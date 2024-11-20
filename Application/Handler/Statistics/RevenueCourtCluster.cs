@@ -71,7 +71,7 @@ namespace Application.Handler.Statistics
                     {
                         ProductName = g.Key,
                         Quantity = g.Sum(od => od.Quantity),
-                        TotalPrice = g.Sum(od => od.Price * od.Quantity)
+                        TotalPrice = g.Sum(od => od.Price * (decimal)od.Quantity)
                     })
                     .ToListAsync(cancellationToken);
 
@@ -93,7 +93,7 @@ namespace Application.Handler.Statistics
                     {
                         ServiceName = g.Key,
                         Quantity = g.Sum(od => od.Quantity),
-                        TotalPrice = g.Sum(od => od.Price * od.Quantity)
+                        TotalPrice = g.Sum(od => od.Price * (decimal)od.Quantity)
                     })
                     .ToListAsync(cancellationToken);
 

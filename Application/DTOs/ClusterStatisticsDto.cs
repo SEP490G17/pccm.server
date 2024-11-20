@@ -10,7 +10,7 @@
     public class    OrderProductDetailDto
     {
         public string ProductName { get; set; }
-        public decimal Quantity { get; set; }
+        public double Quantity { get; set; }
         public decimal TotalPrice { get; set; }
     }
 
@@ -24,7 +24,7 @@
     public class OrderServiceDetailDto
     {
         public string ServiceName { get; set; }
-        public decimal Quantity { get; set; }
+        public double Quantity { get; set; }
         public decimal TotalPrice { get; set; }
     }
 

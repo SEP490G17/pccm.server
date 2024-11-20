@@ -41,7 +41,7 @@ namespace Domain.Entity
         public virtual StaffDetail Staff { get; set; }
         public string RecurrenceRule { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime AcceptedAt { get; set; }
+        public DateTime? AcceptedAt { get; set; } = null;
         [NotMapped]
         public string StatusName => Status.ToString();  // Trả về tên của trạng thái thay vì số
 

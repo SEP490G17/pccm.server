@@ -37,7 +37,7 @@ namespace Application.Handler.Orders
             }
             public async Task<Result<OrderOfBookingDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (request.OrderForProducts.Count() == 0 && request.OrderForServices.Count() == 0)
+                if (request.OrderForProducts.Count == 0 && request.OrderForServices.Count == 0)
                 {
                     return Result<OrderOfBookingDto>.Failure("Danh sách sản phẩm không được rỗng");
                 }
@@ -52,7 +52,7 @@ namespace Application.Handler.Orders
                 decimal sum = 0;
                 var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == order.BookingId);
                 var orderDetails = await _context.OrderDetails.Where(o => o.OrderId == request.Id).ToListAsync();
-                if (orderDetails.Count() > 0)
+                if (orderDetails.Count > 0)
                 {
                     _context.RemoveRange(orderDetails);
                     order.OrderDetails.Clear();
@@ -69,7 +69,7 @@ namespace Application.Handler.Orders
                        orderDetails.Price = product.Price;
                        orderDetails.Quantity = orderItem.Quantity;
                        order.OrderDetails.Add(orderDetails);
-                       sum += product.Price * orderItem.Quantity;
+                       sum += product.Price * (decimal)orderItem.Quantity;
                    }
 
                    order.OrderDetails.Add(orderDetails);
@@ -85,7 +85,7 @@ namespace Application.Handler.Orders
                        orderDetails.Service = service;
                        orderDetails.ServiceId = service.Id;
                        orderDetails.Price = service.Price;
-                       orderDetails.Quantity = booking.Duration / 60;
+                       orderDetails.Quantity = (double) booking.Duration / 60;
                        order.OrderDetails.Add(orderDetails);
                        sum += service.Price * booking.Duration / 60;
                    }

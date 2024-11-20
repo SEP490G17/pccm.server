@@ -8,7 +8,7 @@ namespace Domain.Entity
         public string Position { get; set; }
         public string[] Roles { get; set; }
         public string Shift { get; set; } = "8:30 - 12:00";
-        public string[]? CourtCluster { get; set; }
+        public string[] CourtCluster { get; set; }
         public string PhoneNumber { get; set; }
 
 
