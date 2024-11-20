@@ -60,11 +60,11 @@ namespace Application.Handler.Bookings
 
                 var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
                 
-                var courtPrice = court.CourtPrices.ToList();
                 if (court == null || court.Status == CourtStatus.Closed)
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại hoặc đã dừng hoạt động");
                 }
+                var courtPrice = court.CourtPrices.ToList();
                 var amout = CalculateCourtPrice(request.Booking.StartTime, request.Booking.EndTime, courtPrice);
 
                 var booking = _mapper.Map<Booking>(request.Booking);
@@ -81,13 +81,12 @@ namespace Application.Handler.Bookings
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
-                var entity = _context.Entry(booking).Entity;
                 return Result<BookingDtoV1>.Success(_mapper.Map<BookingDtoV1>(booking));
 
 
             }
 
-            public decimal CalculateCourtPrice(DateTime fromTime, DateTime toTime, List<CourtPrice> courtPrices)
+            public static decimal CalculateCourtPrice(DateTime fromTime, DateTime toTime, List<CourtPrice> courtPrices)
             {
                 decimal totalPrice = 0;
 
