@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Application.Handler.Staffs;
 using Application.SpecParams;
 using Microsoft.AspNetCore.Authorization;
@@ -20,5 +21,6 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
+
     }
 }
