@@ -2,8 +2,8 @@ namespace Domain.Enum
 {
     public enum BannerStatus
     {
-        Hidden,
-        Display
+        Hidden = 0,
+        Display = 1
     }
     public static class BannerStatusExtensions
     {

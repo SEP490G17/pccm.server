@@ -66,5 +66,13 @@ namespace API.Controllers
             }
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
         }
+
+        [AllowAnonymous]
+        [HttpGet("log")]
+        public async Task<IActionResult> GetProductsLog([FromQuery] ProductLogSpecParams specWithFilterParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListProductLog.Query() { SpecParam = specWithFilterParam }, ct));
+
+        }
     }
 }

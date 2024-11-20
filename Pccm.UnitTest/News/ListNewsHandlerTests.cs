@@ -28,7 +28,7 @@ namespace Pccm.UnitTest.News
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.News.List.Query()
             {
-                BaseSpecParam = new BaseSpecParam()
+                BaseSpecParam = new BaseSpecWithFilterParam()
                 {
                     Search = "",
                     Skip = 0,
@@ -45,7 +45,7 @@ namespace Pccm.UnitTest.News
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.News.List.Query()
             {
-                BaseSpecParam = new BaseSpecParam()
+                BaseSpecParam = new BaseSpecWithFilterParam()
                 {
                     Search = "Giải đấu Pickleball nữ",
                     Skip = 0,

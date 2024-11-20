@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Handler.Banners;
 using Application.Interfaces;
 using Application.SpecParams;
+using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace API.Controllers
         */
 
         [HttpGet]
-        public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetBanner([FromQuery] BannerSpecParams baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();
             logger.LogInformation($"Check >>> {username}");

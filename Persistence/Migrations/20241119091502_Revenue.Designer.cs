@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Persistence;
 
@@ -11,9 +12,11 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241119091502_Revenue")]
+    partial class Revenue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -363,12 +366,6 @@ namespace Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DeleteAt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -450,33 +447,6 @@ namespace Persistence.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("CourtClusters");
-                });
-
-            modelBuilder.Entity("Domain.Entity.CourtCombo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourtId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourtId");
-
-                    b.ToTable("CourtCombos");
                 });
 
             modelBuilder.Entity("Domain.Entity.CourtPrice", b =>
@@ -1386,17 +1356,6 @@ namespace Persistence.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Domain.Entity.CourtCombo", b =>
-                {
-                    b.HasOne("Domain.Entity.Court", "Court")
-                        .WithMany("CourtCombos")
-                        .HasForeignKey("CourtId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Court");
-                });
-
             modelBuilder.Entity("Domain.Entity.CourtPrice", b =>
                 {
                     b.HasOne("Domain.Entity.Court", "Court")
@@ -1728,8 +1687,6 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entity.Court", b =>
                 {
-                    b.Navigation("CourtCombos");
-
                     b.Navigation("CourtPrices");
                 });
 

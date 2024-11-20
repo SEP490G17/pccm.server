@@ -12,7 +12,6 @@ namespace Application.SpecParams.ServiceSpecification
             // || x.Description.ToLower().Contains(baseSpecParam.Search)
             ))
             && x.DeletedAt == null
-            && x.UpdatedAt == null
             && (baseSpecParam.Filter == null || baseSpecParam.Filter == 0 || x.CourtClusterId.Equals(baseSpecParam.Filter)))
 
 

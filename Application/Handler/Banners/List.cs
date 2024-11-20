@@ -8,6 +8,7 @@ using Domain.Entity;
 using Application.SpecParams.BannerSpec;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Application.SpecParams.ProductSpecification;
 
 namespace Application.Handler.Banners
 {
@@ -15,7 +16,7 @@ namespace Application.Handler.Banners
     {
         public class Query : IRequest<Result<Pagination<BannerDto>>>
         {
-            public BaseSpecParam BaseSpecParam { get; set; }
+            public BannerSpecParams BaseSpecParam { get; set; }
         }
         public class Handler(IUnitOfWork _unitOfWork, IMapper _mapper) : IRequestHandler<Query, Result<Pagination<BannerDto>>>
         {

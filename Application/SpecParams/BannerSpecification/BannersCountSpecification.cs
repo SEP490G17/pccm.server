@@ -1,10 +1,11 @@
+using Application.SpecParams.ProductSpecification;
 using Domain.Entity;
 
 namespace Application.SpecParams.BannerSpec
 {
     public class BannersCountSpecification : BaseSpecification<Banner>
     {
-        public BannersCountSpecification(BaseSpecParam baseSpecParam) :
+        public BannersCountSpecification(BannerSpecParams baseSpecParam) :
         base
         (
             x =>

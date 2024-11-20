@@ -14,6 +14,7 @@ namespace Application.Handler.Services
         public class Command : IRequest<Result<List<Service>>>
         {
             public ServiceInputDto Service { get; set; }
+            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -39,9 +40,12 @@ namespace Application.Handler.Services
 
                 foreach (var courtClusterId in serviceDtos.CourtClusterId)
                 {
-                    // Kiểm tra xem dịch vụ có tồn tại với ServiceName và CourtClusterId hay không
                     var existingService = await _context.Services
-                        .FirstOrDefaultAsync(x => x.ServiceName == serviceDtos.ServiceName && x.CourtClusterId == courtClusterId, cancellationToken);
+                        .FirstOrDefaultAsync(x => x.ServiceName == serviceDtos.ServiceName
+                        && x.CourtClusterId == courtClusterId
+                        && x.DeletedAt == null
+                        && x.DeletedBy == null
+                        , cancellationToken);
 
                     if (existingService != null)
                     {
@@ -65,20 +69,32 @@ namespace Application.Handler.Services
                     services.Add(service);
                 }
 
-                // Nếu có các CourtCluster đã tồn tại, trả về thông báo lỗi với tên của chúng
                 if (existingCourtClusters.Any())
                 {
-                    string message = $"Dịch vụ '{serviceDtos.ServiceName}' đã tồn tại trong các CourtCluster: {string.Join(", ", existingCourtClusters)}";
+                    string message = $"Dịch vụ '{serviceDtos.ServiceName}' đã tồn tại ở {string.Join(", ", existingCourtClusters)}";
                     return Result<List<Service>>.Failure(message);
                 }
 
                 foreach (var service in services)
                 {
-                    await _context.AddAsync(service, cancellationToken);
-                    var newService = _context.Entry(service).Entity;
+                    await _context.Services.AddAsync(service, cancellationToken);
                 }
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<List<Service>>.Failure("Fail to create service");
+
+                foreach (var service in services)
+                {
+                    var serviceLog = _mapper.Map<ServiceLog>(service);
+                    serviceLog.Id = 0;
+                    serviceLog.CreatedAt = DateTime.Now;
+                    serviceLog.CreatedBy = request.userName;
+                    serviceLog.LogType = Domain.Enum.LogType.Create;
+                    serviceLog.CourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(c => c.Id == service.CourtClusterId);
+                    serviceLog.Description = $"đã thêm dịch vụ {service.ServiceName}";
+                    await _context.ServiceLogs.AddAsync(serviceLog, cancellationToken);
+                }
+                var result1 = await _context.SaveChangesAsync(cancellationToken) > 0;
+                if (!result1) return Result<List<Service>>.Failure("Fail to create servicelog");
 
                 return Result<List<Service>>.Success(services);
             }

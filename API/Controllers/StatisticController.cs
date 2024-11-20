@@ -62,6 +62,13 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost("SaveRevenue")]
+        public async Task<IActionResult> SaveRevenue([FromBody] SaveRevenueDto data, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new SaveRevenue.Command() { revenue = data }, ct));
+        }
+
+        [AllowAnonymous]
         [HttpGet("ExportExcel")]
         public async Task<IActionResult> ExportExcel([FromQuery] DateTime date, [FromQuery] int clusterId, CancellationToken ct)
         {

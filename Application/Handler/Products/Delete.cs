@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Products
@@ -12,7 +13,7 @@ namespace Application.Handler.Products
         public class Command : IRequest<Result<Unit>>
         {
             public int Id { get; set; }
-              public string userName { get; set; }
+            public string userName { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, Result<Unit>>
@@ -27,12 +28,13 @@ namespace Application.Handler.Products
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var deleteProduct = await _context.Products.FindAsync(request.Id);
+                var deleteProduct = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.CourtCluster)
+                .FirstOrDefaultAsync(p => p.Id == request.Id);
                 if (deleteProduct is null) return null;
-     
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-                DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
-                deleteProduct.DeletedAt = vietnamTime;
+
+                deleteProduct.DeletedAt = DateTime.Now;
 
                 var productLog = _mapper.Map<ProductLog>(deleteProduct);
                 if (productLog == null)
@@ -41,10 +43,9 @@ namespace Application.Handler.Products
                 }
 
                 productLog.Id = 0;
-                productLog.ProductId = deleteProduct.Id;
                 productLog.CreatedBy = request.userName;
-                productLog.CreatedAt = vietnamTime;
-                productLog.Description = "Product has been deleted";
+                productLog.CreatedAt = DateTime.Now;
+                productLog.Description = $"đã xóa {(int)deleteProduct.Quantity} {deleteProduct.ProductName}";
                 productLog.LogType = LogType.Delete;
 
                 await _context.ProductLogs.AddAsync(productLog, cancellationToken);

@@ -11,7 +11,7 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }

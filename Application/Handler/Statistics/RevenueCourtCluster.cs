@@ -31,12 +31,15 @@ namespace Application.Handler.Statistics
             {
                 // Thống kê các sân thuộc cụm sân đó
                 var bookingDetails = await _context.Bookings
-                  .Where(b => b.StartTime.Month == request.Date.Month &&
+                    .Include(B => B.Payment)
+                    .Include(b => b.Court)
+                    .Where(b => b.StartTime.Month == request.Date.Month &&
                                 b.StartTime.Year == request.Date.Year &&
                                  b.Court.CourtClusterId == request.CourtClusterId &&
                                  b.Status == BookingStatus.Confirmed &&
-                                 b.Payment.Status == PaymentStatus.Success)
-                    .Include(b => b.Court)
+                                 b.AcceptedAt != null &&
+                                 b.Payment.Status == PaymentStatus.Success &&
+                                 b.Payment.PaidAt != null)
                     .ToListAsync(cancellationToken);
 
                 var bookingDetailsGrouped = bookingDetails
@@ -52,6 +55,7 @@ namespace Application.Handler.Statistics
                 // Thống kê các dịch vụ
                 var orderProductDetails = await _context.OrderDetails
                     .Include(od => od.Order)
+                    .ThenInclude(od => od.Payment)
                     .Where(od => (int)od.Order.Payment.Status == (int)PaymentStatus.Success &&
                                  _context.Bookings
                                      .Where(b => b.Id == od.Order.BookingId &&
@@ -73,6 +77,7 @@ namespace Application.Handler.Statistics
 
                 var orderServiceDetails = await _context.OrderDetails
                     .Include(od => od.Order)
+                    .ThenInclude(od => od.Payment)
                     .Where(od => (int)od.Order.Payment.Status == (int)PaymentStatus.Success &&
                                  _context.Bookings
                                      .Where(b => b.Id == od.Order.BookingId &&
@@ -80,8 +85,9 @@ namespace Application.Handler.Statistics
                                                   b.Status == BookingStatus.Confirmed &&
                                                   b.Payment.Status == PaymentStatus.Success)
                                      .Any() &&
-                                 od.Order.CreatedAt.Date == request.Date.Date
-                                 && od.ServiceId != null && od.ProductId == null)
+                                 od.Order.CreatedAt.Date.Month == request.Date.Date.Month &&
+                                 od.Order.CreatedAt.Date.Year == request.Date.Date.Year
+                                 && od.ProductId == null && od.ServiceId != null)
                     .GroupBy(od => od.Service.ServiceName)
                     .Select(g => new OrderServiceDetailDto
                     {

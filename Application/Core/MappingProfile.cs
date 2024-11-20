@@ -35,6 +35,29 @@ namespace Application.Core
                .ForMember(p => p.Price, o => o.MapFrom(st => st.Price))
                .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
                .ForMember(p => p.CreatedAt, o => o.Ignore());
+
+            CreateMap<ProductLog, ProductLogDto>()
+              .ForMember(c => c.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
+              .ForMember(c => c.CreateBy, o => o.MapFrom(s => s.CreatedBy))
+              .ForMember(c => c.CreateAt, o => o.MapFrom(s => s.CreatedAt))
+              .ForMember(c => c.LogType, o => o.MapFrom(s => s.LogType.ToString()))
+              .ForMember(c => c.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+
+            CreateMap<Product, ProductLog>();
+            CreateMap<Product, ProductLog>()
+              .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+              .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+              .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
+
+
+            CreateMap<ProductLog, ProductLogDto>()
+                       .ForMember(c => c.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))
+                       .ForMember(c => c.CreateBy, o => o.MapFrom(s => s.CreatedBy))
+                       .ForMember(c => c.CreateAt, o => o.MapFrom(s => s.CreatedAt))
+                       .ForMember(c => c.LogType, o => o.MapFrom(s => s.LogType.ToString()))
+                       .ForMember(c => c.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+
+
             #endregion
 
             #region Banner Profile
@@ -79,20 +102,32 @@ namespace Application.Core
 
             CreateMap<ServiceInputDto, Service>()
               .ForMember(dest => dest.CourtClusterId,
-               opt => opt.MapFrom(src => 
-                        src.CourtClusterId != null 
+               opt => opt.MapFrom(src =>
+                        src.CourtClusterId != null
                         && src.CourtClusterId.Any() ? (int?)src.CourtClusterId.First() : null));
 
             CreateMap<Service, ServiceInputDto>();
 
             CreateMap<ServiceDto, Service>();
+            CreateMap<Service, ServiceLog>()
+              .ForMember(c => c.ServiceId, o => o.MapFrom(s => s.Id))
+              .ForMember(c => c.ServiceName, o => o.MapFrom(s => s.ServiceName))
+              .ForMember(c => c.Price, o => o.MapFrom(s => s.Price));
+
+
+            CreateMap<ServiceLog, ServiceLogDto>()
+              .ForMember(c => c.LogType, o => o.MapFrom(s => s.LogType.ToString()))
+              .ForMember(c => c.CreateBy, o => o.MapFrom(s => s.CreatedBy))
+              .ForMember(c => c.CreateAt, o => o.MapFrom(s => s.CreatedAt))
+              .ForMember(c => c.CourtClusterName, o => o.MapFrom(s => s.CourtCluster.CourtClusterName));
+
             #endregion
 
             #region Review Profile
             CreateMap<ReviewInputDto, Review>();
 
             CreateMap<Review, Review>();
-            
+
             CreateMap<Review, ReviewDto>()
                 .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
             #endregion
