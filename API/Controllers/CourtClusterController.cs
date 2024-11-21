@@ -64,10 +64,10 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
-        public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersEditInput newCourtCluster)
+        public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersInputDto newCourtCluster)
         {
 
-            return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster, CourtClusterId = id }));
+            return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster, id = id }));
         }
 
         [HttpDelete("{id}")]
