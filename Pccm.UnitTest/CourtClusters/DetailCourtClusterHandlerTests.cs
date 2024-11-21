@@ -39,7 +39,7 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
         [TestCase(130, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailCourtCluster_WhenNotExistId(
+        public async Task<bool> Handle_ShouldDetailCourtClusterFail_WhenNotExistId(
            int id)
         {
             try

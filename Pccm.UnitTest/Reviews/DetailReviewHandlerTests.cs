@@ -9,7 +9,7 @@ namespace Pccm.UnitTest.Reviews
 {
     public class DetailReviewHandlerTests
     {
-            private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
         public DetailReviewHandlerTests()
         {
@@ -20,7 +20,6 @@ namespace Pccm.UnitTest.Reviews
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
-
 
         [TestCase(2, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailReview_WhenValidId(

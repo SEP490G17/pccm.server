@@ -57,7 +57,7 @@ namespace Pccm.UnitTest.Orders
         }
 
         [TestCase(7, 114, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = false)]
-        public async Task<bool> Handle_EditOrder_WhenBookingIdNotExist(
+        public async Task<bool> Handle_EditOrderFail_WhenBookingIdNotExist(
            int id,
            int BookingId,
            int StaffId,
@@ -90,7 +90,7 @@ namespace Pccm.UnitTest.Orders
         }
 
         [TestCase(7, 4, 111, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = false)]
-        public async Task<bool> Handle_EditOrder_WhenStaffIdNotExist(
+        public async Task<bool> Handle_ShouldEditOrderFail_WhenStaffIdNotExist(
           int id,
           int BookingId,
           int StaffId,
