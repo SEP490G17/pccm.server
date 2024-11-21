@@ -152,5 +152,11 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new GetCourtPrice.Query() { Id = courtClusterId }, ct));
         }
 
+        [HttpPost("combo")]
+        
+        public async Task<IActionResult> BookingCombo([FromBody] BookingWithComboDto bookingWithComboDto, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct));
+        }
     }
 }

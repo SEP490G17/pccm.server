@@ -37,16 +37,22 @@ namespace Application.Handler.CourtCombos
                 {
                     return Result<Unit>.Failure("Sân không tồn tại");
                 }
-                if (!request.CourtComboCreateDtos.Any())
+                if (request.CourtComboCreateDtos.Count == 0)
                 {
                     return Result<Unit>.Failure("Danh sách combo không được rỗng");
-
                 }
                 court.CourtCombos.Clear();
+                foreach (var combo in request.CourtComboCreateDtos)
+                {
+                    combo.Id = 0; 
+                }
                 court.CourtCombos = mapper.Map<List<CourtCombo>>(request.CourtComboCreateDtos);
-                var courtCombos = _context.CourtCombos.Where(c => c.CourtId == request.CourtId).ToListAsync(cancellationToken);
+                var courtCombos = await _context.CourtCombos.Where(c => c.CourtId == request.CourtId).ToListAsync(cancellationToken);
                 _context.Update(court);
-                _context.RemoveRange(courtCombos);
+                if (courtCombos.Count == 0)
+                {
+                    _context.RemoveRange(courtCombos);
+                }
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result<Unit>.Success(Unit.Value);
             }

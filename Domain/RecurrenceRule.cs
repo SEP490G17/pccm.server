@@ -11,7 +11,7 @@ namespace Domain
     {
         public string Frequency { get; set; } // FREQ
         public int Interval { get; set; } = 1; // INTERVAL (Default: 1)
-        public List<string> ByDays { get; set; } = new(); // BYDAY
+        public List<string> ByDays { get; set; } // BYDAY
         public DateTime? Until { get; set; } // UNTIL (UTC)
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Domain
                 ruleParts.Add($"UNTIL={untilDateTime.ToString("yyyyMMdd'T'HHmmss'Z'")}");
             }
 
-            return string.Join(";", ruleParts);
+            return string.Join(";", ruleParts)+";";
         }
 
         public static RecurrenceRule FromString(string rule)

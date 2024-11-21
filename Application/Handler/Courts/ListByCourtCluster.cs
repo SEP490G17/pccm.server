@@ -13,21 +13,21 @@ namespace Application.Handler.Courts
 {
     public class ListByCourtCluster
     {
-        public class Query : IRequest<Result<IReadOnlyList<CourtDto>>>
+        public class Query : IRequest<Result<IReadOnlyList<CourtOfClusterDto>>>
         {
             public BaseSpecWithFilterParam BaseSpecWithFilterParam { get; set; }
         }
 
-        public class Handler(IUnitOfWork _unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<IReadOnlyList<CourtDto>>>
+        public class Handler(IUnitOfWork _unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<IReadOnlyList<CourtOfClusterDto>>>
         {
-            public async Task<Result<IReadOnlyList<CourtDto>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<IReadOnlyList<CourtOfClusterDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var querySpec = request.BaseSpecWithFilterParam;
                 var spec = new CourtOfCourtClusterSpecification(querySpec);
                 var data = await _unitOfWork.Repository<Court>().QueryList(spec)
-                .ProjectTo<CourtDto>(mapper.ConfigurationProvider)
+                .ProjectTo<CourtOfClusterDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
-                return Result<IReadOnlyList<CourtDto>>.Success(data);
+                return Result<IReadOnlyList<CourtOfClusterDto>>.Success(data);
             }
             
         }
