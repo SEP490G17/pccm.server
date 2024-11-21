@@ -11,22 +11,22 @@ namespace Application.Handler.CourtClusters
 {
     public class Edit
     {
-        public class Command : IRequest<Result<CourtCluster>>
+        public class Command : IRequest<Result<Unit>>
         {
             public CourtClustersInputDto courtCluster { get; set; }
             public int id { get; set; }
-        }
-        public class CommandValidator : AbstractValidator<Command>
-        {
-            public CommandValidator()
-            {
-                RuleFor(x => x.courtCluster).SetValidator(new CourtClusterValidator());
 
-            }
         }
-        public class Handler : IRequestHandler<Command, Result<CourtCluster>>
-        {
+        // public class CommandValidator : AbstractValidator<Command>
+        // {
+        //     public CommandValidator()
+        //     {
+        //         RuleFor(x => x.courtCluster).SetValidator(new CourtClusterValidator());
 
+        //     }
+        // }
+        public class Handler : IRequestHandler<Command, Result<Unit>>
+        {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
 
@@ -35,8 +35,9 @@ namespace Application.Handler.CourtClusters
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<CourtCluster>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
+
                 var existingCourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == request.id, cancellationToken);
 
                 if (existingCourtCluster == null)
@@ -55,6 +56,7 @@ namespace Application.Handler.CourtClusters
                 }
 
                 return Result<CourtCluster>.Success(_context.Entry(existingCourtCluster).Entity);
+
             }
         }
     }

@@ -9,7 +9,7 @@ namespace API.Extensions
         }
         public static DateTime EndOfWeek(this DateTime dt, DayOfWeek startOfWeek)
         {
-            return dt.StartOfWeek(startOfWeek).AddDays(6).Date;
+            return dt.StartOfWeek(startOfWeek).AddDays(6).Date.AddDays(1).AddTicks(-1); // 23:59:59.999
         }
     }
 }

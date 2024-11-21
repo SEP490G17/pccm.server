@@ -11,7 +11,7 @@ namespace API.Controllers
     {
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetEvents([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
@@ -30,14 +30,15 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListNewsUserSite.Query(), ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> PostCategories([FromBody] NewsBlog events, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Event = events }, ct));
         }
         [AllowAnonymous]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> UpdateActivity(int id, NewsBlog updatedActivity)
         {
             updatedActivity.Id = id;
@@ -46,6 +47,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> DeleteActivity(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
@@ -53,6 +55,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPut("changestatus/{id}/{status}")]
+        [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));

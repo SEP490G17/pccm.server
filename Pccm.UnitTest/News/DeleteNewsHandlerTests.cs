@@ -1,13 +1,5 @@
 using Application.Events;
 using MediatR;
-using NUnit.Framework;
-using Persistence;
-using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
-using Application.Core;
-using Domain.Entity;
-using Moq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;

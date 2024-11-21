@@ -23,11 +23,9 @@ namespace Application.Handler.Bookings
         {
 
             private readonly DataContext _context;
-            private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IMapper mapper)
+            public Handler(DataContext context)
             {
-                _mapper = mapper;
                 _context = context;
             }
             public async Task<Result<Booking>> Handle(Command request, CancellationToken cancellationToken)

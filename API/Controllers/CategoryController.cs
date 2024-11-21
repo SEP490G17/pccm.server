@@ -14,20 +14,20 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new List.Query(), ct));
         }
-        [AllowAnonymous]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> PostCategories([FromBody] Category category, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Category = category }, ct));
         }
-        [AllowAnonymous]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
-        [AllowAnonymous]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> UpdateCategory(int id, Category updatedCategory)
         {
             updatedCategory.Id = id;

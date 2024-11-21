@@ -14,15 +14,16 @@ namespace API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
 
-        public UserController(UserManager<AppUser> userManager) {
+        public UserController(UserManager<AppUser> userManager)
+        {
             _userManager = userManager;
         }
 
-        [AllowAnonymous]
         [HttpGet]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> GetUsers([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam=baseSpecParam }, ct));
+            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
         [AllowAnonymous]

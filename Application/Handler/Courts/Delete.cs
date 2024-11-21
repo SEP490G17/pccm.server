@@ -23,7 +23,8 @@ namespace Application.Handler.Courts
             {
                 var court = await _context.Courts.FindAsync(request.Id);
                 if (court is null) return null;
-                _context.Remove(court);
+                court.DeleteAt = DateTime.UtcNow;
+                _context.Courts.Update(court);
                 var result = await _context.SaveChangesAsync() > 0;
                 if (result) return Result<Unit>.Success(Unit.Value);
                 return Result<Unit>.Failure("Failed to delete the court.");

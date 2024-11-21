@@ -7,8 +7,8 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using Application.Interfaces;
 using Domain.Enum;
+using System.Globalization;
 
 namespace Application.Handler.Products
 {
@@ -37,7 +37,7 @@ namespace Application.Handler.Products
             }
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                
+
                 if (request.product == null)
                 {
                     return Result<ProductDto>.Failure("Product data is required.");
@@ -47,9 +47,13 @@ namespace Application.Handler.Products
 
                 var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == product.CategoryId);
                 var courtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == product.CourtClusterId);
+                var cultureInfo = new CultureInfo("vi-VN")
+                {
+                    NumberFormat = { CurrencySymbol = "₫", CurrencyDecimalDigits = 0 }
+                };
                 product.Category = category;
                 product.CourtCluster = courtCluster;
-          
+
                 // Thêm product vào database
                 await _context.AddAsync(product, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -62,7 +66,7 @@ namespace Application.Handler.Products
                 productLog.CourtClusterId = product.CourtClusterId;
                 productLog.ProductId = product.Id;
                 productLog.CreatedBy = request.userName;
-                productLog.Description = product.Quantity + " products imported";
+                productLog.Description = "đã nhập " + product.Quantity + " " + product.ProductName + " với giá nhập là " + string.Format(cultureInfo, "{0:C}", product.ImportFee);
                 productLog.LogType = LogType.Create;
 
                 // Thêm product log vào database

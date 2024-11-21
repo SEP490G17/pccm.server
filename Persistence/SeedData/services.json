@@ -1,60 +1,50 @@
 [
     {
-        "CourtClusterId": 2,
         "ServiceName": "Cho thuê vợt pickleball",
         "Description": "Vợt pickleball chất lượng cao cho người chơi.",
         "Price": 50000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Cho thuê bóng pickleball",
         "Description": "Bóng pickleball chính hãng, đảm bảo chất lượng.",
         "Price": 20000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Dịch vụ huấn luyện pickleball",
         "Description": "Huấn luyện viên chuyên nghiệp cho các buổi tập.",
         "Price": 300000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Khóa học pickleball cho người mới bắt đầu",
         "Description": "Khóa học dành cho những người mới bắt đầu chơi pickleball.",
         "Price": 250000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Cho thuê dụng cụ tập luyện pickleball",
         "Description": "Dụng cụ tập luyện cho môn pickleball.",
         "Price": 100000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Cho thuê huấn luyện viên",
         "Description": "Buổi tập riêng với huấn luyện viên pickleball.",
         "Price": 400000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "wifi miễn phí tại sân",
         "Description": "Wifi miễn phí cho người chơi tại sân pickleball.",
         "Price": 0.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Cho thuê trang phục thể thao",
         "Description": "Bán trang phục thể thao cho người chơi pickleball.",
         "Price": 300000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Thuê người nhặt bóng",
         "Description": "Tổ chức tiệc sinh nhật với chủ đề pickleball.",
         "Price": 800000.00
     },
     {
-        "CourtClusterId": 2,
         "ServiceName": "Thuê người nhặt bóng",
         "Description": "Tổ chức tiệc sinh nhật với chủ đề pickleball.",
         "Price": 800000.00

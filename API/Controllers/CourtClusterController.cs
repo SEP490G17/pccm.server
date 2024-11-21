@@ -29,12 +29,24 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListAllUserSite.Query(), ct));
         }
 
+        /// <summary>
+        ///  Trả về thông tin chi tiết của 1 cụm sân
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns> 
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetCourtCluster(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
+        /// <summary>
+        /// Trả về thông tin chi tiết của 1 cụm sân phía user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns> 
 
         [HttpGet("usersite/{id}")]
         [AllowAnonymous]
@@ -43,26 +55,33 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new DetailUserSite.Query() { Id = id }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> CreateCourtCluster([FromBody] CourtClustersInputDto courtCluster, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { CourtCluster = courtCluster }, ct));
         }
 
-        // [AllowAnonymous]
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersInputDto newCourtCluster)
-        // {
-        //     newCourtCluster.Id = id;
-        //     return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster }));
-        // }
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
+        public async Task<IActionResult> UpdateCourtCluster(int id, CourtClustersEditInput newCourtCluster)
+        {
 
-        [AllowAnonymous]
+            return HandleResult(await Mediator.Send(new Edit.Command() { courtCluster = newCourtCluster, CourtClusterId = id }));
+        }
+
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteCourtCluster(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+        }
+
+        [HttpPut("visible/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
+        public async Task<IActionResult> ToggleVisible([FromRoute] int id, [FromQuery] bool isVisible)
+        {
+            return HandleResult(await Mediator.Send(new ToggleVisible.Command() { Id = id, IsVisible = isVisible }));
         }
     }
 }

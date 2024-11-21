@@ -34,7 +34,7 @@ namespace Application.Handler.Orders
         {
             public async Task<Result<OrderOfBookingDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (request.OrderForProducts.Count() == 0 && request.OrderForServices.Count() == 0)
+                if (request.OrderForProducts.Count == 0 && request.OrderForServices.Count == 0)
                 {
                     return Result<OrderOfBookingDto>.Failure("Danh sách sản phẩm không được rỗng");
                 }
@@ -53,7 +53,7 @@ namespace Application.Handler.Orders
                         orderDetails.Price = product.Price;
                         orderDetails.Quantity = orderItem.Quantity;
                         order.OrderDetails.Add(orderDetails);
-                        sum += product.Price * orderItem.Quantity;
+                        sum += product.Price * (decimal)orderItem.Quantity;
                     }
 
                     order.OrderDetails.Add(orderDetails);
@@ -69,9 +69,9 @@ namespace Application.Handler.Orders
                        orderDetails.Service = service;
                        orderDetails.ServiceId = service.Id;
                        orderDetails.Price = service.Price;
-                       orderDetails.Quantity = booking.Duration / 60;
+                       orderDetails.Quantity = (double)booking.Duration / 60;
                        order.OrderDetails.Add(orderDetails);
-                       sum += service.Price * booking.Duration / 60;
+                       sum += service.Price * (booking.Duration / 60);
                    }
                    order.OrderDetails.Add(orderDetails);
                });
@@ -84,10 +84,9 @@ namespace Application.Handler.Orders
                 order.BookingId = request.BookingId;
                 order.TotalAmount = sum;
                 order.Payment = payment;
-                await _context.AddAsync(order);
+                await _context.AddAsync(order,cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<OrderOfBookingDto>.Failure("Fail to create order");
-                var entity = _context.Entry(order).Entity;
                 return Result<OrderOfBookingDto>.Success(_mapper.Map<OrderOfBookingDto>(order));
             }
         }

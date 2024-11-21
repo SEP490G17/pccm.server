@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
@@ -35,6 +31,7 @@ namespace Application.Handler.Bookings
                 var booking = await _context.Bookings
                 .Include(b=>b.Payment)
                 .Include(b=>b.Court)
+                .ThenInclude(b=>b.CourtCluster)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 if (booking == null)
                 {

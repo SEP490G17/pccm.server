@@ -1,0 +1,55 @@
+using Application.Core;
+using Application.DTOs;
+using AutoMapper;
+using Domain.Entity;
+using FluentValidation;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
+
+namespace Application.Handler.CourtCombos
+{
+    public class CreateCourtCombo
+    {
+
+        public class Command : IRequest<Result<Unit>>
+        {
+            public int CourtId { get; set; }
+            public List<CourtComboDto> CourtComboCreateDtos { get; set; }
+
+
+        }
+
+        public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator()
+            {
+                RuleFor(x => x).SetValidator(new CreateCourtValidator());
+            }
+        }
+
+        public class Handler(DataContext _context, IMapper mapper) : IRequestHandler<Command, Result<Unit>>
+        {
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
+            {
+                var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id.Equals(request.CourtId) && x.DeleteAt == null, cancellationToken);
+                if (court == null)
+                {
+                    return Result<Unit>.Failure("Sân không tồn tại");
+                }
+                if (!request.CourtComboCreateDtos.Any())
+                {
+                    return Result<Unit>.Failure("Danh sách combo không được rỗng");
+
+                }
+                court.CourtCombos.Clear();
+                court.CourtCombos = mapper.Map<List<CourtCombo>>(request.CourtComboCreateDtos);
+                var courtCombos = _context.CourtCombos.Where(c => c.CourtId == request.CourtId).ToListAsync(cancellationToken);
+                _context.Update(court);
+                _context.RemoveRange(courtCombos);
+                await _context.SaveChangesAsync(cancellationToken);
+                return Result<Unit>.Success(Unit.Value);
+            }
+        }
+    }
+}

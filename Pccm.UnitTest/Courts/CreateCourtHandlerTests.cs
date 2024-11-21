@@ -1,21 +1,9 @@
-using Application.Core;
-using AutoMapper;
 using Domain.Entity;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using NUnit.Framework;
-using Persistence;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Application.DTOs;
 using Application.Handler.Courts;
 using Domain.Enum;
 

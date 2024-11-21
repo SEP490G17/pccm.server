@@ -8,6 +8,10 @@
         "NormalizedName": "OWNER"
     },
     {
+        "Name": "Customer",
+        "NormalizedName": "CUSTOMER"
+    },
+    {
         "Name": "ManagerBanner",
         "NormalizedName": "MANAGERBANNER"
     },

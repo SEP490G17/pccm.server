@@ -1,7 +1,7 @@
 using Application.DTOs;
 using Application.Handler.Banners;
 using Application.Interfaces;
-using Application.SpecParams;
+using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +21,7 @@ namespace API.Controllers
         */
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetBanner([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetBanner([FromQuery] BannerSpecParams baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();
             logger.LogInformation($"Check >>> {username}");
@@ -39,14 +38,13 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Details.Query() { Id = id }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
             string userName = userAccessor.GetUserName();
@@ -57,8 +55,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner, userName = userName }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
             string userName = userAccessor.GetUserName();
@@ -70,8 +68,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { Banner = updatedBanner, userName = userName }));
         }
 
-        [AllowAnonymous]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> DeleteBanner(int id)
         {
             string userName = userAccessor.GetUserName();
@@ -82,8 +80,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
         }
 
-        [AllowAnonymous]
         [HttpPut]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));

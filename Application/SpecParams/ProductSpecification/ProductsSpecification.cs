@@ -24,7 +24,10 @@ namespace Application.SpecParams.ProductSpecification
                 && x.DeletedAt == null // ??m b?o ch? l?y s?n ph?m ch?a b? x�a
         )
         {
-            ApplyPaging(specParam.Skip, specParam.PageSize);
+            if (specParam.CourtCluster == null)
+            {
+                ApplyPaging(specParam.Skip, specParam.PageSize);
+            }
             AddOrderByDescending(x => x.Id);
         }
     }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using API.Services;
 using Domain;
@@ -32,8 +33,11 @@ namespace API.Extensions
                 opt.Password.RequireDigit = true;
                 opt.Password.RequireUppercase = true;
                 opt.User.RequireUniqueEmail = true;
-            }).AddRoles<IdentityRole>() 
+            })
+            .AddRoles<IdentityRole>()
+            .AddRoleManager<RoleManager<IdentityRole>>() // Đăng ký RoleManager
             .AddEntityFrameworkStores<DataContext>();
+
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
 
@@ -45,7 +49,8 @@ namespace API.Extensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateAudience = false,
+                    RoleClaimType = ClaimTypes.Role
                 };
             });
             services.AddScoped<TokenService>();

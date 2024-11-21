@@ -1,4 +1,3 @@
-using Application.SpecParams.ProductSpecification;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +48,7 @@ namespace Pccm.UnitTest.Courts
             {
                 BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
                 {
-                    Search = "Sân 3",
+                    Search = "Sï¿½n 3",
                     Skip = 0,
                     PageSize = 5
                 }

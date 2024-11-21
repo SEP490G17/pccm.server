@@ -8,6 +8,7 @@ using Domain;
 using Application.SpecParams.UserSpecification;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Handler.Users
 {
@@ -17,12 +18,13 @@ namespace Application.Handler.Users
         {
             public BaseSpecParam BaseSpecParam { get; set; }
         }
-        public class Handler(IUnitOfWork _unitOfWork, IMapper mapper) : IRequestHandler<Query, Result<Pagination<UserDto>>>
+        public class Handler(IUnitOfWork _unitOfWork, IMapper mapper, UserManager<AppUser> userManager) : IRequestHandler<Query, Result<Pagination<UserDto>>>
         {
             public async Task<Result<Pagination<UserDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var query = request.BaseSpecParam;
                 var spec = new UsersSpecification(query);
+                
                 var specCount = new UsersCountSpecification(query);
                 var totalCount = await _unitOfWork.Repository<AppUser>().CountAsync(specCount,cancellationToken);
                 var users = await _unitOfWork.Repository<AppUser>().QueryList(spec)

@@ -57,7 +57,7 @@ namespace Persistence.Repository
             _context.Set<T>().Remove(entity);
         }
 
-        public IQueryable<T> QueryList(ISpecification<T>? spec)
+        public IQueryable<T> QueryList(ISpecification<T> spec)
         {
             if (spec == null)
             {
