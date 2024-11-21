@@ -42,7 +42,7 @@ namespace Application.Handler.CourtClusters
 
                 if (existingCourtCluster == null)
                 {
-                    return Result<CourtCluster>.Failure("Court cluster not found.");
+                    return Result<Unit>.Failure("Court cluster not found.");
                 }
 
                 _mapper.Map(request.courtCluster, existingCourtCluster);
@@ -52,10 +52,10 @@ namespace Application.Handler.CourtClusters
 
                 if (!result)
                 {
-                    return Result<CourtCluster>.Failure("Failed to edit court cluster. Changes were not saved.");
+                    return Result<Unit>.Failure("Failed to edit court cluster. Changes were not saved.");
                 }
 
-                return Result<CourtCluster>.Success(_context.Entry(existingCourtCluster).Entity);
+                return Result<Unit>.Success(Unit.Value);
 
             }
         }
