@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using Application.SpecParams;
+using Application.SpecParams.ProductSpecification;
 
 namespace Pccm.UnitTest.Banners
 {
@@ -29,7 +30,7 @@ namespace Pccm.UnitTest.Banners
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Banners.List.Query()
             {
-                BaseSpecParam = new BaseSpecWithFilterParam()
+                BaseSpecParam = new BannerSpecParams()
                 {
                     Search = "",
                     Skip = 0,
@@ -46,7 +47,7 @@ namespace Pccm.UnitTest.Banners
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Banners.List.Query()
             {
-                BaseSpecParam = new BaseSpecParam()
+                BaseSpecParam = new BannerSpecParams()
                 {
                     Search = "Banner 5",
                     Skip = 0,

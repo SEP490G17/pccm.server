@@ -21,7 +21,7 @@ namespace API.Controllers
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService,  IEmailService emailService, ISendSmsService sendSmsService)
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -32,7 +32,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<UserResponseDto>> Login([FromBody]LoginDto loginDto)
+        public async Task<ActionResult<UserResponseDto>> Login([FromBody] LoginDto loginDto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
             if (user is null) return Unauthorized("Tên đăng nhập/ Mật khẩu không đúng");
@@ -157,27 +157,28 @@ namespace API.Controllers
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy người dùng");
             }
 
             var token = _tokenService.CreatePasswordResetToken(user);
 
             var emailMessage = $@"
-                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                        <h2 style='text-align: center; color: #007BFF;'>Password Reset Request</h2>
-                        <p>Hi,</p>
-                        <p>You have requested to reset your password. Please click the link below to reset your password:</p>
-                        <p style='text-align: center;'>
-                            <a href='https://argonaut.asia/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Reset Password</a>
-                        </p>
-                        <p>If you didn't request this, you can safely ignore this email.</p>
-                        <p>Thanks,<br>PCCM System.</p>
-                    </div>
-                ";
+                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                    <h2 style='text-align: center; color: #007BFF;'>Yêu cầu đặt lại mật khẩu</h2>
+                    <p>Chào bạn,</p>
+                    <p>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào liên kết dưới đây để đặt lại mật khẩu của bạn:</p>
+                    <p style='text-align: center;'>
+                        <a href='https://argonaut.asia/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Đặt lại mật khẩu</a>
+                    </p>
+                    <p>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
+                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                </div>
+            ";
+
             try
             {
                 await _emailService.SendEmailAsync(user.Email, "Reset Password", emailMessage);
-                return Ok("Reset password email sent.");
+                return Ok("Yêu cầu đặt lại mật khẩu đã được gửi.");
             }
             catch (Exception ex)
             {
@@ -194,7 +195,7 @@ namespace API.Controllers
             var principal = _tokenService.ValidateToken(command.Token);
             if (principal == null)
             {
-                return BadRequest("Invalid or expired token");
+                return BadRequest("Token không hợp lệ.");
             }
 
             // Extract user email from token
@@ -202,17 +203,46 @@ namespace API.Controllers
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy người dùng");
             }
 
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, resetToken, command.NewPassword);
+            // Tạo mật khẩu mới
+            var newPassword = GenerateSecurePassword();
 
-            if (result.Succeeded)
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, newPassword);
+            user.PasswordHash = hashedPassword;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
             {
-                return Ok("Password has been reset successfully.");
+                return StatusCode(500, "Đặt lại mật khẩu thất bại");
             }
-            return BadRequest(result.Errors);
+
+            var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
+
+            var emailMessage = $@"
+                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                    <h2 style='text-align: center; color: #007BFF;'>Mật khẩu mới của bạn</h2>
+                    <p>Xin chào {userName},</p>
+                    <p>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
+                    <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333;'>{newPassword}</p>
+                    <p>Vì lý do bảo mật, hãy đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                    <p style='text-align: center;'>
+                        <a href='https://argonaut.asia/login' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Nhấn vào đây để đăng nhập</a>
+                    </p>
+                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                </div>
+            ";
+
+            try
+            {
+                // Gửi email
+                await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu", emailMessage);
+                return Ok("Mật khẩu mới đã được gửi đến email của bạn.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Gửi email thất bại: {ex.Message}");
+            }
         }
 
         // API khi người dùng yêu cầu thay đổi mật khẩu (nhập mật khẩu hiện tại)
@@ -224,33 +254,34 @@ namespace API.Controllers
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy người dùng");
             }
 
             // Kiểm tra mật khẩu hiện tại
             if (!await _userManager.CheckPasswordAsync(user, request.CurrentPassword))
             {
-                return BadRequest("Current password is incorrect");
+                return BadRequest("Mật khẩu hiện tại không chính xác.");
             }
 
             // Tạo token để thay đổi mật khẩu
             var token = _tokenService.CreatePasswordResetToken(user);
 
             var emailMessage = $@"
-                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                        <h2 style='text-align: center; color: #007BFF;'>Password Change Request</h2>
-                        <p>Hi,</p>
-                        <p>You have requested to change your password. Please click the link below to change your password:</p>
-                        <p style='text-align: center;'>
-                            <a href='http://localhost:5000/api/Account/confirm-change-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Change Password</a>
-                        </p>
-                        <p>If you didn't request this, you can safely ignore this email.</p>
-                        <p>Thanks,<br>PCCM System.</p>
-                    </div>
-                ";
+                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                    <h2 style='text-align: center; color: #007BFF;'>Yêu cầu thay đổi mật khẩu</h2>
+                    <p>Chào bạn,</p>
+                    <p>Bạn đã yêu cầu thay đổi mật khẩu. Vui lòng nhấn vào liên kết dưới đây để thay đổi mật khẩu của bạn:</p>
+                    <p style='text-align: center;'>
+                        <a href='http://localhost:5000/api/Account/confirm-change-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Thay đổi mật khẩu</a>
+                    </p>
+                    <p>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
+                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                </div>
+            ";
+
             await _emailService.SendEmailAsync(user.Email, "Change Password", emailMessage);
 
-            return Ok("An email has been sent to change your password.");
+            return Ok("Một email đã được gửi đến bạn để thay đổi mật khẩu.");
         }
 
         [AllowAnonymous]
@@ -261,7 +292,7 @@ namespace API.Controllers
             var principal = _tokenService.ValidateToken(request.Token);
             if (principal == null)
             {
-                return BadRequest("Invalid or expired token");
+                return BadRequest("Token không hợp lệ");
             }
 
             // Extract user email from token
@@ -270,15 +301,16 @@ namespace API.Controllers
 
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound("Không tìm thấy người dùng");
             }
-            //var result = await _userManager.ChangePasswordAsync(user, user.PasswordHash, request.NewPassword);
-            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, resetToken, request.NewPassword);
+
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, request.NewPassword);
+            user.PasswordHash = hashedPassword;
+            var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
             {
-                return Ok("Password has been reset successfully.");
+                return Ok("Mật khẩu đã được thay đổi thành công.");
             }
             return BadRequest(result.Errors);
         }
@@ -295,6 +327,86 @@ namespace API.Controllers
             await _sendSmsService.SendSms(sendMessOtp.To, sendMessOtp.Text, cancellationToken);
             return Ok("Send sms success");
         }
+
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ForgotPasswordDTO request)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
+            if (user == null)
+            {
+                return NotFound("Không tìm thấy người dùng");
+            }
+
+            // Tạo mật khẩu mới
+            var newPassword = GenerateSecurePassword();
+
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, newPassword);
+            user.PasswordHash = hashedPassword;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return StatusCode(500, "Đặt lại mật khẩu thất bại");
+            }
+
+            var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
+
+            var emailMessage = $@"
+                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                    <h2 style='text-align: center; color: #007BFF;'>Mật khẩu mới của bạn</h2>
+                    <p>Xin chào {userName},</p>
+                    <p>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
+                    <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333;'>{newPassword}</p>
+                    <p>Vì lý do bảo mật, hãy đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                    <p style='text-align: center;'>
+                        <a href='https://argonaut.asia/login' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Nhấn vào đây để đăng nhập</a>
+                    </p>
+                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                </div>
+            ";
+
+            try
+            {
+                // Gửi email
+                await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu", emailMessage);
+                return Ok("Mật khẩu mới đã được gửi đến email của bạn.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Gửi email thất bại: {ex.Message}");
+            }
+        }
+
+        // Hàm tạo mật khẩu phức tạp
+        private static string GenerateSecurePassword()
+        {
+            const string lowerCase = "abcdefghijklmnopqrstuvwxyz";
+            const string upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string digits = "0123456789";
+            const string specialChars = "!@#$%^&*()-_=+<>?";
+            const int passwordLength = 12;
+
+            var random = new Random();
+            var passwordChars = new List<char>();
+
+            // Đảm bảo mỗi loại ký tự đều có ít nhất 1 ký tự
+            passwordChars.Add(lowerCase[random.Next(lowerCase.Length)]);
+            passwordChars.Add(upperCase[random.Next(upperCase.Length)]);
+            passwordChars.Add(digits[random.Next(digits.Length)]);
+            passwordChars.Add(specialChars[random.Next(specialChars.Length)]);
+
+            // Thêm các ký tự ngẫu nhiên còn lại
+            var allChars = lowerCase + upperCase + digits + specialChars;
+            while (passwordChars.Count < passwordLength)
+            {
+                passwordChars.Add(allChars[random.Next(allChars.Length)]);
+            }
+
+            // Trộn thứ tự ký tự
+            return new string(passwordChars.OrderBy(x => random.Next()).ToArray());
+        }
+
 
     }
 }
