@@ -26,7 +26,12 @@ namespace Application.Handler.Staffs
             }
             public async Task<Result<StaffDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var staff = await _context.StaffDetails.Include(a => a.User).FirstOrDefaultAsync(x => x.Id == request.Id);
+                var staff = await _context.StaffDetails
+                .Include(a => a.User)
+                .Include(a => a.Position)
+                .Include(a => a.StaffAssignments)
+                .ThenInclude(a => a.CourtCluster)
+                .FirstOrDefaultAsync(x => x.Id == request.Id);
 
                 if (staff == null) return Result<StaffDto>.Failure("Staff not found!");
                 var staffDtoMap = _mapper.Map<StaffDto>(staff);

@@ -52,7 +52,7 @@ namespace Pccm.UnitTest.Courts
         }
 
           [TestCase(14, "Premium Court 2", 1, CourtStatus.Available, ExpectedResult = false)]
-        public async Task<bool> Handle_EditCourt_WhenNotExistCourt(
+        public async Task<bool> Handle_ShouldEditCourtFail_WhenNotExistCourt(
             int id,
                 string CourtName,
                 int? CourtClusterId,

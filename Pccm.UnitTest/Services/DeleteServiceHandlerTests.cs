@@ -23,8 +23,8 @@ namespace Pccm.UnitTest.Services
         }
 
 
-        [TestCase(2, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteService_WhenNotExistId(
+        [TestCase(211, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeleteServiceFail_WhenNotExistId(
             int id)
         {
             try

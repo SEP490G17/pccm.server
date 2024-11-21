@@ -27,19 +27,26 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{username}")]
 
-        public async Task<IActionResult> GetUser(string id, CancellationToken ct)
+        public async Task<IActionResult> GetUser(string username, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
+            return HandleResult(await Mediator.Send(new Detail.Query() { username = username }, ct));
         }
 
-        [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> IsActive(ActiveDto activeDTO, CancellationToken ct)
+        [HttpPut("changestatus/{username}/{status}")]
+        public async Task<IActionResult> ChangeStatus(string username, bool status)
         {
-            return HandleResult(await Mediator.Send(new ActiveUser.Command() { user = activeDTO }, ct));
+            return HandleResult(await Mediator.Send(new ActiveUser.Command() { user = new ActiveDto(){username  = username, IsActive = status} }));
         }
+
+        // [HttpPost]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> IsActive(ActiveDto activeDTO, CancellationToken ct)
+        // {
+        //     return HandleResult(await Mediator.Send(new ActiveUser.Command() { user = activeDTO }, ct));
+        // }
 
         [AllowAnonymous]
         [HttpGet("Profile")]

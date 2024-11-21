@@ -39,7 +39,7 @@ namespace Pccm.UnitTest.Courts
         }
 
          [TestCase(130, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailCourt_WhenNotExistId(
+        public async Task<bool> Handle_ShouldDetailCourtFail_WhenNotExistId(
             int id)
         {
             try

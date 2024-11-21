@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Orders
         }
 
         [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteOrder_WhenIdNotExist(
+        public async Task<bool> Handle_ShouldDeleteOrderFail_WhenIdNotExist(
         int id)
         {
             try

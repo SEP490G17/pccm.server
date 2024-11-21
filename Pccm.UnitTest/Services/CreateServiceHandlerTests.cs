@@ -52,7 +52,7 @@ namespace Pccm.UnitTest.Services
         }
 
         [TestCase(new int[] { 1 }, "Premium Service 2", "High-quality tennis court rental", 150, ExpectedResult = false)]
-        public async Task<bool> Handle_CreateServiceWithExistServiceCourtCluster(
+        public async Task<bool> Handle_ShouldCreateServiceFail_WhenExistServiceCourtCluster(
             int[] CourtClusterId,
             string ServiceName,
             string Description,

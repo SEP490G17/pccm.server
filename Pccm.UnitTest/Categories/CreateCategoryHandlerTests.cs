@@ -47,7 +47,7 @@ namespace Pccm.UnitTest.Categories
 
 
         [TestCase(null, ExpectedResult = false)]
-        public async Task<bool> Handle_CreateCategory_WhenNameIsNull(
+        public async Task<bool> Handle_ShouldCreateCategoryFail_WhenNameIsNull(
           string? CategoryName)
         {
             try

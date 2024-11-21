@@ -24,7 +24,7 @@ namespace Pccm.UnitTest.Products
 
 
         [TestCase(200, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteProduct_WhenNotExistProduct(
+        public async Task<bool> Handle_ShouldDeleteProductFail_WhenNotExistProduct(
             int id)
         {
             try

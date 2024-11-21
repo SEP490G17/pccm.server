@@ -3,6 +3,7 @@ using Application.DTOs;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Users
@@ -33,7 +34,11 @@ namespace Application.Handler.Users
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var userExist = await _context.Users.FindAsync(request.user.Id);
+                var userExist = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.user.username);
+                if (userExist == null)
+                {
+                    return Result<Unit>.Failure("Faild to edit user");
+                }
                 userExist.LockoutEnabled = request.user.IsActive;
                 var result = await _context.SaveChangesAsync() > 0;
                 if (!result) return Result<Unit>.Failure("Faild to edit user");

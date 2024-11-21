@@ -39,7 +39,7 @@ namespace Pccm.UnitTest.Services
         }
 
          [TestCase(130, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailService_WhenNotExistId(
+        public async Task<bool> Handle_ShouldDetailServiceFail_WhenNotExistId(
             int id)
         {
             try

@@ -4,7 +4,7 @@ namespace Application.DTOs
 {
     public class ActiveDto
     {
-        public string Id { get; set; }
+        public string username { get; set; }
         [Required]
         public bool IsActive { get; set; }
     }

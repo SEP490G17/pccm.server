@@ -24,11 +24,11 @@ namespace Pccm.UnitTest.Staffs
 
         [TestCase("06b243a8-8158-4a9c-845e-63054506a1b8", ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailStaff_WhenStaffExist(
-            string id)
+            string username)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new Detail.Query() { username = username }, default);
 
                 return result.IsSuccess;
             }
@@ -40,11 +40,11 @@ namespace Pccm.UnitTest.Staffs
 
          [TestCase("06b243a8-8158-4a9c-845e-63054506a1b89", ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDetailStaff_WhenNotExistStaff(
-            string id)
+            string username)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new Detail.Query() { username = username }, default);
                 return result.IsSuccess;
             }
             catch (Exception ex)
