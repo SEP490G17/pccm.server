@@ -2,6 +2,7 @@ using API.DTOs;
 using API.Services;
 using Application.DTOs;
 using Application.Interfaces;
+using AutoMapper;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,13 +22,15 @@ namespace API.Controllers
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService)
+        private readonly IMapper _mapper;
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService, IMapper mapper)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
             _emailService = emailService;
             _sendSmsService = sendSmsService;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
@@ -79,6 +82,45 @@ namespace API.Controllers
             if (result.Succeeded)
             {
                 return Ok();
+            }
+            return BadRequest(result.Errors);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("registerByStaff")]
+        public async Task<ActionResult<UserDto>> RegisterByStaff(RegisterDto registerDto)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
+            {
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+            {
+                ModelState.AddModelError("Email", "Email đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.PhoneNumber == registerDto.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "Số điện thoại đã tồn tại");
+                return ValidationProblem();
+            }
+            var user = new AppUser
+            {
+                Email = registerDto.Email,
+                UserName = registerDto.Username,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                PhoneNumber = registerDto.PhoneNumber,
+                JoiningDate = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if (result.Succeeded)
+            {
+                var res = _mapper.Map<UserDto>(await _userManager.FindByEmailAsync(registerDto.Email));
+                return res;
             }
             return BadRequest(result.Errors);
         }

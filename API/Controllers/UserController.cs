@@ -27,11 +27,11 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
+        [HttpGet("{username}")]
 
-        public async Task<IActionResult> GetUser(string id, CancellationToken ct)
+        public async Task<IActionResult> GetUser(string username, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
+            return HandleResult(await Mediator.Send(new Detail.Query() { username = username }, ct));
         }
 
         [HttpPost]

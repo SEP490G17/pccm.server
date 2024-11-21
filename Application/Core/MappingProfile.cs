@@ -141,9 +141,10 @@ namespace Application.Core
 
             CreateMap<StaffDetail, StaffDto>()
                 .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"))
+                .ForMember(st => st.Email, o => o.MapFrom(s => s.User.Email))
                 .ForMember(st => st.Position, o => o.MapFrom(s => s.Position.Name))
+                .ForMember(st => st.Roles, o => o.MapFrom(s => s.Position.DefaultRoles))
                 .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
-                .ForMember(st => st.CCCD, o => o.MapFrom(s => s.User.CitizenIdentification))
                 .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.CourtClusterName)));
         }
 
