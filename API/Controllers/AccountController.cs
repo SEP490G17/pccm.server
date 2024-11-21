@@ -35,8 +35,8 @@ namespace API.Controllers
         public async Task<ActionResult<UserResponseDto>> Login([FromBody]LoginDto loginDto)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
-            if (user is null) return BadRequest("Tên đăng nhập/ Mật khẩu không đúng");
-            if (user.IsDisabled) return StatusCode(403, "Tài khoản đã bị vô hiệu hóa");
+            if (user is null) return Unauthorized("Tên đăng nhập/ Mật khẩu không đúng");
+            if (user.IsDisabled) return StatusCode(401, "Tài khoản đã bị vô hiệu hóa");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (result)
             {
@@ -89,7 +89,7 @@ namespace API.Controllers
             {
                 DisplayName = $"{user.FirstName} {user.LastName}",
                 Image = user?.ImageUrl?.ToString(),
-                Token = _tokenService.CreateToken(user),
+                Token = await _tokenService.CreateToken(user),
                 UserName = user.UserName,
                 PhoneNumber = user?.PhoneNumber,
                 Roles = await _userManager.GetRolesAsync(user),

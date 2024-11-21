@@ -1,8 +1,7 @@
 
-
 namespace Application.DTOs
 {
-    public class CourtComboCreateDto
+    public class CourtComboDto
     {
         public string DisplayName { get; set; }
         public decimal TotalPrice { get; set; }

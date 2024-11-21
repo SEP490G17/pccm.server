@@ -1,5 +1,3 @@
-using Domain.Enum;
-
 namespace Application.DTOs
 {
     public class ProductLogDto

@@ -17,6 +17,26 @@ namespace Application.Core
             CreateMap<CourtPricesDto, CourtPrice>();
             #endregion
 
+            #region Edit CourtCluster
+            CreateMap<CourtClustersEditInput, CourtCluster>()
+                .ForMember(dest => dest.CourtClusterName, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Province, opt => opt.MapFrom(src => src.Province))
+                .ForMember(dest => dest.ProvinceName, opt => opt.MapFrom(src => src.ProvinceName))
+                .ForMember(dest => dest.District, opt => opt.MapFrom(src => src.District))
+                .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
+                .ForMember(dest => dest.Ward, opt => opt.MapFrom(src => src.Ward))
+                .ForMember(dest => dest.WardName, opt => opt.MapFrom(src => src.WardName))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.OwnerId, opt => opt.MapFrom(src => src.OwnerId))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images))
+                .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => src.OpenTime))
+                .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => src.CloseTime));
+
+
+            #endregion
+
+
             #region CourtCluster for user page
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListPageUserSite>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.CourtClusterName))
@@ -45,9 +65,8 @@ namespace Application.Core
 
             #region CourtCluster details
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterDetails>()
-                .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count()))
+                .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count))
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName))
-                .ForMember(c => c.Address, o => o.MapFrom(src => $"{src.Address},{src.WardName},{src.DistrictName},{src.ProvinceName}"))
                 .ForMember(c => c.MinPrice, o => o.MapFrom(src => src.Courts.SelectMany(court => court.CourtPrices).Min(price => price.Price)))
                 .ForMember(c => c.MaxPrice, o => o.MapFrom(src => src.Courts.SelectMany(court => court.CourtPrices).Max(price => price.Price)));
 
@@ -66,7 +85,7 @@ namespace Application.Core
                 .ForMember(dto => dto.CourtName, opt => opt.MapFrom(entity => entity.CourtName))
                 .ForMember(dto => dto.MinPrice, opt =>
                 {
-                    opt.Condition(entity => entity.CourtPrices.Count() > 0);
+                    opt.Condition(entity => entity.CourtPrices.Count > 0);
                     opt.MapFrom(
                       entity => entity.CourtPrices.Min(price => price.Price)
                     );
@@ -74,7 +93,7 @@ namespace Application.Core
                 })
                 .ForMember(dto => dto.MaxPrice, opt =>
                 {
-                    opt.Condition(entity => entity.CourtPrices.Count() > 0);
+                    opt.Condition(entity => entity.CourtPrices.Count > 0);
                     opt.MapFrom(
                     entity => entity.CourtPrices.Max(price => price.Price)
                     );
@@ -102,6 +121,14 @@ namespace Application.Core
             CreateMap<CourtPriceResponseDto, CourtPrice>();
 
             #endregion
+
+            // 4. Court combo
+            #region Court combo for get list combo
+            CreateMap<CourtCombo, CourtComboDto>();
+            CreateMap<CourtComboDto, CourtCombo>();
+
+            #endregion
+
 
         }
     }

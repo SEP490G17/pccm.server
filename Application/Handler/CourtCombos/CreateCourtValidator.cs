@@ -15,7 +15,7 @@ namespace Application.Handler.CourtCombos
                  .ForEach(x => x.SetValidator(new CourtComboCreateDtoValidator()));
         }
     }
-    public class CourtComboCreateDtoValidator : AbstractValidator<CourtComboCreateDto>
+    public class CourtComboCreateDtoValidator : AbstractValidator<CourtComboDto>
     {
         public CourtComboCreateDtoValidator()
         {
@@ -30,9 +30,6 @@ namespace Application.Handler.CourtCombos
             RuleFor(x => x.Duration)
                 .GreaterThan(0).WithMessage("Duration must be greater than zero.");
 
-
-            RuleFor(x => x.CourtId)
-                .GreaterThan(0).WithMessage("CourtId must be greater than zero.");
         }
     }
 }

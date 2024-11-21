@@ -20,6 +20,9 @@ namespace Domain.Entity
         public string[] Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         [ForeignKey("OwnerId")] public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
+        public DateTime? DeleteAt { get; set; }
+        public AppUser? DeleteBy { get; set; }
+        [Required] public bool IsVisible { get; set; } = true;
         public List<Service> Services { get; set; } = new List<Service>();
         public List<Product> Products { get; set; } = new List<Product>();
         public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = new List<StaffAssignment>();

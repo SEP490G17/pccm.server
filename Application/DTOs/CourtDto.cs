@@ -16,8 +16,8 @@ namespace Application.DTOs
         public string CourtName { get; set; }
         public decimal MinPrice { get; set; } = 0;
         public decimal MaxPrice { get; set; } = 0;
-
-        public List<CourtPriceResponseDto> CourtPrices { get; set; } = null;
+        public List<CourtPriceResponseDto> CourtPrices { get; set; } = [];
+        public List<CourtComboDto> CourtCombos { get; set; } = [];
         public CourtStatus Status { get; set; }
     }
 

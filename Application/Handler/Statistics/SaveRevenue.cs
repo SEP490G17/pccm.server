@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
 using Domain.Entity;
-using FluentValidation;
 using MediatR;
 using Persistence;
 

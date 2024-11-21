@@ -21,7 +21,8 @@ namespace Application.Core
 
             CreateMap<Product, ProductDto.ProductDetails>()
                 .ForMember(p => p.ImportFee, o => o.MapFrom(st => st.ImportFee))
-                .ForMember(p => p.Price, o => o.MapFrom(st => st.Price));
+                .ForMember(p => p.Price, o => o.MapFrom(st => st.Price))
+                .ForMember(p => p.CourtClusterName, o => o.MapFrom(st => st.CourtCluster.CourtClusterName));
 
             CreateMap<Product, ProductLog>();
 

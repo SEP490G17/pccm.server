@@ -1,6 +1,4 @@
 using API.Extensions;
-using Application.DTOs;
-using Application.Handler.Courts;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

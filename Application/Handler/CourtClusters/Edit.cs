@@ -11,21 +11,21 @@ namespace Application.Handler.CourtClusters
 {
     public class Edit
     {
-        public class Command : IRequest<Result<CourtCluster>>
+        public class Command : IRequest<Result<Unit>>
         {
-            public CourtClustersInputDto courtCluster { get; set; }
+            public int CourtClusterId { get; set; }
+            public CourtClustersEditInput courtCluster { get; set; }
         }
-        public class CommandValidator : AbstractValidator<Command>
-        {
-            public CommandValidator()
-            {
-                RuleFor(x => x.courtCluster).SetValidator(new CourtClusterValidator());
+        // public class CommandValidator : AbstractValidator<Command>
+        // {
+        //     public CommandValidator()
+        //     {
+        //         RuleFor(x => x.courtCluster).SetValidator(new CourtClusterValidator());
 
-            }
-        }
-        public class Handler : IRequestHandler<Command, Result<CourtCluster>>
+        //     }
+        // }
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-
             private readonly DataContext _context;
             private readonly IMapper _mapper;
 
@@ -34,20 +34,16 @@ namespace Application.Handler.CourtClusters
                 _mapper = mapper;
                 _context = context;
             }
-            public async Task<Result<CourtCluster>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var courtCluster = _mapper.Map<CourtCluster>(request.courtCluster);
-                var existingCourtCluster  = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == courtCluster.Id);
-                if (existingCourtCluster  == null)
-                {
-                    return Result<CourtCluster>.Failure("Not found court cluster.");
-                }
+                var courtCluster = request.courtCluster;
+                var check = await _context.CourtClusters.FirstOrDefaultAsync(c => c.Id == request.CourtClusterId, cancellationToken);
+                if (check == null) return Result<Unit>.Failure("Cụm sân không tồn tại");
+                var map = _mapper.Map(courtCluster, check);
+                _context.CourtClusters.Update(map);
+                await _context.SaveChangesAsync(cancellationToken);
 
-                _context.Entry(existingCourtCluster).State = EntityState.Detached;
-                _context.CourtClusters.Update(courtCluster);
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<CourtCluster>.Failure("Faild to edit court cluster.");
-                return Result<CourtCluster>.Success(_context.Entry(courtCluster).Entity);
+                return Result<Unit>.Success(Unit.Value);
             }
         }
     }

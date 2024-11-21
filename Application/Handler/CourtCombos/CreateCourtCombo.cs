@@ -1,7 +1,6 @@
-
-
 using Application.Core;
 using Application.DTOs;
+using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
 using MediatR;
@@ -15,8 +14,8 @@ namespace Application.Handler.CourtCombos
 
         public class Command : IRequest<Result<Unit>>
         {
-
-            public List<CourtComboCreateDto> CourtComboCreateDtos { get; set; }
+            public int CourtId { get; set; }
+            public List<CourtComboDto> CourtComboCreateDtos { get; set; }
 
 
         }
@@ -29,35 +28,26 @@ namespace Application.Handler.CourtCombos
             }
         }
 
-        public class Handler(DataContext _context) : IRequestHandler<Command, Result<Unit>>
+        public class Handler(DataContext _context, IMapper mapper) : IRequestHandler<Command, Result<Unit>>
         {
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var combos = request.CourtComboCreateDtos;
-                if (combos == null || !combos.Any())
+                var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id.Equals(request.CourtId) && x.DeleteAt == null, cancellationToken);
+                if (court == null)
                 {
-                    return Result<Unit>.Failure("Không có combo để sử lý.");
+                    return Result<Unit>.Failure("Sân không tồn tại");
                 }
-                var courtCombos = new List<CourtCombo>();
-
-                foreach (var combo in combos)
+                if (!request.CourtComboCreateDtos.Any())
                 {
+                    return Result<Unit>.Failure("Danh sách combo không được rỗng");
 
-                    var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == combo.CourtId);
-                    if (court != null)
-                    {
-                        var courtCombo = new CourtCombo
-                        {
-                            DisplayName = combo.DisplayName,
-                            TotalPrice = combo.TotalPrice,
-                            Duration = combo.Duration,
-                            Court = court,
-                        };
-                        courtCombos.Add(courtCombo);
-                    }
                 }
-                await _context.CourtCombos.AddRangeAsync(courtCombos);
-                await _context.SaveChangesAsync();
+                court.CourtCombos.Clear();
+                court.CourtCombos = mapper.Map<List<CourtCombo>>(request.CourtComboCreateDtos);
+                var courtCombos = _context.CourtCombos.Where(c => c.CourtId == request.CourtId).ToListAsync(cancellationToken);
+                _context.Update(court);
+                _context.RemoveRange(courtCombos);
+                await _context.SaveChangesAsync(cancellationToken);
                 return Result<Unit>.Success(Unit.Value);
             }
         }

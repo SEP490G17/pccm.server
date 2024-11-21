@@ -17,6 +17,7 @@ namespace Application.DTOs
             public int Id { get; set; }
             public int CategoryId { get; set; }
             public int CourtClusterId { get; set; }
+            public string CourtClusterName { get; set; }
             public string ProductName { get; set; }  // Tên sản phẩm
             public string Description { get; set; }  // Mô tả chi tiết về sản phẩm
             public decimal Quantity { get; set; }  // Số lượng sản phẩm có sẵn

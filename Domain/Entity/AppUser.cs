@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain
 {
-    public class AppUser : IdentityUser,IEntity
+    public class AppUser : IdentityUser, IEntity
     {
         [Required]
         [StringLength(100)]
@@ -26,7 +26,7 @@ namespace Domain
         public bool? Gender { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? Address { get; set; }
-
+        public StaffDetail StaffDetail { get; set; }
 
     }
 }

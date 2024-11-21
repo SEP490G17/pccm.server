@@ -46,14 +46,12 @@ namespace API.Controllers
 
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetBooking(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
         [HttpGet("v1/{id}")]
-        [AllowAnonymous]
 
         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
         {
@@ -85,6 +83,7 @@ namespace API.Controllers
         /// <param name="id"></param>
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
         [HttpPut("completed/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> CompletedBooking(int id)
         {
             return HandleResult(await Mediator.Send(new CompletedBooking.Command() { Id = id }));
@@ -96,6 +95,7 @@ namespace API.Controllers
         /// <param name="id"></param>
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
         [HttpPut("accepted/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> AcceptedBooking(int id)
         {
             return HandleResult(await Mediator.Send(new AcceptedBooking.Command() { Id = id }));
@@ -116,6 +116,7 @@ namespace API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut("deny/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> DenyBooking(int id)
         {
             return HandleResult(await Mediator.Send(new DenyBooking.Command() { Id = id }));
@@ -141,7 +142,7 @@ namespace API.Controllers
         [HttpGet("history")]
         public async Task<IActionResult> GetHistoryBookingOfUser([FromQuery] BookingUserHistorySpecParam baseSpecParam)
         {
-            return HandleResult(await Mediator.Send(new UserHistory.Query(){BookingSpecParam = baseSpecParam}));
+            return HandleResult(await Mediator.Send(new UserHistory.Query() { BookingSpecParam = baseSpecParam }));
         }
 
         [HttpGet("priceCourt")]

@@ -3,7 +3,6 @@ using Application.Handler.Services;
 using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.ProductSpecification;
-using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +40,7 @@ namespace API.Controllers
 
         [Authorize]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> PostService([FromBody] ServiceInputDto service, CancellationToken ct)
         {
             string userName = _userAccessor.GetUserName();
@@ -53,6 +53,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> UpdateService(int id, ServiceInputDto updatedService)
         {
             string userName = _userAccessor.GetUserName();
@@ -66,6 +67,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteService(int id)
         {
             string userName = _userAccessor.GetUserName();

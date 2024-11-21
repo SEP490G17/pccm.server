@@ -1,7 +1,6 @@
 using Application.DTOs;
 using Application.Handler.Banners;
 using Application.Interfaces;
-using Application.SpecParams;
 using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,13 +38,13 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet("{id}")]
-
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Details.Query() { Id = id }, ct));
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
             string userName = userAccessor.GetUserName();
@@ -57,6 +56,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
             string userName = userAccessor.GetUserName();
@@ -69,6 +69,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> DeleteBanner(int id)
         {
             string userName = userAccessor.GetUserName();
@@ -80,6 +81,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));

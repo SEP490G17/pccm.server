@@ -1,7 +1,6 @@
 ﻿using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
-using Application.SpecParams;
 using Application.SpecParams.ProductSpecification;
 using Application.SpecParams.ServiceSpecification;
 using AutoMapper;

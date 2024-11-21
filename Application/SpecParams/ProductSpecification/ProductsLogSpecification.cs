@@ -1,6 +1,5 @@
 using System.Globalization;
 using Domain.Entity;
-using Domain.Enum;
 
 namespace Application.SpecParams.ProductSpecification
 {

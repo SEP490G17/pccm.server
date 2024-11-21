@@ -21,30 +21,30 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new DetailV1.Query() { Id = id }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderInputDto orderInput, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { order = orderInput }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost("v1")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> CreateOrderV1([FromBody] OrderCreateV1.Command command, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(command, ct));
         }
 
-        [AllowAnonymous]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> UpdateOrder(int id, OrderInputDto orderInput)
         {
             orderInput.Id = id;
             return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));
         }
 
-        [AllowAnonymous]
         [HttpPut("cancel/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> CancelOrder(int id, OrderInputDto orderInput)
         {
             orderInput.Id = id;
@@ -52,17 +52,15 @@ namespace API.Controllers
         }
 
         // chạy swagger bị lỗi nên cmt lại
-
-        [AllowAnonymous]
-        [HttpPut("v1/edit")]
+        [HttpPut("edit")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
         {
             return HandleResult(await Mediator.Send(command));
         }
 
-
-        [AllowAnonymous]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
