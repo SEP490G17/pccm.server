@@ -1,8 +1,6 @@
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
-using Domain.Entity;
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;

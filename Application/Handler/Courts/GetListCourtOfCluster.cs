@@ -35,6 +35,8 @@ namespace Application.Handler.Courts
                 return Result<CourtManagerResponse>.Success(new CourtManagerResponse
                 {
                     CourtClusterName = check.CourtClusterName,
+                    OpenTime = check.OpenTime,
+                    CloseTime = check.CloseTime,
                     CourtForTable = courts
                 });
             }

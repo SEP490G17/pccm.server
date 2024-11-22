@@ -1,36 +1,42 @@
 using Application.Core;
+using Application.DTOs;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entity;
-using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Courts
 {
     public class Create
     {
-        public class Command : IRequest<Result<Court>>
+        public class Command : IRequest<Result<CourtOfClusterDto>>
         {
-            public Court Court { get; set; }
+            public CourtCreateDto Court { get; set; }
         }
 
-        public class CommandValidator : AbstractValidator<Command>
+        public class Handler(DataContext _context, IMapper mapper) : IRequestHandler<Command, Result<CourtOfClusterDto>>
         {
-            public CommandValidator()
+            public async Task<Result<CourtOfClusterDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                RuleFor(x => x.Court).SetValidator(new CourtValidator());
-            }
-        }
+                var court = new Court()
+                {
+                    CourtClusterId = request.Court.CourtClusterId,
+                    CourtName = request.Court.CourtName
+                };
 
-        public class Handler(DataContext _context) : IRequestHandler<Command, Result<Court>>
-        {
-            public async Task<Result<Court>> Handle(Command request, CancellationToken cancellationToken)
-            {
-                var court = request.Court;
+                var courtPrices = mapper.Map<List<CourtPrice>>(request.Court.CourtPrice);
+
+                court.CourtPrices = courtPrices;
                 await _context.AddAsync(court, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<Court>.Failure("Fail to create court");
+                if (!result) return Result<CourtOfClusterDto>.Failure("Fail to create court");
                 var newCourt = _context.Entry(court).Entity;
-                return Result<Court>.Success(newCourt);
+                var response = await _context.Courts
+                .ProjectTo<CourtOfClusterDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(x => x.CourtId == newCourt.Id, cancellationToken);
+                return Result<CourtOfClusterDto>.Success(response);
             }
         }
     }

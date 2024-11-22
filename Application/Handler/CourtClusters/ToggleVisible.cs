@@ -1,10 +1,7 @@
 
 
 using Application.Core;
-using Application.Interfaces;
-using Domain;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Persistence;
 
 namespace Application.Handler.CourtClusters

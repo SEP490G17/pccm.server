@@ -25,7 +25,14 @@ namespace Application.DTOs
     {
         public List<CourtOfClusterDto> CourtForTable { get; set; } = [];
         public string CourtClusterName { get; set; }
+        public TimeOnly CloseTime { get; set; }
+        public TimeOnly OpenTime { get; set; }
     }
 
+    public class CourtCreateDto{
+        public int CourtClusterId { get; set; }
+        public string CourtName { get; set; }
+        public List<CourtPricesDto> CourtPrice { get; set; }
+    }
 
 }

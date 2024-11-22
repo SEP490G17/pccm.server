@@ -1,3 +1,4 @@
+using Application.DTOs;
 using Application.Handler.CourtPrices;
 using Application.Handler.Courts;
 using Application.SpecParams;
@@ -49,16 +50,13 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListByCourtCluster.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPost]
-        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
-        public async Task<IActionResult> CreateCourt([FromBody] Court court, CancellationToken ct)
+        [Authorize(Roles = "Admin, Owner, ManagerCourtCluster")]
+        public async Task<IActionResult> CreateCourt([FromBody] CourtCreateDto court, CancellationToken ct)
         {
-            court.Status = Domain.Enum.CourtStatus.Available;
             return HandleResult(await Mediator.Send(new Create.Command() { Court = court }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> UpdateCourt(int id, Court newCourt)
@@ -67,7 +65,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { court = newCourt }));
         }
 
-        [AllowAnonymous]
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteCourt(int id)
@@ -94,5 +91,6 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new ToggleCourt.Command() { Id = id, Status = status }, ct));
         }
+
     }
 }

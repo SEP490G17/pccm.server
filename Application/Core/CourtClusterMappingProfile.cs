@@ -16,6 +16,8 @@ namespace Application.Core
 
             CreateMap<CourtDetailsDto, Court>();
             CreateMap<CourtPricesDto, CourtPrice>();
+            CreateMap<CourtPrice, CourtPricesDto>();
+
             #endregion
 
             #region Edit CourtCluster

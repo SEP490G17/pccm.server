@@ -1,9 +1,6 @@
 ﻿using Application.Core;
-using Application.DTOs;
 using AutoMapper;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using Domain.Entity;
-using Domain.Enum;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
