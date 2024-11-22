@@ -23,7 +23,7 @@ namespace Infrastructure.Payment
         {
             var tick = DateTime.Now.ToString();
             var ipAddress = Utils.GetIpAddress(_httpContextAccessor.HttpContext);
-            var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Bangkok Standard Time");
+            var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
 
             var utcNow = DateTime.UtcNow;
             var createDate = TimeZoneInfo.ConvertTimeFromUtc(utcNow, vietnamTimeZone);
