@@ -51,14 +51,27 @@ namespace Application.Handler.Bookings
                 {
                     return Result<Unit>.Failure("Username không tồn tại");
                 }
-                var checkSlot = await _context.Bookings.AnyAsync(
-                  x =>
-                  x.Court.Id == request.Booking.CourtId &&
-                      (int)x.Status == (int)BookingStatus.Confirmed
-                      && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
-                      || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
-                      || (request.Booking.StartTime >= x.StartTime && request.Booking.EndTime <= x.EndTime))
-                  );
+                var checkSlot = await _context.Bookings
+                        .AnyAsync(x =>
+                            x.Court.Id == request.Booking.CourtId && // Cùng sân
+                            (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
+
+                            // Kiểm tra va chạm trùng hay gì đó, không nghĩ ra từ với lịch lẻ khác
+                            (
+                                (!x.UntilTime.HasValue && // Lịch lẻ
+                                x.StartTime.Date >= request.Booking.StartTime.Date &&
+                                x.StartTime.Date <= request.Booking.EndTime.Date)
+                                ||
+                                // Kiểm tra va chạm với lịch dài hạn
+                                (x.UntilTime.HasValue && // Lịch dài hạn
+                                x.StartTime.Date <= request.Booking.EndTime.Date &&
+                                x.UntilTime.Value.Date >= request.Booking.StartTime.Date)
+                            )
+
+                            // Kiểm tra va chạm thời gian
+                            && request.Booking.StartTime.TimeOfDay < x.EndTime.TimeOfDay
+                            && request.Booking.EndTime.TimeOfDay > x.StartTime.TimeOfDay
+                        );
 
                 if (checkSlot)
                 {
@@ -88,7 +101,7 @@ namespace Application.Handler.Bookings
             {
                 decimal totalPrice = 0;
 
-                TimeZoneInfo gmtPlus7 = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo gmtPlus7 = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
 
                 // Chuyển đổi từ UTC hoặc giờ hệ thống sang giờ GMT+7
                 DateTime fromTimeGmt7 = TimeZoneInfo.ConvertTime(fromTime, gmtPlus7);

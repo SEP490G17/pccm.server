@@ -1,6 +1,8 @@
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -21,17 +23,9 @@ namespace Application.Handler.CourtClusters
                 Query request, CancellationToken cancellationToken)
             {
                 var court = await _context.CourtClusters
-                    .Include(x => x.Services)
-                    .Include(x => x.Products)
-                    .Include(x=>x.Courts)
+                     .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
-                var numberOfCourts = await _context.Courts.Where(c => c.CourtCluster.Id == request.Id).ToListAsync();
-                if (court is null)
-                    return Result<CourtClusterDto.CourtClusterListPageUserSite>.Failure(
-                        "Court cluster not found");
-                var courtClusterMap = _mapper.Map<CourtClusterDto.CourtClusterListPageUserSite>(court);
-                courtClusterMap.NumbOfCourts = numberOfCourts.Count();
-                return Result<CourtClusterDto.CourtClusterListPageUserSite>.Success(courtClusterMap);
+                return Result<CourtClusterDto.CourtClusterListPageUserSite>.Success(court);
             }
         }
     }

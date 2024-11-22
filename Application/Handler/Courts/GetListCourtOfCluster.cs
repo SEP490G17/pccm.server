@@ -4,6 +4,7 @@ using Application.Core;
 using Application.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -27,7 +28,7 @@ namespace Application.Handler.Courts
                     return Result<CourtManagerResponse>.Failure("Cụm sân không tồn tại");
                 }
                 var courts = await dataContext.Courts
-                    .Where(c => c.CourtClusterId.Equals(request.CourtClusterId) && c.DeleteAt == null)
+                    .Where(c => c.CourtClusterId.Equals(request.CourtClusterId) && c.DeleteAt == null && c.Status == CourtStatus.Available)
                     .ProjectTo<CourtOfClusterDto>(mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 

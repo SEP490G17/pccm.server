@@ -37,15 +37,27 @@ namespace Application.Handler.Bookings
             public async Task<Result<BookingDtoV1>> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var checkSlot = await _context.Bookings.AnyAsync(
-                    x =>
-                     x.Court.Id == request.Booking.CourtId &&
-                        (int)x.Status == (int)BookingStatus.Confirmed
-                        && ((request.Booking.StartTime <= x.StartTime && request.Booking.EndTime > x.StartTime)
-                        || (request.Booking.StartTime < x.EndTime && request.Booking.EndTime > x.EndTime)
-                        || (request.Booking.StartTime >= x.StartTime && request.Booking.EndTime <= x.EndTime))
-                );
+                var checkSlot = await _context.Bookings
+                        .AnyAsync(x =>
+                            x.Court.Id == request.Booking.CourtId && // Cùng sân
+                            (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
 
+                            // Kiểm tra va chạm trùng hay gì đó, không nghĩ ra từ với lịch lẻ khác
+                            (
+                                (!x.UntilTime.HasValue && // Lịch lẻ
+                                x.StartTime.Date >= request.Booking.StartTime.Date &&
+                                x.StartTime.Date <= request.Booking.EndTime.Date)
+                                ||
+                                // Kiểm tra va chạm với lịch dài hạn
+                                (x.UntilTime.HasValue && // Lịch dài hạn
+                                x.StartTime.Date <= request.Booking.EndTime.Date &&
+                                x.UntilTime.Value.Date >= request.Booking.StartTime.Date)
+                            )
+
+                            // Kiểm tra va chạm thời gian
+                            && request.Booking.StartTime.TimeOfDay < x.EndTime.TimeOfDay
+                            && request.Booking.EndTime.TimeOfDay > x.StartTime.TimeOfDay
+                        );
                 if (checkSlot)
                 {
                     return Result<BookingDtoV1>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
@@ -59,7 +71,7 @@ namespace Application.Handler.Bookings
                 }
 
                 var court = await _context.Courts.Include(x => x.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId);
-                
+
                 if (court == null || court.Status == CourtStatus.Closed)
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại hoặc đã dừng hoạt động");
@@ -90,7 +102,7 @@ namespace Application.Handler.Bookings
             {
                 decimal totalPrice = 0;
 
-                TimeZoneInfo gmtPlus7 = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo gmtPlus7 = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
 
                 // Chuyển đổi từ UTC hoặc giờ hệ thống sang giờ GMT+7
                 DateTime fromTimeGmt7 = TimeZoneInfo.ConvertTime(fromTime, gmtPlus7);

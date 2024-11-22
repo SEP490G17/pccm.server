@@ -1,6 +1,7 @@
 using Application.DTOs;
 using AutoMapper;
 using Domain.Entity;
+using Domain.Enum;
 
 namespace Application.Core
 {
@@ -40,17 +41,10 @@ namespace Application.Core
             #region CourtCluster for user page
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListPageUserSite>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.CourtClusterName))
-                .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count))
-                .ForMember(dest => dest.Services, opt => opt.MapFrom(src =>
-                    src.Services.Select(s => new ServiceDto { ServiceName = s.ServiceName }).ToList()))
-                .ForMember(dest => dest.Products, opt => opt.MapFrom(src =>
-                    src.Products.Select(p => new ProductDto { ProductName = p.ProductName }).ToList()))
-                .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts.Select(x => new CourtDto
-                {
-                    CourtId = x.Id,
-                    CourtName = x.CourtName,
-                }))
-                );
+                .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count(
+                    c => c.DeleteAt == null && c.Status == CourtStatus.Available
+                )))
+                .ForMember(dest => dest.Courts, opt=>opt.MapFrom(src=>src.Courts.Where(c=>c.DeleteAt == null &&c.Status == CourtStatus.Available)));
             #endregion
 
             #region CourtCluster list all for elect options 

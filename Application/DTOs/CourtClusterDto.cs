@@ -40,10 +40,7 @@ namespace Application.DTOs
             public TimeOnly OpenTime { get; set; }
             public TimeOnly CloseTime { get; set; }
             public string[] Images { get; set; }
-            public List<ServiceDto> Services { get; set; } = new List<ServiceDto>();
-            public List<ProductDto> Products { get; set; } = new List<ProductDto>();
-
-            public List<CourtDto> Courts { get; set; }
+            public List<CourtOfClusterDto> Courts { get; set; }
 
         }
 

@@ -19,6 +19,7 @@ namespace Application.Handler.CourtClusters
             {
                 var courtCluster = await unitOfWork.Repository<CourtCluster>()
                 .QueryList(null)
+                .Where(c =>c.DeleteAt == null && c.IsVisible)
                 .Include(c => c.Courts)
                 .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
