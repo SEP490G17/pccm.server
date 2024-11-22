@@ -1,7 +1,9 @@
 # syntax=docker/dockerfile:1
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
-
+RUN apk add --no-cache tzdata \
+    && ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime \
+    && echo "Asia/Bangkok" > /etc/timezone
 # Copy toàn bộ mã nguồn vào container
 COPY . /source
 WORKDIR /source/API
