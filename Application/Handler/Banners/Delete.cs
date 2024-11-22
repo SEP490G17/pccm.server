@@ -31,7 +31,7 @@ namespace Application.Handler.Banners
                 if (banner is null) return null;
                 banner.DeletedBy = request.userName;
 
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
                 banner.DeletedAt = vietnamTime;
 

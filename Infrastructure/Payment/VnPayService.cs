@@ -1,7 +1,9 @@
 using API.DTOs;
+using API.Helper;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Enum;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Payment
@@ -9,15 +11,18 @@ namespace Infrastructure.Payment
     public class VnPayService : IVnPayService
     {
         private readonly VnPaySettings _settings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public VnPayService(IOptions<VnPaySettings> settings)
+        public VnPayService(IOptions<VnPaySettings> settings, IHttpContextAccessor httpContextAccessor)
         {
             _settings = settings.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public string GeneratePaymentUrl(int billPaymentId, decimal amount, PaymentType type)
         {
             var tick = DateTime.Now.ToString();
+            var ipAddress = Utils.GetIpAddress(_httpContextAccessor.HttpContext);
             var createDate = DateTime.Now;
             var vnPay = new VnPayLibrary();
             vnPay.AddRequestData("vnp_Version", "2.1.1");
@@ -33,7 +38,7 @@ namespace Infrastructure.Payment
             vnPay.AddRequestData("vnp_OrderInfo", $"Thanh toan don hang: {billPaymentId}");
             vnPay.AddRequestData("vnp_OrderType", $"{type.ToString()}");
             vnPay.AddRequestData("vnp_ReturnUrl", _settings.ReturnUrl);
-            vnPay.AddRequestData("vnp_IpAddr", "127.0.0.1");
+            vnPay.AddRequestData("vnp_IpAddr", string.IsNullOrEmpty(ipAddress)? "127.0.0.1": ipAddress);
 
             return vnPay.CreateRequestUrl(_settings.Url,_settings.HashSecret);
         }

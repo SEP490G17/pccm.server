@@ -37,7 +37,7 @@ namespace Application.Handler.Banners
             }
             public async Task<Result<BannerInputDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+                TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
                 DateTime vietnamTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone);
 
                 var banner = await _context.Banners.FindAsync(request.Banner.Id);
