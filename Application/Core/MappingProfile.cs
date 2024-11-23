@@ -130,6 +130,7 @@ namespace Application.Core
             CreateMap<Review, Review>();
 
             CreateMap<Review, ReviewDto>()
+                .ForMember(st => st.PhoneNumber, o => o.MapFrom(s => s.User.PhoneNumber))
                 .ForMember(st => st.FullName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
             #endregion
 
