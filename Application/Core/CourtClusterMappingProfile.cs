@@ -46,7 +46,7 @@ namespace Application.Core
                 .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count(
                     c => c.DeleteAt == null && c.Status == CourtStatus.Available
                 )))
-                .ForMember(dest => dest.Courts, opt=>opt.MapFrom(src=>src.Courts.Where(c=>c.DeleteAt == null &&c.Status == CourtStatus.Available)));
+                .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts.Where(c => c.DeleteAt == null && c.Status == CourtStatus.Available)));
             #endregion
 
             #region CourtCluster list all for elect options 
