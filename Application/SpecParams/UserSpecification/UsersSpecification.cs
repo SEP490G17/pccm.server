@@ -17,7 +17,7 @@ namespace Application.SpecParams.UserSpecification
             ))
             && (string.IsNullOrEmpty(baseSpecParam.Sort) || int.Parse(baseSpecParam.Sort) < 0 ||
             (
-                x.LockoutEnabled == int.Parse(baseSpecParam.Sort).Equals(0) ? false : true
+                x.IsDisabled == int.Parse(baseSpecParam.Sort).Equals(0) ? false : true
             ))
         )
         {
