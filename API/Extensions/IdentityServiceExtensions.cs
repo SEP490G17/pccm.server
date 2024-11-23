@@ -14,11 +14,17 @@ namespace API.Extensions
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
-            // services.AddCors(opt =>
-            // {
-            //     opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000", "http://argonaut.asia", "https://argonaut.asia"));
-            // });
+            services.AddSwaggerGen(c =>
+            {
+                c.CustomSchemaIds(type => type.FullName); // Sử dụng tên đầy đủ (namespace + class)
+            });
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("Policy", policy => 
+                    policy.AllowAnyMethod().AllowAnyHeader()
+                    .WithOrigins("http://localhost:3000", "https://admin.argonaut.asia", "https://argonaut.asia")
+                );
+            });
 
             services.AddCors(opt =>
             {

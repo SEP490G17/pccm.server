@@ -39,13 +39,13 @@ namespace API.Controllers
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(loginDto.Username) || x.UserName.Equals(loginDto.Username));
             if (user is null) return Unauthorized("Tên đăng nhập/ Mật khẩu không đúng");
-            if (user.IsDisabled) return StatusCode(401, "Tài khoản đã bị vô hiệu hóa");
+            if (!user.LockoutEnabled) return Unauthorized("Tài khoản đã bị vô hiệu hoá");
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (result)
             {
                 return await CreateUserObject(user);
             }
-            return Unauthorized();
+            return Unauthorized("Tên đăng nhập/ Mật khẩu không đúng");
         }
 
         [AllowAnonymous]

@@ -52,12 +52,12 @@ namespace API.Controllers
         }
 
         // // chạy swagger bị lỗi nên cmt lại
-        // [HttpPut("edit")]
-        // [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
-        // public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
-        // {
-        //     return HandleResult(await Mediator.Send(command));
-        // }
+        [HttpPut("edit")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)
+        {
+            return HandleResult(await Mediator.Send(command));
+        }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]

@@ -111,7 +111,7 @@ namespace Application.Handler.Bookings
                 var booking = new Booking();
                 TimeSpan difference = bookingRequest.ToTime.ToTimeSpan() - bookingRequest.FromTime.ToTimeSpan();
                 //duration
-                var duration = (int)difference.TotalMinutes / 60;
+                var duration = (int)difference.TotalMinutes ;
                 //1. amount
                 var amout = duration * combo.TotalPrice;
                 //2. startTime
