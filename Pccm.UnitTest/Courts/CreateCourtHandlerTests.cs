@@ -6,6 +6,7 @@ using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Handler.Courts;
 using Domain.Enum;
+using Application.DTOs;
 
 namespace Pccm.UnitTest.Courts
 {
@@ -28,16 +29,15 @@ namespace Pccm.UnitTest.Courts
         [TestCase("Premium Service 2", 1, CourtStatus.Available, ExpectedResult = true)]
         public async Task<bool> Handle_CreateCourt_WhenValid(
                 string CourtName,
-                int? CourtClusterId,
+                int CourtClusterId,
                 CourtStatus Status)
         {
             try
             {
-                var courtInputDto = new Court
+                var courtInputDto = new CourtCreateDto
                 {
-                    CourtName = CourtName, 
-                    CourtClusterId = CourtClusterId, 
-                    Status = Status
+                    CourtName = CourtName,
+                    CourtClusterId = CourtClusterId,
                 };
 
                 var result = await Mediator.Send(new Create.Command() { Court = courtInputDto }, default);
@@ -54,16 +54,15 @@ namespace Pccm.UnitTest.Courts
         [TestCase("Premium Service 2", 100, CourtStatus.Available, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldCreateCourtFail_WhenNotExistCourtCluster(
                 string CourtName,
-                int? CourtClusterId,
+                int CourtClusterId,
                 CourtStatus Status)
         {
             try
             {
-                var courtInputDto = new Court
+                var courtInputDto = new CourtCreateDto
                 {
-                    CourtName = CourtName, 
-                    CourtClusterId = CourtClusterId, 
-                    Status = Status
+                    CourtName = CourtName,
+                    CourtClusterId = CourtClusterId,
                 };
 
                 var result = await Mediator.Send(new Create.Command() { Court = courtInputDto }, default);
