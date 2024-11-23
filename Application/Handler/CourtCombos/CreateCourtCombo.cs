@@ -44,15 +44,15 @@ namespace Application.Handler.CourtCombos
                 court.CourtCombos.Clear();
                 foreach (var combo in request.CourtComboCreateDtos)
                 {
-                    combo.Id = 0; 
+                    combo.Id = 0;
                 }
                 court.CourtCombos = mapper.Map<List<CourtCombo>>(request.CourtComboCreateDtos);
                 var courtCombos = await _context.CourtCombos.Where(c => c.CourtId == request.CourtId).ToListAsync(cancellationToken);
-                _context.Update(court);
-                if (courtCombos.Count == 0)
+                if (courtCombos.Count > 0)
                 {
                     _context.RemoveRange(courtCombos);
                 }
+                _context.Update(court);
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result<Unit>.Success(Unit.Value);
             }
