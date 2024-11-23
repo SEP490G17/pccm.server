@@ -205,17 +205,24 @@ namespace API.Controllers
             var token = _tokenService.CreatePasswordResetToken(user);
 
             var emailMessage = $@"
-                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                    <h2 style='text-align: center; color: #007BFF;'>Yêu cầu đặt lại mật khẩu</h2>
-                    <p>Chào bạn,</p>
-                    <p>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào liên kết dưới đây để đặt lại mật khẩu của bạn:</p>
-                    <p style='text-align: center;'>
-                        <a href='https://argonaut.asia/confirm-forgot-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Đặt lại mật khẩu</a>
+                <div style='font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: 20px auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                    <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Yêu cầu đặt lại mật khẩu</h2>
+                    <p style='font-size: 16px; line-height: 1.6;'>Chào bạn,</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào nút dưới đây để đặt lại mật khẩu của bạn:</p>
+                    <p style='text-align: center; margin: 30px 0;'>
+                        <a href='https://argonaut.asia/confirm-forgot-password?token={token}' 
+                        style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                            Đặt lại mật khẩu
+                        </a>
                     </p>
-                    <p>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
-                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                    <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                    <footer style='text-align: center; margin-top: 20px; font-size: 12px; color: #999;'>
+                        <p>© 2024 PCCM. All Rights Reserved.</p>
+                    </footer>
                 </div>
-            ";
+                ";
+
 
             try
             {
@@ -248,10 +255,7 @@ namespace API.Controllers
                 return NotFound("Không tìm thấy người dùng");
             }
 
-            // Tạo mật khẩu mới
-            var newPassword = GenerateSecurePassword();
-
-            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, newPassword);
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, command.NewPassword);
             user.PasswordHash = hashedPassword;
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -262,24 +266,28 @@ namespace API.Controllers
             var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
 
             var emailMessage = $@"
-                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                    <h2 style='text-align: center; color: #007BFF;'>Mật khẩu mới của bạn</h2>
-                    <p>Xin chào {userName},</p>
-                    <p>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
-                    <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333;'>{newPassword}</p>
-                    <p>Vì lý do bảo mật, hãy đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
-                    <p style='text-align: center;'>
-                        <a href='https://argonaut.asia/login' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Nhấn vào đây để đăng nhập</a>
+                <div style='font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: 20px auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                    <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Thay đổi mật khẩu tài khoản</h2>
+                    <p style='font-size: 16px; line-height: 1.6;'>Xin chào <b>{userName}</b>,</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Mật khẩu của bạn đã được thiết lập lại thành công. Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                    <p style='text-align: center; margin: 30px 0;'>
+                        <a href='https://argonaut.asia/login' 
+                        style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                            Nhấn vào đây để đăng nhập
+                        </a>
                     </p>
-                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                    <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi ngay lập tức để được hỗ trợ.</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                    <footer style='text-align: center; margin-top: 20px; font-size: 12px; color: #999;'>
+                        <p>© 2024 PCCM. All Rights Reserved.</p>
+                    </footer>
                 </div>
-            ";
-
+                ";
             try
             {
                 // Gửi email
                 await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu", emailMessage);
-                return Ok("Mật khẩu mới đã được gửi đến email của bạn.");
+                return Ok("Mật khẩu đã được thay đổi thành công.");
             }
             catch (Exception ex)
             {
@@ -393,20 +401,38 @@ namespace API.Controllers
             }
 
             var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
-
             var emailMessage = $@"
-                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                    <h2 style='text-align: center; color: #007BFF;'>Mật khẩu mới của bạn</h2>
-                    <p>Xin chào {userName},</p>
-                    <p>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
-                    <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333;'>{newPassword}</p>
-                    <p>Vì lý do bảo mật, hãy đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
-                    <p style='text-align: center;'>
-                        <a href='https://argonaut.asia/login' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Nhấn vào đây để đăng nhập</a>
-                    </p>
-                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
-                </div>
-            ";
+                    <table style='width: 100%; background-color: #f4f6f9; padding: 20px 0; font-family: Arial, sans-serif;'>
+                        <tr>
+                            <td align='center'>
+                                <table style='width: 600px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                                    <tr>
+                                        <td style='padding: 20px;'>
+                                            <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Mật khẩu mới của bạn</h2>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Xin chào <b>{userName}</b>,</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
+                                            <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333; background-color: #e9ecef; padding: 10px; border-radius: 5px; display: inline-block; margin: 20px 0;'>{newPassword}</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                                            <div style='text-align: center; margin: 30px 0;'>
+                                                <a href='https://argonaut.asia/login' 
+                                                style='display: inline-block; padding: 15px 30px; font-size: 16px; color: #ffffff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                                                    Nhấn vào đây để đăng nhập
+                                                </a>
+                                            </div>
+                                            <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu đặt lại mật khẩu này, vui lòng bỏ qua email hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style='text-align: center; padding: 10px; font-size: 12px; color: #999;'>
+                                            <p>© 2024 PCCM. All Rights Reserved.</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    ";
 
             try
             {
