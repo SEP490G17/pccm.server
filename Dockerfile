@@ -22,14 +22,15 @@ RUN mkdir -p /app/data && cp *.db /app/data/
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 
-# Copy ứng dụng đã publish từ build stage sang container cuối cùng
-COPY --from=build /app .
-
 # Cài đặt Chromium cho Puppeteer
 RUN apk add --no-cache chromium
 
-# Cấu hình đường dẫn đến Chromium
+# Cấu hình đường dẫn đến Chromium và các tham số Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox"
+
+# Copy ứng dụng đã publish từ build stage sang container cuối cùng
+COPY --from=build /app .
 
 # Đảm bảo thư mục /app/data có quyền ghi cho SQLite
 RUN chmod -R 777 /app/data
