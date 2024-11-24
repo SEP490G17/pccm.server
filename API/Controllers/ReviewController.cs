@@ -25,6 +25,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListCourtCluster.Query() { Id = id }, ct));
         }
 
+        //[Authorize(Roles = "Admin,ManagerBanner,ManagerNews,Owner,ManagerCourtCluster,Customer,ManagerCustomer,ManagerBooking,ManagerStaff,ManagerOrder")]
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostReview([FromBody] ReviewInputDto review, CancellationToken ct)

@@ -23,16 +23,16 @@ namespace Pccm.UnitTest.Users
         }
 
 
-        [TestCase("16d78ef3-0524-4fbb-860f-de5e91a67a1d", true, ExpectedResult = true)]
+        [TestCase("Thanhhung", true, ExpectedResult = true)]
         public async Task<bool> Handle_ActiveUser_WhenValid(
-         string id,
+         string username,
          bool isActive)
-              {
+        {
             try
             {
                 var activeDto = new ActiveDto()
                 {
-                    Id = id,
+                    username = username,
                     IsActive = isActive
                 };
 
@@ -46,16 +46,16 @@ namespace Pccm.UnitTest.Users
             }
         }
 
-         [TestCase("06b243a8-8158-4a9c-845e-63054506a1b89", true, ExpectedResult = false)]
+        [TestCase("Thanhhung", true, ExpectedResult = false)]
         public async Task<bool> Handle_ActiveUser_WhenNotExistUserID(
-         string id,
-         bool isActive)
+        string username,
+        bool isActive)
         {
             try
             {
                 var activeDto = new ActiveDto()
                 {
-                    Id = id,
+                    username = username,
                     IsActive = isActive
                 };
 

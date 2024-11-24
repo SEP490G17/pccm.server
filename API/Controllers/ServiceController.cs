@@ -23,8 +23,8 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
-        [AllowAnonymous]
         [HttpGet("log")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> GetServiceLog([FromQuery] ServiceLogSpecParams baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new ListServiceLog.Query() { BaseSpecParam = baseSpecParam }, ct));
@@ -38,7 +38,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
-        [Authorize]
         [HttpPost]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> PostService([FromBody] ServiceInputDto service, CancellationToken ct)
@@ -51,7 +50,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Create.Command() { Service = service, userName = userName }, ct));
         }
 
-        [AllowAnonymous]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> UpdateService(int id, ServiceInputDto updatedService)
@@ -65,7 +63,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { Service = updatedService, userName = userName }));
         }
 
-        [AllowAnonymous]
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteService(int id)

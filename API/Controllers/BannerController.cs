@@ -21,6 +21,7 @@ namespace API.Controllers
         */
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         public async Task<IActionResult> GetBanner([FromQuery] BannerSpecParams baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();
@@ -36,7 +37,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListUserSite.Query(), ct));
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
         {

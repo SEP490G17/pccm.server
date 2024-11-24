@@ -68,6 +68,7 @@ namespace API.Controllers
         }
 
         [HttpGet("log")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> GetProductsLog([FromQuery] ProductLogSpecParams specWithFilterParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new ListProductLog.Query() { SpecParam = specWithFilterParam }, ct));

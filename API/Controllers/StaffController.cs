@@ -7,15 +7,16 @@ namespace API.Controllers
 {
     public class StaffController : BaseApiController
     {
-        [AllowAnonymous]
         [HttpGet]
+        [Authorize(Roles = "Admin,Owner,ManagerStaff")]
         public async Task<IActionResult> GetStaffs([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,Owner,ManagerStaff")]
+
         public async Task<IActionResult> GetStaff(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));

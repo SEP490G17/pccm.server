@@ -6,7 +6,7 @@ namespace Application.DTOs
     {
         [Key]
         public int Id { get; set; }
-        public string UserId { get; set; }
+        public string PhoneNumber { get; set; }
         public string FullName { get; set; }
         public int? CourtClusterId { get; set; }
         [Range(1, 5)]
