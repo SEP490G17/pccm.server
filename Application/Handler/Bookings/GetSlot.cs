@@ -2,6 +2,7 @@ using Application.Core;
 using Application.DTOs;
 using AutoMapper;
 using Domain.Entity;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -23,124 +24,108 @@ namespace Application.Handler.Bookings
 
             public Handler(DataContext context, IMapper mapper)
             {
-                this._context = context;
-                this._mapper = mapper;
+                _context = context;
+                _mapper = mapper;
             }
+
             public async Task<Result<AvailableSlotDto.AvailableSlotsResponse>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var response = new AvailableSlotDto.AvailableSlotsResponse();
 
-                // Parse the date from request.Date (which is a string)
+                // Parse the input date
                 if (!DateTime.TryParse(request.Date, out var parsedDate))
                 {
-                    throw new Exception("Invalid date format. Please provide a valid date.");
+                    return Result<AvailableSlotDto.AvailableSlotsResponse>.Failure("Invalid date format. Please provide a valid date.");
                 }
 
-                // Fetch the Court Cluster details
+                // Fetch court cluster information
                 var courtCluster = await _context.CourtClusters
                     .FirstOrDefaultAsync(c => c.Id == request.CourtClusterId, cancellationToken);
 
-                if (courtCluster == null) throw new Exception("Court cluster not found.");
+                if (courtCluster == null)
+                {
+                    return Result<AvailableSlotDto.AvailableSlotsResponse>.Failure("Court cluster not found.");
+                }
 
+                // Define open and close times
                 var openTime = parsedDate.Date.Add(courtCluster.OpenTime.ToTimeSpan());
                 var closeTime = parsedDate.Date.Add(courtCluster.CloseTime.ToTimeSpan());
 
-                // Fetch all courts in the specified CourtCluster
+                // Fetch all courts within the cluster
                 var courts = await _context.Courts
-                    .Where(c => c.CourtClusterId == request.CourtClusterId)
+                    .Where(c => c.CourtClusterId == request.CourtClusterId && c.DeleteAt == null)
                     .ToListAsync(cancellationToken);
 
                 foreach (var court in courts)
                 {
-                    // Fetch bookings for the court on the specified date, including those with recurrence
+                    // Fetch bookings for the court on the specified date
                     var bookings = await _context.Bookings
-                        .Where(b => b.Court.Id == court.Id &&
-                                    (b.StartTime.Date == parsedDate.Date && b.RecurrenceRule != null))
+                        .Where(b =>
+                            b.Court.Id == court.Id &&
+                            b.Status != BookingStatus.Cancelled &&
+                            b.StartTime.Date <= parsedDate.Date &&
+                            (b.UntilTime == null || b.UntilTime.Value.Date >= parsedDate.Date))
                         .OrderBy(b => b.StartTime)
                         .ToListAsync(cancellationToken);
-                    var availableTimes = new List<string>();
-                    var currentTime = openTime;
 
-                    var expandedBookings = ExpandRecurringBookings(bookings, parsedDate, openTime, closeTime);
+                    // Process bookings and calculate available slots
+                    var availableSlots = CalculateAvailableSlots(bookings, openTime, closeTime, parsedDate);
 
-                    foreach (var booking in expandedBookings)
-                    {
-                        if (booking.StartTime > currentTime)
-                        {
-                            availableTimes.Add($"{currentTime.TimeOfDay:hh\\:mm} - {booking.StartTime.TimeOfDay:hh\\:mm}");
-                        }
-                        currentTime = booking.EndTime;
-                    }
-
-                    // Check for availability after the last booking
-                    if (currentTime < closeTime)
-                    {
-                        availableTimes.Add($"{currentTime.TimeOfDay:hh\\:mm} - {closeTime.TimeOfDay:hh\\:mm}");
-                    }
-
-                    // Add the court and its available slots to the response
+                    // Add results to response
                     response.AvailableSlots.Add(new AvailableSlotDto.CourtAvailableSlot
                     {
                         Id = court.Id,
                         Name = court.CourtName,
-                        AvailableSlots = availableTimes
+                        AvailableSlots = availableSlots
                     });
                 }
 
                 return Result<AvailableSlotDto.AvailableSlotsResponse>.Success(response);
             }
 
-            private List<Booking> ExpandRecurringBookings(List<Booking> bookings, DateTime date, DateTime openTime, DateTime closeTime)
+            private List<string> CalculateAvailableSlots(List<Booking> bookings, DateTime openTime, DateTime closeTime, DateTime targetDate)
             {
-                var expandedBookings = new List<Booking>();
+                var availableSlots = new List<string>();
+                var currentTime = openTime;
 
+                // Xử lý từng booking
                 foreach (var booking in bookings)
                 {
-                    if (string.IsNullOrEmpty(booking.RecurrenceRule))
+                    // Kiểm tra nếu booking có UntilTime và áp dụng logic lặp lại
+                    if (booking.UntilTime != null && booking.UntilTime.Value.Date >= targetDate.Date)
                     {
-                        // If no recurrence, just add the booking
-                        expandedBookings.Add(booking);
-                    }
-                    else
-                    {
-                        // Parse the recurrence rule
-                        var ruleParts = booking.RecurrenceRule.Split(';');
-                        var freq = ruleParts.FirstOrDefault(r => r.StartsWith("FREQ="))?.Split('=')[1];
-                        var untilStr = ruleParts.FirstOrDefault(r => r.StartsWith("UNTIL="))?.Split('=')[1];
+                        // Tạo khoảng thời gian booking lặp lại trong ngày targetDate
+                        var repeatedStartTime = targetDate.Date.Add(booking.StartTime.TimeOfDay);
+                        var repeatedEndTime = targetDate.Date.Add(booking.EndTime.TimeOfDay);
 
-                        if (freq == "DAILY" && DateTime.TryParseExact(untilStr, "yyyyMMdd'T'HHmmss'Z'", null, System.Globalization.DateTimeStyles.AssumeUniversal, out var untilDate))
+                        // Nếu khoảng thời gian lặp lại nằm sau currentTime, tính giờ trống
+                        if (repeatedStartTime > currentTime)
                         {
-                            var occurrenceDate = booking.StartTime.Date;
-
-                            while (occurrenceDate <= untilDate.Date && occurrenceDate <= date.Date)
-                            {
-                                // Add only the occurrences on the requested date
-                                if (occurrenceDate == date.Date)
-                                {
-                                    var occurrenceStart = occurrenceDate.Add(booking.StartTime.TimeOfDay);
-                                    var occurrenceEnd = occurrenceDate.Add(booking.EndTime.TimeOfDay);
-
-                                    if (occurrenceStart < closeTime && occurrenceEnd > openTime)
-                                    {
-                                        // Adjust the occurrence to be within open and close times
-                                        occurrenceStart = occurrenceStart < openTime ? openTime : occurrenceStart;
-                                        occurrenceEnd = occurrenceEnd > closeTime ? closeTime : occurrenceEnd;
-
-                                        expandedBookings.Add(new Booking
-                                        {
-                                            StartTime = occurrenceStart,
-                                            EndTime = occurrenceEnd,
-                                            Court = booking.Court,
-                                        });
-                                    }
-                                }
-                                occurrenceDate = occurrenceDate.AddDays(1);
-                            }
+                            availableSlots.Add($"{currentTime:HH\\:mm} - {repeatedStartTime:HH\\:mm}");
                         }
+
+                        // Cập nhật currentTime tới thời gian kết thúc booking
+                        currentTime = repeatedEndTime > currentTime ? repeatedEndTime : currentTime;
+                    }
+                    else if (booking.StartTime.Date == targetDate.Date)
+                    {
+                        // Nếu booking không lặp lại, xử lý như bình thường
+                        if (booking.StartTime > currentTime)
+                        {
+                            availableSlots.Add($"{currentTime:HH\\:mm} - {booking.StartTime:HH\\:mm}");
+                        }
+
+                        currentTime = booking.EndTime > currentTime ? booking.EndTime : currentTime;
                     }
                 }
 
-                return expandedBookings.OrderBy(b => b.StartTime).ToList();
+                // Kiểm tra giờ trống sau booking cuối cùng đến closeTime
+                if (currentTime < closeTime)
+                {
+                    availableSlots.Add($"{currentTime:HH\\:mm} - {closeTime:HH\\:mm}");
+                }
+
+                return availableSlots;
             }
         }
     }
