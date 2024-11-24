@@ -79,7 +79,8 @@ namespace Application.Handler.Bill
                     {
                         Headless = true,
                         ExecutablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH"),
-                        Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }  // Thêm tham số này
+                        Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" },  // Thêm tham số này
+                        Timeout = 30000
 
                     }))
                     {
@@ -102,7 +103,7 @@ namespace Application.Handler.Bill
                 {
 
                     Headless = true,
-
+                    Timeout = 30000,
                     Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }  // Thêm tham số này
                 }))
                 {
@@ -113,7 +114,8 @@ namespace Application.Handler.Bill
                     {
                         Format = PaperFormat.A6,
                         PrintBackground = true,
-                        MarginOptions = new MarginOptions { Top = 10, Left = 12, Right = 12, Bottom = 10 }
+                        MarginOptions = new MarginOptions { Top = 10, Left = 12, Right = 12, Bottom = 10 },
+
                     });
 
                     await browser.CloseAsync();
