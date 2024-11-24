@@ -89,6 +89,8 @@ namespace Application.Core
 
             CreateMap<ProfileInputDto, AppUser>();
 
+            CreateMap<AppUser, ProfileDto>();
+            
             CreateMap<AppUser, UserDto>()
                 .ForMember(u => u.FullName, o => o.MapFrom(au => $"{au.FirstName} {au.LastName}"));
             #endregion
