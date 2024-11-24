@@ -73,7 +73,38 @@ namespace Application.Handler.Bill
 
                 var browserFetcher = new BrowserFetcher();
                 await browserFetcher.DownloadAsync();
-                using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }))
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+                {
+                    using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                    {
+                        Headless = true,
+                        ExecutablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH"),
+                        Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }  // Thêm tham số này
+
+                    }))
+                    {
+                        var page = await browser.NewPageAsync();
+                        await page.SetContentAsync(htmlContent);
+
+                        var pdfBytes = await page.PdfDataAsync(new PdfOptions
+                        {
+                            Format = PaperFormat.A6,
+                            PrintBackground = true,
+                            MarginOptions = new MarginOptions { Top = 10, Left = 12, Right = 12, Bottom = 10 }
+                        });
+
+                        await browser.CloseAsync();
+
+                        return Result<ActionResult>.Success(new FileContentResult(pdfBytes, "application/pdf"));
+                    }
+                }
+                using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                {
+
+                    Headless = true,
+
+                    Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" }  // Thêm tham số này
+                }))
                 {
                     var page = await browser.NewPageAsync();
                     await page.SetContentAsync(htmlContent);
