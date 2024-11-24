@@ -1,15 +1,9 @@
-# Build ứng dụng .NET và publish vào /app
+# Bước 1: Build ứng dụng
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
-RUN apk add --no-cache tzdata \
+
+RUN apk add --no-cache tzdata chromium \
     && ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime \
-    && echo "Asia/Bangkok" > /etc/timezone \
-    && apk add --no-cache \
-        chromium \
-        nss \
-        freetype \
-        harfbuzz \
-        ca-certificates \
-        ttf-freefont
+    && echo "Asia/Bangkok" > /etc/timezone
 
 # Copy toàn bộ mã nguồn vào container
 COPY . /source
@@ -24,14 +18,18 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 # Copy file .db từ thư mục API vào thư mục publish /app/data
 RUN mkdir -p /app/data && cp *.db /app/data/
 
+# Bước 2: Final Stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 
 # Copy ứng dụng đã publish từ build stage sang container cuối cùng
 COPY --from=build /app .
 
-# Cài đặt Chromium vào final container
+# Cài đặt Chromium cho Puppeteer
 RUN apk add --no-cache chromium
+
+# Cấu hình đường dẫn đến Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Đảm bảo thư mục /app/data có quyền ghi cho SQLite
 RUN chmod -R 777 /app/data
