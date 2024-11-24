@@ -64,6 +64,8 @@ namespace Application.DTOs
             public decimal MinPrice { get; set; }
             public decimal MaxPrice { get; set; }
             public string[] Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
+            public List<CourtOfClusterDto> Courts { get; set; }
+
         }
 
     }

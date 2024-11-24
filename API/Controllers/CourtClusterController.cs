@@ -56,7 +56,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
+        [Authorize(Roles = "Admin, Owner, ManagerCourtCluster")]
         public async Task<IActionResult> CreateCourtCluster([FromBody] CourtClustersInputDto courtCluster, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new Create.Command() { CourtCluster = courtCluster }, ct));

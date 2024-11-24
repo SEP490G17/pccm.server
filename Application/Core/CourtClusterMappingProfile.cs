@@ -46,7 +46,7 @@ namespace Application.Core
                 .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count(
                     c => c.DeleteAt == null && c.Status == CourtStatus.Available
                 )))
-                .ForMember(dest => dest.Courts, opt=>opt.MapFrom(src=>src.Courts.Where(c=>c.DeleteAt == null &&c.Status == CourtStatus.Available)));
+                .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts.Where(c => c.DeleteAt == null && c.Status == CourtStatus.Available)));
             #endregion
 
             #region CourtCluster list all for elect options 
@@ -64,7 +64,8 @@ namespace Application.Core
                 .ForMember(c => c.NumbOfCourts, o => o.MapFrom(st => st.Courts.Count))
                 .ForMember(c => c.Title, o => o.MapFrom(st => st.CourtClusterName))
                 .ForMember(c => c.MinPrice, o => o.MapFrom(src => src.Courts.SelectMany(court => court.CourtPrices).Min(price => price.Price)))
-                .ForMember(c => c.MaxPrice, o => o.MapFrom(src => src.Courts.SelectMany(court => court.CourtPrices).Max(price => price.Price)));
+                .ForMember(c => c.MaxPrice, o => o.MapFrom(src => src.Courts.SelectMany(court => court.CourtPrices).Max(price => price.Price)))
+                   .ForMember(dest => dest.Courts, opt => opt.MapFrom(src => src.Courts.Where(c => c.DeleteAt == null && c.Status == CourtStatus.Available)));
 
             #endregion
 

@@ -31,7 +31,6 @@ namespace Application.DTOs
         public string CourtName { get; set; }
         public List<CourtPricesDto> CourtPrice { get; set; }
         public CourtStatus Status { get; set; }
-        public string? Actions { get; set; }
     }
 
     public class CourtPricesDto

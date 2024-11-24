@@ -83,23 +83,34 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
                 }
-                // check conflig
+                // Check trùng, bao phủ, va chạm lịch
                 var hasConflict = await _context.Bookings
-                            .AnyAsync(x =>
-                                x.Court.Id == request.Booking.CourtId && // Cùng sân
-                                (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
-                                (
-                                    (!x.UntilTime.HasValue &&
-                                    x.StartTime.Date >= startDateTimeUtc.Date &&
-                                    x.StartTime.Date <= until.Date)
-                                    ||
-                                    (x.UntilTime.HasValue &&
-                                    x.StartTime.Date <= until.Date &&
-                                    x.UntilTime.Value.Date >= startDateTimeUtc.Date)
-                                )
-                                && startDateTimeUtc.TimeOfDay < x.EndTime.TimeOfDay
-                                && endDateTimeUtc.TimeOfDay > x.StartTime.TimeOfDay
-                            );
+                        .AnyAsync(x =>
+                            x.Court.Id == request.Booking.CourtId && // Cùng sân
+                            (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
+                            (
+                                // Kiểm tra va chạm với lịch lẻ
+                                (!x.UntilTime.HasValue &&
+                                x.StartTime.Date == startDateTimeUtc.Date) // Cùng ngày
+                                ||
+                                // Kiểm tra va chạm với lịch dài hạn
+                                (x.UntilTime.HasValue &&
+                                x.StartTime.Date <= startDateTimeUtc.Date &&
+                                x.UntilTime.Value.Date >= startDateTimeUtc.Date) // Trong dải ngày
+                            )
+                            &&
+                            (
+                                // Kiểm tra trùng thời gian
+                                (startDateTimeUtc == x.StartTime && endDateTimeUtc == x.EndTime)
+                                ||
+                                // Kiểm tra va chạm thời gian
+                                (startDateTimeUtc < x.EndTime && endDateTimeUtc > x.StartTime)
+                                ||
+                                // Kiểm tra bao phủ toàn bộ thời gian của lịch đã tồn tại
+                                (startDateTimeUtc <= x.StartTime && endDateTimeUtc >= x.EndTime)
+                            )
+                        );
+
                 if (hasConflict)
                 {
                     return Result<BookingDtoV1>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
@@ -111,9 +122,9 @@ namespace Application.Handler.Bookings
                 var booking = new Booking();
                 TimeSpan difference = bookingRequest.ToTime.ToTimeSpan() - bookingRequest.FromTime.ToTimeSpan();
                 //duration
-                var duration = (int)difference.TotalMinutes ;
+                var duration = (int)difference.TotalMinutes;
                 //1. amount
-                var amout = duration * combo.TotalPrice;
+                var amout = duration / 60 * combo.TotalPrice;
                 //2. startTime
                 booking.StartTime = startDateTimeUtc;
                 //3. endTime
@@ -136,7 +147,7 @@ namespace Application.Handler.Bookings
                 };
                 booking.RecurrenceRule = recurrenceRule.ToString();
                 var roles = await _userManager.GetRolesAsync(user);
-                var acceptableRole = new List<string>() { "Admin","ManagerCourtCluster", "Owner", "ManagerBooking" };
+                var acceptableRole = new List<string>() { "Admin", "ManagerCourtCluster", "Owner", "ManagerBooking" };
 
                 // Check nếu là nhân viên có quyền sẽ confirm và tạo thanh toán luôn
                 var check = roles.Any(x => acceptableRole.Contains(x));

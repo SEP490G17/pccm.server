@@ -27,9 +27,8 @@ namespace Application.Handler.CourtClusters
                 if (court is null)
                     return Result<CourtClusterDto.CourtClusterDetails>.Failure(
                         "Court cluster not found");
-                var courtClusterMap = _mapper.Map<CourtClusterDto.CourtClusterDetails>(court);
 
-                return Result<CourtClusterDto.CourtClusterDetails>.Success(courtClusterMap);
+                return Result<CourtClusterDto.CourtClusterDetails>.Success(court);
             }
         }
     }
