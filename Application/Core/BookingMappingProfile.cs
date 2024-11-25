@@ -45,6 +45,7 @@ namespace Application.Core
                                 opt.MapFrom(src => src.Payment.Status);
                             })
                 .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName));
+
             #endregion
 
             #region Booking for user history

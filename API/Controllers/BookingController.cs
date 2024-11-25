@@ -153,10 +153,26 @@ namespace API.Controllers
         }
 
         [HttpPost("combo")]
-        
+
         public async Task<IActionResult> BookingCombo([FromBody] BookingWithComboDto bookingWithComboDto, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpPost("bookingConflict")]
+
+        public async Task<IActionResult> GetBookingConflict([FromBody] BookingConflictDto bookingConflictDto, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetBookingConflict.Command() { Booking = bookingConflictDto }, ct));
+        }
+
+        [AllowAnonymous]
+        [HttpPut("denybookingConflict")]
+
+        public async Task<IActionResult> DenyBookingConflict([FromBody] List<int> bookingId, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new DenyBookingConflict.Command() { Id = bookingId }, ct));
         }
     }
 }

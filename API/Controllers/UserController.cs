@@ -19,8 +19,8 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
