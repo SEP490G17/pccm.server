@@ -174,5 +174,10 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new DenyBookingConflict.Command() { Id = bookingId }, ct));
         }
+        [HttpPost("byDay")]
+        public async Task<IActionResult> BookingByDay([FromBody] BookingByDayDto bookingByDay, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new BookingByDay.Command() { Booking = bookingByDay }, ct));
+        }
     }
 }
