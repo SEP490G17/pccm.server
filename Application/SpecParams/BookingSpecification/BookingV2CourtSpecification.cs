@@ -6,19 +6,26 @@ namespace Application.SpecParams.BookingSpecification
     public class BookingV2CourtSpecification : BaseSpecification<Booking>
     {
         public BookingV2CourtSpecification(BookingSpecParam baseSpecParam) : base(
-           x => (
+           x => (string.IsNullOrEmpty(baseSpecParam.Search) ||
+                x.PhoneNumber.ToLower().Contains(baseSpecParam.Search) ||
+                x.FullName.ToLower().Contains(baseSpecParam.Search.ToLower())
+                )
+           &&
+           (
                 (baseSpecParam.Status == null
                 || baseSpecParam.Status < 0
-                || ((baseSpecParam.Status == 4) && (int)x.Status == 1 && x.IsSuccess)
-                || (int)x.Status == (int)baseSpecParam.Status)
+                || (baseSpecParam.Status == 1 && (int)x.Status == 1 && !x.IsSuccess)
+                || (baseSpecParam.Status == 4 && (int)x.Status == 1 && x.IsSuccess)
+                || (baseSpecParam.Status != 1 && baseSpecParam.Status != 4 && (int)x.Status == (int)baseSpecParam.Status))
             )
-         && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
-                         && (
-                    baseSpecParam.fromDate == null && baseSpecParam.toDate == null ||
-
+            && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
+            && (
+                (baseSpecParam.fromDate == null && baseSpecParam.toDate == null) ||
+                (
                     x.StartTime >= DateTime.ParseExact(baseSpecParam.fromDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(-7)
                     && x.EndTime <= DateTime.ParseExact(baseSpecParam.toDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(-7)
                 )
+            )
          )
 
         {
