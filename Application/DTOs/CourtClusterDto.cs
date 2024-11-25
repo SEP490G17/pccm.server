@@ -42,7 +42,7 @@ namespace Application.DTOs
             public TimeOnly? OpenTime { get; set; }
             public TimeOnly? CloseTime { get; set; }
             public string[] Images { get; set; }
-            public List<Court> Courts { get; set; }
+            public List<CourtOfClusterDto> Courts { get; set; }
 
         }
 

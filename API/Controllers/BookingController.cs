@@ -153,10 +153,15 @@ namespace API.Controllers
         }
 
         [HttpPost("combo")]
-        
+
         public async Task<IActionResult> BookingCombo([FromBody] BookingWithComboDto bookingWithComboDto, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct));
+        }
+        [HttpPost("byDay")]
+        public async Task<IActionResult> BookingByDay([FromBody] BookingByDayDto bookingByDay, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new BookingByDay.Command() { Booking = bookingByDay }, ct));
         }
     }
 }

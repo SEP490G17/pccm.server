@@ -11,7 +11,7 @@ namespace Application.DTOs
         public string EndTime { get; set; }
         public string RecurrenceRule { get; set; }
         public string? UntilTime { get; set; }
-        public int PaymentStatus { get; set; }
+        public int? PaymentStatus { get; set; }
         public string? PaymentUrl { get; set; }
         public int Status { get; set; }
         public bool IsSuccess { get; set; }

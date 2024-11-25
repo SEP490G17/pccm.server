@@ -15,11 +15,11 @@ using Persistence;
 
 namespace Application.Handler.Bookings
 {
-    public class BookingWithCombo
+    public class BookingByDay
     {
         public class Command : IRequest<Result<BookingDtoV1>>
         {
-            public BookingWithComboDto Booking { get; set; }
+            public BookingByDayDto Booking { get; set; }
         }
 
 
@@ -48,18 +48,12 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV1>.Failure("Username không tồn tại");
                 }
-                var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
+                var court = await _context.Courts.Include(c => c.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
                 if (court == null)
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại");
                 }
-                //3. Lấy combo để có endtime chuẩn
-                var combo = await _context.CourtCombos.FirstOrDefaultAsync(cc => cc.Id == request.Booking.ComboId, cancellationToken);
-                if (combo == null)
-                {
-                    return Result<BookingDtoV1>.Failure("Combo không tồn tại");
 
-                }
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
 
                 DateTime startDateTimeInLocal = TimeZoneInfo.ConvertTimeFromUtc(bookingRequest.FromDate, vietnamTimeZone);
@@ -79,69 +73,64 @@ namespace Application.Handler.Bookings
                 DateTime startDateTimeUtc = startDateWithTime.ToUniversalTime();
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
 
-                var until = endDateTimeUtc.AddMonths(combo.Duration);
                 if (request.Booking.FromDate.Date < DateTime.Today.Date)
                 {
                     return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
                 }
-                // Check trùng, bao phủ, va chạm lịch
                 var hasConflictWithSingleDayBookings = await _context.Bookings
-                    .AnyAsync(x =>
-                        x.Court.Id == request.Booking.CourtId && // Cùng sân
-                        (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã xác nhận
-                        !x.UntilTime.HasValue && // Không phải lịch combo
-                       (
-                        x.StartTime.AddHours(7).Date >= startDateWithTime.Date &&
-                        x.EndTime.AddHours(7).Date <= until.AddHours(7).Date &&
-                        (
-                            (startDateWithTime.TimeOfDay <= x.StartTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.StartTime.AddHours(7).TimeOfDay)
-                            ||
-                            (startDateWithTime.TimeOfDay >= x.StartTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay <= x.EndTime.AddHours(7).TimeOfDay)
-                            ||
-                            (startDateWithTime.TimeOfDay < x.EndTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.EndTime.AddHours(7).TimeOfDay)
-
-                        )
-                       )
-                    );
+                .AnyAsync(x =>
+                    x.Court.Id == request.Booking.CourtId &&
+                    (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã xác nhận
+                    !x.UntilTime.HasValue &&
+                    (
+                        (x.StartTime.AddHours(7) <= startDateWithTime && x.EndTime.AddHours(7) > startDateWithTime)
+                        ||
+                        (x.StartTime.AddHours(7) >= startDateWithTime && x.EndTime.AddHours(7) <= endDateWithTime)
+                        ||
+                        (x.StartTime.AddHours(7) < endDateWithTime && x.EndTime.AddHours(7) >= endDateWithTime)
+                    )
+                );
                 if (hasConflictWithSingleDayBookings)
                 {
                     return Result<BookingDtoV1>.Failure("Trùng với một số lịch đặt theo ngày đã được confirm trước đó");
                 }
+
                 var hasConflictWithRecurringBookings = await _context.Bookings
-                     .AnyAsync(x =>
-                         x.Court.Id == request.Booking.CourtId && // Cùng sân
-                         (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
-                         x.UntilTime.HasValue && // Là lịch combo
-                         (
-                             x.StartTime.AddHours(7).Date <= until.AddHours(7).Date &&
-                             x.UntilTime.HasValue && x.UntilTime.Value.AddHours(7).Date >= startDateTimeUtc.AddHours(7).Date)
-                             &&
-                             (
-                                 (startDateWithTime.TimeOfDay <= x.StartTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.StartTime.AddHours(7).TimeOfDay)
-                                 ||
-                                 (startDateWithTime.TimeOfDay >= x.StartTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay <= x.EndTime.AddHours(7).TimeOfDay)
-                                 ||
-                                 (startDateWithTime.TimeOfDay < x.EndTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.EndTime.AddHours(7).TimeOfDay)
-                            )
-                     );
+                    .AnyAsync(x =>
+                        x.Court.Id == request.Booking.CourtId && // Cùng sân
+                        (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
+                        x.UntilTime.HasValue && // Là lịch combo
+                        (
+                           startDateWithTime.Date >= x.StartTime.AddHours(7).Date
+                           &&
+                           endDateWithTime.Date <= x.UntilTime.Value.AddHours(7).Date
+                           &&
+                           (
+                               (x.StartTime.AddHours(7).TimeOfDay <= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay > endDateWithTime.TimeOfDay)
+                               ||
+                               (x.StartTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay <= endDateWithTime.TimeOfDay)
+                               ||
+                               (x.StartTime.AddHours(7).TimeOfDay < endDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay)
+                           )
+                        )
+                    );
+
                 if (hasConflictWithRecurringBookings)
                 {
                     return Result<BookingDtoV1>.Failure("Trùng với một số lịch đặt theo combo đã được confirm trước đó");
                 }
-
                 // Map sang và bắt đầu tính toán
                 var booking = new Booking();
                 TimeSpan difference = bookingRequest.ToTime.ToTimeSpan() - bookingRequest.FromTime.ToTimeSpan();
                 //duration
                 var duration = (int)difference.TotalMinutes;
                 //1. amount
-                var amout = duration / 60 * combo.TotalPrice;
+                var amout = CalculateCourtPrice(startDateTimeUtc, endDateTimeUtc, court.CourtPrices.ToList());
                 //2. startTime
                 booking.StartTime = startDateTimeUtc;
                 //3. endTime
                 booking.EndTime = endDateTimeUtc;
                 //4. until
-                booking.UntilTime = until;
                 // 5. gán court
                 booking.Court = court;
                 // 6. gán totalPricce
@@ -150,13 +139,7 @@ namespace Application.Handler.Bookings
                 booking.Duration = duration;
                 booking.PhoneNumber = bookingRequest.PhoneNumber;
                 booking.FullName = bookingRequest.FullName;
-                var recurrenceRule = new RecurrenceRule()
-                {
-                    Frequency = "DAILY",
-                    Interval = 1,
-                    Until = until,
-                };
-                booking.RecurrenceRule = recurrenceRule.ToString();
+                booking.AppUser = user;
                 var roles = await _userManager.GetRolesAsync(user);
                 var acceptableRole = new List<string>() { "Admin", "ManagerCourtCluster", "Owner", "ManagerBooking" };
 
@@ -175,7 +158,6 @@ namespace Application.Handler.Bookings
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
                 }
-                booking.AppUser = user;
                 await _context.AddAsync(booking, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
@@ -186,7 +168,49 @@ namespace Application.Handler.Bookings
                 return Result<BookingDtoV1>.Success(response);
             }
 
+            public static decimal CalculateCourtPrice(DateTime fromTime, DateTime toTime, List<CourtPrice> courtPrices)
+            {
+                decimal totalPrice = 0;
+
+                TimeZoneInfo gmtPlus7 = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
+
+                // Chuyển đổi từ UTC hoặc giờ hệ thống sang giờ GMT+7
+                DateTime fromTimeGmt7 = TimeZoneInfo.ConvertTime(fromTime, gmtPlus7);
+                DateTime toTimeGmt7 = TimeZoneInfo.ConvertTime(toTime, gmtPlus7);
+
+                // Chuyển từ DateTime sang TimeOnly để so sánh
+                TimeOnly startTimeOnly = TimeOnly.FromDateTime(fromTimeGmt7);
+                TimeOnly endTimeOnly = TimeOnly.FromDateTime(toTimeGmt7);
+                // Sắp xếp các mức giá theo thời gian
+                courtPrices = courtPrices.OrderBy(cp => cp.FromTime).ToList();
+
+                while (startTimeOnly < endTimeOnly)
+                {
+                    // Tìm mức giá phù hợp với thời gian bắt đầu
+                    var currentPrice = courtPrices.Find(cp => startTimeOnly >= cp.FromTime && startTimeOnly < cp.ToTime);
+
+                    if (currentPrice != null)
+                    {
+                        // Tính thời gian thuê trong khoảng giá hiện tại
+                        TimeOnly nextPriceChange = endTimeOnly < currentPrice.ToTime ? endTimeOnly : currentPrice.ToTime;
+                        decimal hours = (decimal)(nextPriceChange.ToTimeSpan() - startTimeOnly.ToTimeSpan()).TotalHours;
+                        totalPrice += hours * currentPrice.Price;
+
+                        // Cập nhật thời gian bắt đầu để tính cho mức giá tiếp theo
+                        startTimeOnly = nextPriceChange;
+                    }
+                    else
+                    {
+                        // Nếu không có mức giá nào phù hợp, thoát vòng lặp
+                        break;
+                    }
+                }
+
+                return totalPrice;
+            }
+
 
         }
+
     }
 }
