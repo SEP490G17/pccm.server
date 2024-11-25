@@ -147,6 +147,39 @@ namespace API.Controllers
             return await CreateUserObject(user);
         }
 
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<ActionResult<ProfileDto>> GetProfileUser()
+        {
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
+            var res = _mapper.Map<ProfileDto>(user);
+            return res;
+        }
+
+        [HttpPost("updateProfile")]
+        [Authorize]
+        public async Task<ActionResult<UserResponseDto>> UpdateProfileUser([FromBody] ProfileUpdateDto request)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
+            if (DateTime.TryParse(request.BirthDate, out DateTime birthDate))
+            {
+                user.BirthDate = birthDate;
+            }
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.PhoneNumber = request.PhoneNumber;
+            user.Gender = request.Gender;
+            user.ImageUrl = request.ImageUrl;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Failed to update user profile.");
+            }
+            return await CreateUserObject(user);
+        }
+
         [AllowAnonymous]
         [HttpPost("CreateRole")]
         public async Task<IActionResult> CreateRole(string roleName)
