@@ -19,7 +19,7 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        [Authorize(Roles = "Admin, Owner, ManagerCourtCluster, ManagerBooking")]
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
         {
@@ -34,7 +34,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { username = username }, ct));
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin, Owner, ManagerCourtCluster, ManagerBooking")]
         [HttpPut("changestatus/{username}/{status}")]
         public async Task<IActionResult> ChangeStatus(string username, bool status)
         {

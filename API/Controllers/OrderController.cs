@@ -45,10 +45,16 @@ namespace API.Controllers
 
         [HttpPut("cancel/{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
-        public async Task<IActionResult> CancelOrder(int id, OrderInputDto orderInput)
+        public async Task<IActionResult> CancelOrder([FromRoute] int id)
         {
-            orderInput.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { order = orderInput }));
+            return HandleResult(await Mediator.Send(new CancelOrderV1.Command() { Id = id }));
+        }
+
+        [HttpPut("complete/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        public async Task<IActionResult> CompleteOrder([FromRoute] int id)
+        {
+            return HandleResult(await Mediator.Send(new CompleteOrder.Command() { Id = id }));
         }
 
         // // chạy swagger bị lỗi nên cmt lại

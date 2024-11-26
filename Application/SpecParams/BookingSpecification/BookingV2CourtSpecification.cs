@@ -26,6 +26,8 @@ namespace Application.SpecParams.BookingSpecification
                     && x.EndTime <= DateTime.ParseExact(baseSpecParam.toDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(-7)
                 )
             )
+             && (baseSpecParam.CourtId == null || x.Court.Id == baseSpecParam.CourtId)
+
          )
 
         {

@@ -90,6 +90,18 @@ namespace API.Controllers
         }
 
         /// <summary>
+        ///  Dùng để xác thực 1 booking đã được thanh toán, và sẽ bị đóng lại
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
+        [HttpPut("payment-success/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        public async Task<IActionResult> PaymentSuccess(int id)
+        {
+            return HandleResult(await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id }));
+        }
+
+        /// <summary>
         /// Dùng để xác thực chấp nhận lịch booking từ ngừoi dngf 
         /// </summary>
         /// <param name="id"></param>

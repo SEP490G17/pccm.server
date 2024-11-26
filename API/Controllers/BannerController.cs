@@ -21,7 +21,7 @@ namespace API.Controllers
         */
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> GetBanner([FromQuery] BannerSpecParams baseSpecParam, CancellationToken ct)
         {
             var username = userAccessor.GetUserName();
@@ -37,7 +37,7 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListUserSite.Query(), ct));
         }
 
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBanner(int id, CancellationToken ct)
         {
@@ -45,7 +45,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
             string userName = userAccessor.GetUserName();
@@ -57,7 +57,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> UpdateBanner(int id, BannerInputDto updatedBanner)
         {
             string userName = userAccessor.GetUserName();
@@ -70,7 +70,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> DeleteBanner(int id)
         {
             string userName = userAccessor.GetUserName();
@@ -82,7 +82,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin,Owner,ManagerBanner")]
+        [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));

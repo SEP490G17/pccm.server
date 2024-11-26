@@ -51,51 +51,91 @@ namespace Application.Handler.Orders
                 }
                 decimal sum = 0;
                 var booking = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == order.BookingId);
-                var orderDetails = await _context.OrderDetails.Where(o => o.OrderId == request.Id).ToListAsync();
+                var orderDetails = await _context.OrderDetails.Include(o => o.Product).Where(o => o.OrderId == request.Id).ToListAsync(cancellationToken);
+                var productsRollBack = new List<Product>();
                 if (orderDetails.Count > 0)
                 {
+                    orderDetails.ForEach(o =>
+                    {
+                        if (o.Product != null)
+                        {
+                            var productRollBack = o.Product;
+                            productRollBack.Quantity += (decimal)o.Quantity;
+                            productsRollBack.Add(productRollBack);
+                        }
+                    });
+                    _context.UpdateRange(productsRollBack);
                     _context.RemoveRange(orderDetails);
                     order.OrderDetails.Clear();
                 }
-                request.OrderForProducts.ForEach(orderItem =>
-               {
-                   var orderDetails = new OrderDetail();
+                var products = new List<Product>();
 
-                   var product = _context.Products.Find(orderItem.ProductId);
-                   if (product != null)
-                   {
-                       orderDetails.Product = product;
-                       orderDetails.ProductId = product.Id;
-                       orderDetails.Price = product.Price;
-                       orderDetails.Quantity = orderItem.Quantity;
-                       order.OrderDetails.Add(orderDetails);
-                       sum += product.Price * (decimal)orderItem.Quantity;
-                   }
+                foreach (var productItem in request.OrderForProducts)
+                {
+                    var newOrderDetails = new OrderDetail();
 
-                   order.OrderDetails.Add(orderDetails);
-               });
+                    var product = await _context.Products.FirstOrDefaultAsync(p => productItem.ProductId == p.Id && p.DeletedAt == null, cancellationToken);
+                    if (product == null)
+                    {
+                        return Result<OrderOfBookingDto>.Failure("Sản phẩm không tồn tại vui lòng tải lại trang");
+                    }
+                    else
+                    {
+                        var rollbackProduct = productsRollBack.FirstOrDefault(p => p.Id == product.Id);
+                        if (rollbackProduct != null)
+                        {
+                            if (rollbackProduct.Quantity < (decimal)productItem.Quantity)
+                            {
+                                return Result<OrderOfBookingDto>.Failure("Sản phẩm không đủ để giao dịch, vui lòng tải lại trang");
+                            }
+                        }
+                        else
+                        {
+                            if (product.Quantity < (decimal)productItem.Quantity)
+                            {
+                                return Result<OrderOfBookingDto>.Failure("Sản phẩm không đủ để giao dịch, vui lòng tải lại trang");
+                            }
+                        }
+                        newOrderDetails.Product = product;
+                        newOrderDetails.ProductId = product.Id;
+                        newOrderDetails.Price = product.Price;
+                        newOrderDetails.Quantity = productItem.Quantity;
+                        order.OrderDetails.Add(newOrderDetails);
+                        sum += product.Price * (decimal)productItem.Quantity;
+                        product.Quantity -= (decimal)productItem.Quantity;
+                        products.Add(product);
+                    }
 
-                request.OrderForServices.ForEach(orderItem =>
-               {
-                   var orderDetails = new OrderDetail();
+                    order.OrderDetails.Add(newOrderDetails);
+                }
 
-                   var service = _context.Services.Find(orderItem.ServiceId);
-                   if (service != null)
-                   {
-                       orderDetails.Service = service;
-                       orderDetails.ServiceId = service.Id;
-                       orderDetails.Price = service.Price;
-                       orderDetails.Quantity = (double) booking.Duration / 60;
-                       order.OrderDetails.Add(orderDetails);
-                       sum += service.Price * booking.Duration / 60;
-                   }
-                   order.OrderDetails.Add(orderDetails);
-               });
+                foreach (var serviceItem in request.OrderForServices)
+                {
+                    var newOrderDetails = new OrderDetail();
+
+                    var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceItem.ServiceId && s.DeletedAt == null, cancellationToken);
+                    if (service == null)
+                    {
+                        return Result<OrderOfBookingDto>.Failure("Dịch vụ không tồn tai vui lòng tải lại trang");
+                    }
+                    else
+                    {
+                        newOrderDetails.Service = service;
+                        newOrderDetails.ServiceId = service.Id;
+                        newOrderDetails.Price = service.Price;
+                        newOrderDetails.Quantity = (double)booking.Duration / 60;
+                        order.OrderDetails.Add(newOrderDetails);
+                        sum += service.Price * booking.Duration / 60;
+                    }
+                    order.OrderDetails.Add(newOrderDetails);
+                }
+
                 order.Payment.Amount = sum;
                 order.TotalAmount = sum;
+                _context.UpdateRange(products);
                 _context.Update(order);
                 await _context.SaveChangesAsync(cancellationToken);
-                var res = await _context.Orders.ProjectTo<OrderOfBookingDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(o=>o.Id == request.Id);
+                var res = await _context.Orders.ProjectTo<OrderOfBookingDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
                 return Result<OrderOfBookingDto>.Success(res);
 
             }
