@@ -4,8 +4,8 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 using Persistence;
 
 namespace Application.Handler.Bill
@@ -87,22 +87,8 @@ namespace Application.Handler.Bill
 
                         var gfx = XGraphics.FromPdfPage(page);
 
-                        // Thử khởi tạo font với các giá trị mặc định
-                        XFont font;
-                        XFont fontBold;
-
-                        try
-                        {
-                            font = new XFont("Arial", 8, XFontStyleEx.Regular);
-                            fontBold = new XFont("Arial", 8, XFontStyleEx.Bold);
-                        }
-                        catch (Exception ex)
-                        {
-                            // Log hoặc xử lý ngoại lệ khi khởi tạo font
-                            Console.WriteLine("Error initializing fonts: " + ex.Message);
-                            font = new XFont("Verdana", 8, XFontStyleEx.Regular);
-                            fontBold = new XFont("Verdana", 8, XFontStyleEx.Bold);
-                        }
+                        XFont font = new XFont("Arial", 8, XFontStyle.Regular);
+                        XFont fontBold = new XFont("Arial", 8, XFontStyle.Bold);
 
                         int yPos = 10;
                         const int margin = 10;
