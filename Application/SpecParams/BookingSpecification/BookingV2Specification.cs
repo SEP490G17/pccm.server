@@ -20,6 +20,7 @@ namespace Application.SpecParams.BookingSpecification
                 || (baseSpecParam.Status != 1 && baseSpecParam.Status != 4 && (int)x.Status == (int)baseSpecParam.Status))
             )
             && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
+            && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
             && (
                 (baseSpecParam.fromDate == null && baseSpecParam.toDate == null) ||
                 (
