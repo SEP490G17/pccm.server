@@ -78,92 +78,116 @@ namespace Application.Handler.Bill
 
             private byte[] GeneratePdf(BillDto data)
             {
-                using (var document = new PdfDocument())
+                try
                 {
-                    var page = document.AddPage();
-                    page.Width = 105 * 2.83465;
-
-                    var gfx = XGraphics.FromPdfPage(page);
-                    var font = new XFont("Arial", 8, XFontStyleEx.Regular);
-                    var fontBold = new XFont("Arial", 8, XFontStyleEx.Bold);
-
-                    int yPos = 10;
-                    const int margin = 10;
-                    string filePath = "../Infrastructure/Images/logo.png";
-                    XImage image = XImage.FromFile(filePath);
-                    double xPos = (gfx.PageSize.Width - 120) / 2;
-                    gfx.DrawImage(image, xPos, yPos, 120, 50);
-                    yPos += 60;
-                    gfx.DrawString(data.courtCluster.CourtClusterName, fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
-                    yPos += 20;
-
-                    gfx.DrawString($"{data.courtCluster.Address}, {data.courtCluster.WardName}, {data.courtCluster.ProvinceName}", font, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
-                    yPos += 20;
-
-                    gfx.DrawString($"HÓA ĐƠN {data.booking.CourtName.ToUpper()}", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
-                    yPos += 20;
-
-                    gfx.DrawString($"Giờ bắt đầu:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{data.booking.StartTime:HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
-                    gfx.DrawString($"Giờ kết thúc:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{data.booking.EndTime:HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
-                    gfx.DrawString("Hàng hóa", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopLeft);
-                    yPos += 20;
-
-                    DrawCell(gfx, "Tên sản phẩm", fontBold, margin, yPos, (page.Width - 2 * margin) * 0.4, 20); // 40% width
-                    DrawCell(gfx, "SL", fontBold, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
-                    DrawCell(gfx, "Giá", fontBold, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
-                    DrawCell(gfx, "Tổng", fontBold, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
-                    yPos += 20;
-
-                    foreach (var item in data.products)
+                    using (var document = new PdfDocument())
                     {
-                        DrawCell(gfx, item.ProductName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
-                        DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                        DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                        DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                        var page = document.AddPage();
+                        page.Width = 105 * 2.83465;
+
+                        var gfx = XGraphics.FromPdfPage(page);
+
+                        // Thử khởi tạo font với các giá trị mặc định
+                        XFont font;
+                        XFont fontBold;
+
+                        try
+                        {
+                            font = new XFont("Arial", 8, XFontStyleEx.Regular);
+                            fontBold = new XFont("Arial", 8, XFontStyleEx.Bold);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Log hoặc xử lý ngoại lệ khi khởi tạo font
+                            Console.WriteLine("Error initializing fonts: " + ex.Message);
+                            font = new XFont("Verdana", 8, XFontStyleEx.Regular);
+                            fontBold = new XFont("Verdana", 8, XFontStyleEx.Bold);
+                        }
+
+                        int yPos = 10;
+                        const int margin = 10;
+                        string filePath = "../Infrastructure/Images/logo.png";
+                        XImage image = XImage.FromFile(filePath);
+                        double xPos = (gfx.PageSize.Width - 120) / 2;
+                        gfx.DrawImage(image, xPos, yPos, 120, 50);
+                        yPos += 60;
+                        gfx.DrawString(data.courtCluster.CourtClusterName, fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
                         yPos += 20;
-                    }
-                    yPos += 20;
-                    gfx.DrawString("Dịch vụ", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopLeft);
-                    yPos += 20;
 
-                    DrawCell(gfx, "Tên dịch vụ", fontBold, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
-                    DrawCell(gfx, "SL", fontBold, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                    DrawCell(gfx, "Giá", fontBold, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                    DrawCell(gfx, "Tổng", fontBold, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                    yPos += 20;
-
-                    foreach (var item in data.services)
-                    {
-                        DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
-                        DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                        DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                        DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                        gfx.DrawString($"{data.courtCluster.Address}, {data.courtCluster.WardName}, {data.courtCluster.ProvinceName}", font, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
                         yPos += 20;
-                    }
-                    yPos += 25;
-                    gfx.DrawString($"Tổng hàng hóa:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{data.products.Sum(p => p.Price * p.Quantity):N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
 
-                    gfx.DrawString($"Tổng dịch vụ:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{data.services.Sum(s => s.Price * s.Quantity):N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
-                    gfx.DrawString($"Tổng tiền giờ:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{data.booking.TotalPrice:N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
-                    gfx.DrawString($"Tổng thanh toán:", fontBold, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                    gfx.DrawString($"{(data.products.Sum(p => p.Price * p.Quantity) + data.services.Sum(s => s.Price * s.Quantity) + data.booking.TotalPrice):N0}", fontBold, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
-                    yPos += 20;
+                        gfx.DrawString($"HÓA ĐƠN {data.booking.CourtName.ToUpper()}", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopCenter);
+                        yPos += 20;
 
-                    using (var ms = new MemoryStream())
-                    {
-                        document.Save(ms, false);
-                        return ms.ToArray();
+                        gfx.DrawString($"Giờ bắt đầu:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{data.booking.StartTime:HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+                        gfx.DrawString($"Giờ kết thúc:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{data.booking.EndTime:HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+                        gfx.DrawString("Hàng hóa", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopLeft);
+                        yPos += 20;
+
+                        DrawCell(gfx, "Tên sản phẩm", fontBold, margin, yPos, (page.Width - 2 * margin) * 0.4, 20); // 40% width
+                        DrawCell(gfx, "SL", fontBold, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
+                        DrawCell(gfx, "Giá", fontBold, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
+                        DrawCell(gfx, "Tổng", fontBold, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20); // 20% width
+                        yPos += 20;
+
+                        foreach (var item in data.products)
+                        {
+                            DrawCell(gfx, item.ProductName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                            DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            yPos += 20;
+                        }
+                        yPos += 20;
+                        gfx.DrawString("Dịch vụ", fontBold, XBrushes.Black, new XRect(margin, yPos, page.Width - 2 * margin, 20), XStringFormats.TopLeft);
+                        yPos += 20;
+
+                        DrawCell(gfx, "Tên dịch vụ", fontBold, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                        DrawCell(gfx, "SL", fontBold, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                        DrawCell(gfx, "Giá", fontBold, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                        DrawCell(gfx, "Tổng", fontBold, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                        yPos += 20;
+
+                        foreach (var item in data.services)
+                        {
+                            DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                            DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            yPos += 20;
+                        }
+                        yPos += 25;
+                        gfx.DrawString($"Tổng hàng hóa:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{data.products.Sum(p => p.Price * p.Quantity):N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+
+                        gfx.DrawString($"Tổng dịch vụ:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{data.services.Sum(s => s.Price * s.Quantity):N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+                        gfx.DrawString($"Tổng tiền giờ:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{data.booking.TotalPrice:N0}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+                        gfx.DrawString($"Tổng thanh toán:", fontBold, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
+                        gfx.DrawString($"{(data.products.Sum(p => p.Price * p.Quantity) + data.services.Sum(s => s.Price * s.Quantity) + data.booking.TotalPrice):N0}", fontBold, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        yPos += 20;
+
+                        using (var ms = new MemoryStream())
+                        {
+                            document.Save(ms, false);
+                            return ms.ToArray();
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // Log hoặc xử lý ngoại lệ tại đây
+                    Console.WriteLine("Error generating PDF: " + ex.Message);
+                    throw;
                 }
             }
 
@@ -172,6 +196,7 @@ namespace Application.Handler.Bill
                 gfx.DrawRectangle(XPens.Black, x, y, width, height);
                 gfx.DrawString(text, font, XBrushes.Black, new XRect(x + 2, y + 2, width - 4, height - 4), XStringFormats.CenterLeft);
             }
+
         }
     }
 }
