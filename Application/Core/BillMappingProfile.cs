@@ -12,11 +12,13 @@ namespace Application.Core
         public BillMappingProfile()
         {
             CreateMap<OrderDetail, ProductBillDto>()
+                .ForMember(c => c.ProductId, o => o.MapFrom(s => s.ProductId))
                 .ForMember(c => c.ProductName, o => o.MapFrom(s => s.Product.ProductName));
 
             CreateMap<OrderDetail, ServiceBillDto>()
+                .ForMember(c => c.ServiceId, o => o.MapFrom(s => s.ServiceId))
                 .ForMember(c => c.ServiceName, o => o.MapFrom(s => s.Service.ServiceName));
-                
+
             CreateMap<CourtCluster, CourtClusterBillDto>();
 
             CreateMap<Booking, BookingBillDto>()
