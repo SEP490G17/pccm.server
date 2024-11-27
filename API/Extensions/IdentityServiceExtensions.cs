@@ -26,10 +26,10 @@ namespace API.Extensions
                 );
             });
 
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
-            });
+            // services.AddCors(opt =>
+            // {
+            //     opt.AddPolicy("Policy", policy => policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+            // });
             services.AddIdentityCore<AppUser>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = true;

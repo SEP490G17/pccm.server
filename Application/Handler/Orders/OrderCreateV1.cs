@@ -1,10 +1,12 @@
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
+using DocumentFormat.OpenXml.Drawing;
 using Domain.Entity;
 using Domain.Enum;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Orders
@@ -40,41 +42,61 @@ namespace Application.Handler.Orders
                 }
                 var order = new Order();
                 decimal sum = 0;
-                var booking = _context.Bookings.FirstOrDefault(b => b.Id == request.BookingId);
-                request.OrderForProducts.ForEach(orderItem =>
+                var booking = _context.Bookings.Include(b => b.Orders).ThenInclude(c => c.Payment).FirstOrDefault(b => b.Id == request.BookingId);
+                if (booking == null) return Result<OrderOfBookingDto>.Failure("Booking không tồn tại");
+                if (booking.Orders.Any(b => b.Payment.Status == PaymentStatus.Pending))
+                {
+                    return Result<OrderOfBookingDto>.Failure("Vui lòng thanh toán Order trước đó");
+                }
+                var products = new List<Product>();
+                foreach (var productItem in request.OrderForProducts)
                 {
                     var orderDetails = new OrderDetail();
 
-                    var product = _context.Products.Find(orderItem.ProductId);
+                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productItem.ProductId && p.DeletedAt == null);
                     if (product != null)
                     {
+                        if (product.Quantity < (decimal)productItem.Quantity)
+                        {
+                            return Result<OrderOfBookingDto>.Failure("Sản phẩm không đủ để giao dịch vui lòng load lại trang");
+                        }
                         orderDetails.Product = product;
                         orderDetails.ProductId = product.Id;
                         orderDetails.Price = product.Price;
-                        orderDetails.Quantity = orderItem.Quantity;
+                        orderDetails.Quantity = productItem.Quantity;
                         order.OrderDetails.Add(orderDetails);
-                        sum += product.Price * (decimal)orderItem.Quantity;
+                        sum += product.Price * (decimal)productItem.Quantity;
+                        product.Quantity -= (decimal)productItem.Quantity;
+                        products.Add(product);
                     }
-
+                    else
+                    {
+                        return Result<OrderOfBookingDto>.Failure("Sản phẩm đã bị xóa vui lòng tải lại trang");
+                    }
                     order.OrderDetails.Add(orderDetails);
-                });
+                }
 
-                request.OrderForServices.ForEach(orderItem =>
-               {
-                   var orderDetails = new OrderDetail();
 
-                   var service = _context.Services.Find(orderItem.ServiceId);
-                   if (service != null)
-                   {
-                       orderDetails.Service = service;
-                       orderDetails.ServiceId = service.Id;
-                       orderDetails.Price = service.Price;
-                       orderDetails.Quantity = (double)booking.Duration / 60;
-                       order.OrderDetails.Add(orderDetails);
-                       sum += service.Price * (booking.Duration / 60);
-                   }
-                   order.OrderDetails.Add(orderDetails);
-               });
+                foreach (var serviceItem in request.OrderForServices)
+                {
+                    var orderDetails = new OrderDetail();
+                    var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceItem.ServiceId || s.DeletedAt == null, cancellationToken);
+                    if (service != null)
+                    {
+                        orderDetails.Service = service;
+                        orderDetails.ServiceId = service.Id;
+                        orderDetails.Price = service.Price;
+                        orderDetails.Quantity = (double)booking.Duration / 60;
+                        order.OrderDetails.Add(orderDetails);
+                        sum += service.Price * (booking.Duration / 60);
+                    }
+                    else
+                    {
+                        return Result<OrderOfBookingDto>.Failure("Dịch vụ đã bị xóa vui lòng tải lại trang");
+
+                    }
+                    order.OrderDetails.Add(orderDetails);
+                }
 
                 var payment = new Payment()
                 {
@@ -84,7 +106,8 @@ namespace Application.Handler.Orders
                 order.BookingId = request.BookingId;
                 order.TotalAmount = sum;
                 order.Payment = payment;
-                await _context.AddAsync(order,cancellationToken);
+                _context.UpdateRange(products);
+                await _context.AddAsync(order, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<OrderOfBookingDto>.Failure("Fail to create order");
                 return Result<OrderOfBookingDto>.Success(_mapper.Map<OrderOfBookingDto>(order));

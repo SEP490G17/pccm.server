@@ -2,6 +2,7 @@ using Application.Core;
 using Application.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain.Entity;
 using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace Application.Handler.Orders
             }
             public async Task<Result<OrderOfBookingDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(x => x.Id == request.Id);
+                var order = await _context.Orders.Include(o => o.Payment).Include(o=>o.OrderDetails).ThenInclude(od=>od.Product).FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
                 if (order == null)
                 {
                     return Result<OrderOfBookingDto>.Failure("Không tìm thấy Order");
@@ -39,7 +40,16 @@ namespace Application.Handler.Orders
                 {
                     return Result<OrderOfBookingDto>.Failure("Order đã được thanh toán không thể cancel");
                 }
+                var productsRollBack = new List<Product>();
+                order.OrderDetails.ToList().ForEach(x=>{
+                    if(x.Product != null){
+                        var product = x.Product;
+                        product.Quantity +=  (decimal)x.Quantity;
+                        productsRollBack.Add(product);
+                    }
+                });
                 order.Payment.Status = PaymentStatus.Cancel;
+                _context.UpdateRange(productsRollBack);
                 _context.Update(order);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
 

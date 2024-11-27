@@ -20,7 +20,6 @@ namespace Application.SpecParams.BookingSpecification
                 || (baseSpecParam.Status != 1 && baseSpecParam.Status != 4 && (int)x.Status == (int)baseSpecParam.Status))
             )
             && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
-            && (baseSpecParam.CourtClusterId == null || x.Court.CourtCluster.Id == baseSpecParam.CourtClusterId)
             && (
                 (baseSpecParam.fromDate == null && baseSpecParam.toDate == null) ||
                 (
@@ -28,6 +27,7 @@ namespace Application.SpecParams.BookingSpecification
                     && x.EndTime <= DateTime.ParseExact(baseSpecParam.toDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture).AddHours(-7)
                 )
             )
+            && (baseSpecParam.CourtId ==null || x.Court.Id == baseSpecParam.CourtId)
         )
         {
             AddOrderByDescending(x => x.CreatedAt);
