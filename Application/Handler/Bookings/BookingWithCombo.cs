@@ -101,7 +101,7 @@ namespace Application.Handler.Bookings
                             (startDateWithTime.TimeOfDay < x.EndTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.EndTime.AddHours(7).TimeOfDay)
 
                         )
-                       )
+                       ),cancellationToken
                     );
                 if (hasConflictWithSingleDayBookings)
                 {

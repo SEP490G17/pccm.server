@@ -36,31 +36,54 @@ namespace Application.Handler.Bookings
             }
             public async Task<Result<BookingDtoV1>> Handle(Command request, CancellationToken cancellationToken)
             {
+                var today = DateTime.UtcNow.AddHours(7);
 
-                var checkSlot = await _context.Bookings
-                        .AnyAsync(x =>
-                            x.Court.Id == request.Booking.CourtId && // Cùng sân
-                            (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
-
-                            // Kiểm tra va chạm trùng hay gì đó, không nghĩ ra từ với lịch lẻ khác
-                            (
-                                (!x.UntilTime.HasValue && // Lịch lẻ
-                                x.StartTime.Date >= request.Booking.StartTime.Date &&
-                                x.StartTime.Date <= request.Booking.EndTime.Date)
-                                ||
-                                // Kiểm tra va chạm với lịch dài hạn
-                                (x.UntilTime.HasValue && // Lịch dài hạn
-                                x.StartTime.Date <= request.Booking.EndTime.Date &&
-                                x.UntilTime.Value.Date >= request.Booking.StartTime.Date)
-                            )
-
-                            // Kiểm tra va chạm thời gian
-                            && request.Booking.StartTime.TimeOfDay < x.EndTime.TimeOfDay
-                            && request.Booking.EndTime.TimeOfDay > x.StartTime.TimeOfDay
-                        );
-                if (checkSlot)
+                if (request.Booking.StartTime.Date < DateTime.Today.Date)
                 {
-                    return Result<BookingDtoV1>.Failure("Trùng lịch của 1 booking đã được confirm trước đó");
+                    return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
+                }
+                var bookingRequest = request.Booking;
+                var hasConflictWithSingleDayBookings = await _context.Bookings
+                .AnyAsync(x =>
+                    x.Court.Id == request.Booking.CourtId &&
+                    (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã xác nhận
+                    !x.UntilTime.HasValue &&
+                    (
+                        (x.StartTime.AddHours(7) <= bookingRequest.StartTime.AddHours(7) && x.EndTime.AddHours(7) > bookingRequest.StartTime.AddHours(7))
+                        ||
+                        (x.StartTime.AddHours(7) >= bookingRequest.StartTime.AddHours(7) && x.EndTime.AddHours(7) <= bookingRequest.EndTime.AddHours(7))
+                        ||
+                        (x.StartTime.AddHours(7) < bookingRequest.EndTime.AddHours(7) && x.EndTime.AddHours(7) >= bookingRequest.EndTime.AddHours(7))
+                    )
+                );
+                if (hasConflictWithSingleDayBookings)
+                {
+                    return Result<BookingDtoV1>.Failure("Trùng với một số lịch đặt theo ngày đã được confirm trước đó");
+                }
+
+                var hasConflictWithRecurringBookings = await _context.Bookings
+                    .AnyAsync(x =>
+                        x.Court.Id == request.Booking.CourtId && // Cùng sân
+                        (int)x.Status == (int)BookingStatus.Confirmed && // Lịch đã được xác nhận
+                        x.UntilTime.HasValue && // Là lịch combo
+                        (
+                           bookingRequest.StartTime.AddHours(7).Date >= x.StartTime.AddHours(7).Date
+                           &&
+                           bookingRequest.EndTime.AddHours(7).Date <= x.UntilTime.Value.AddHours(7).Date
+                           &&
+                           (
+                               (x.StartTime.AddHours(7).TimeOfDay <= bookingRequest.StartTime.AddHours(7).TimeOfDay && x.EndTime.AddHours(7).TimeOfDay > bookingRequest.EndTime.AddHours(7).TimeOfDay)
+                               ||
+                               (x.StartTime.AddHours(7).TimeOfDay >= bookingRequest.StartTime.AddHours(7).TimeOfDay && x.EndTime.AddHours(7).TimeOfDay <= bookingRequest.EndTime.AddHours(7).TimeOfDay)
+                               ||
+                               (x.StartTime.AddHours(7).TimeOfDay < bookingRequest.EndTime.AddHours(7).TimeOfDay && x.EndTime.AddHours(7).TimeOfDay >= bookingRequest.StartTime.AddHours(7).TimeOfDay)
+                           )
+                        )
+                    );
+
+                if (hasConflictWithRecurringBookings)
+                {
+                    return Result<BookingDtoV1>.Failure("Trùng với một số lịch đặt theo combo đã được confirm trước đó");
                 }
 
                 var todayDate = DateTime.UtcNow;
