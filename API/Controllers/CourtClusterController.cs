@@ -24,9 +24,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet("list-all-usersite")]
-        public async Task<IActionResult> GetAllCourtClustersUserSite(CancellationToken ct)
+        public async Task<IActionResult> GetAllCourtClustersUserSite([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ListAllUserSite.Query(), ct));
+            return HandleResult(await Mediator.Send(new ListAllUserSite.Query(){ BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
         /// <summary>
