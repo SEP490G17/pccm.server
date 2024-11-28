@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Enum;
 
 namespace Domain.Entity
@@ -11,8 +12,8 @@ namespace Domain.Entity
         public decimal Amount { get; set; }          // Số tiền thanh toán
 
         public PaymentMethod? PaymentMethod { get; set; } = null;    // Phương thức thanh toán (VNPay, Credit Card, etc.)
-
-        public string? PaymentUrl { get; set; }
+        [AllowNull]
+        public string PaymentUrl { get; set; }
 
         [Required]
         public PaymentStatus Status { get; set; }    // Enum for trạng thái thanh toán (Pending, Success, Failed, etc.)

@@ -1,7 +1,6 @@
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
-using DocumentFormat.OpenXml.Drawing;
 using Domain.Entity;
 using Domain.Enum;
 using FluentValidation;
@@ -83,12 +82,13 @@ namespace Application.Handler.Orders
                     var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceItem.ServiceId || s.DeletedAt == null, cancellationToken);
                     if (service != null)
                     {
+                        var quantity =  Math.Round((double)booking.Duration / 60, 2);
                         orderDetails.Service = service;
                         orderDetails.ServiceId = service.Id;
                         orderDetails.Price = service.Price;
-                        orderDetails.Quantity = (double)booking.Duration / 60;
+                        orderDetails.Quantity =  quantity;
                         order.OrderDetails.Add(orderDetails);
-                        sum += service.Price * (booking.Duration / 60);
+                        sum += service.Price * (decimal)quantity;
                     }
                     else
                     {

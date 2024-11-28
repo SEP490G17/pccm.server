@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
@@ -21,7 +22,8 @@ namespace Domain.Entity
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         [ForeignKey("OwnerId")] public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id
         public DateTime? DeleteAt { get; set; }
-        public AppUser? DeleteBy { get; set; }
+        [AllowNull]
+        public AppUser DeleteBy { get; set; }
         [Required] public bool IsVisible { get; set; } = true;
         public List<Service> Services { get; set; } = new List<Service>();
         public List<Product> Products { get; set; } = new List<Product>();

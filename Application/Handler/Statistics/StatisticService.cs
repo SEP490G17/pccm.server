@@ -30,13 +30,13 @@ namespace Application.Handler.Statistics
 
                 var bookings = await GetBookings(year, month, courtClusterId, cancellationToken);
 
-                var totalAmounts = await GetTotalAmounts(bookings);
+                var totalAmounts =  GetTotalAmounts(bookings);
 
                 var totalImportFees = await GetTotalImportFees(year, month, courtClusterId, cancellationToken);
 
                 return month > 0
-                    ? await BuildDailyStatistics(totalAmounts, totalImportFees, year, month)
-                    : await BuildMonthlyStatistics(totalAmounts, totalImportFees);
+                    ? BuildDailyStatistics(totalAmounts, totalImportFees, year, month)
+                    : BuildMonthlyStatistics(totalAmounts, totalImportFees);
             }
 
             private (int year, int month, int? courtClusterId) ParseInputs(StatisticInputDTO input)
@@ -112,7 +112,7 @@ namespace Application.Handler.Statistics
                 return totalPrice;
             }
 
-            private async Task<IEnumerable<dynamic>> GetTotalAmounts(List<Booking> bookings)
+            private IEnumerable<dynamic> GetTotalAmounts(List<Booking> bookings)
             {
                 return bookings
                     .GroupJoin(
@@ -156,7 +156,7 @@ namespace Application.Handler.Statistics
                     .ToListAsync(cancellationToken);
             }
 
-            private async Task<Result<IEnumerable<StatisticResult>>> BuildDailyStatistics(
+            private Result<IEnumerable<StatisticResult>> BuildDailyStatistics(
                 IEnumerable<dynamic> totalAmounts,
                 List<dynamic> totalImportFees,
                 int year,
@@ -199,7 +199,7 @@ namespace Application.Handler.Statistics
             }
 
 
-            private async Task<Result<IEnumerable<StatisticResult>>> BuildMonthlyStatistics(
+            private  Result<IEnumerable<StatisticResult>> BuildMonthlyStatistics(
                 IEnumerable<dynamic> totalAmounts,
                 List<dynamic> totalImportFees)
             {

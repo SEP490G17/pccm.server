@@ -32,11 +32,6 @@
         "NormalizedName": "MANAGERBOOKING"
     },
     {
-        "Name": "ManagerOrder",
-        "NormalizedName": "MANAGERORDER"
-    }
-    ,
-    {
         "Name": "ManagerCustomer",
         "NormalizedName": "MANAGERCUSTOMER"
     }

@@ -20,9 +20,11 @@ namespace API.Extensions
             });
             services.AddCors(opt =>
             {
-                opt.AddPolicy("Policy", policy => 
-                    policy.AllowAnyMethod().AllowAnyHeader()
-                    .WithOrigins("http://localhost:3000", "https://admin.argonaut.asia", "https://argonaut.asia")
+                opt.AddPolicy("Policy", policy =>
+                    {
+                        policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+                        .WithOrigins("http://localhost:3000", "http://localhost:3001", "https://admin.argonaut.asia", "https://argonaut.asia");
+                    }
                 );
             });
 

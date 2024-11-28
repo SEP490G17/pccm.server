@@ -61,11 +61,11 @@ namespace API.Controllers
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
                 return ValidationProblem();
             }
-            if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
-            {
-                ModelState.AddModelError("Email", "Email đã tồn tại");
-                return ValidationProblem();
-            }
+            // if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+            // {
+            //     ModelState.AddModelError("Email", "Email đã tồn tại");
+            //     return ValidationProblem();
+            // }
             if (await _userManager.Users.AnyAsync(x => x.PhoneNumber == registerDto.PhoneNumber))
             {
                 ModelState.AddModelError("PhoneNumber", "Số điện thoại đã tồn tại");

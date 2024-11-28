@@ -1,5 +1,3 @@
-using Domain.Enum;
-
 namespace Application.SpecParams.BookingSpecification
 {
     public class BookingSpecParam : BaseSpecParam

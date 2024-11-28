@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Enum;
 
 namespace Domain.Entity
@@ -32,12 +33,13 @@ namespace Domain.Entity
 
         [Required]
         public BookingStatus Status { get; set; } = 0;// Trạng thái đặt sân
-
-        public virtual Court? Court { get; set; }  // Liên kết với bảng Courts
+        [AllowNull]
+        public virtual Court Court { get; set; }  // Liên kết với bảng Courts
         public string AppUserId { get; set; }
         
         [ForeignKey("AppUserId")]
-        public virtual AppUser? AppUser { get; set; }  // Liên kết với bảng Users
+        [AllowNull]
+        public virtual AppUser AppUser { get; set; }  // Liên kết với bảng Users
         public virtual StaffDetail Staff { get; set; }
         public string RecurrenceRule { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;

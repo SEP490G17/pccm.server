@@ -1,3 +1,4 @@
+using API.SocketSignalR;
 using Application.DTOs;
 using Application.Handler.Bookings;
 using Application.SpecParams;
@@ -37,8 +38,8 @@ namespace API.Controllers
         /// <param name="bookingSpecParam"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpGet("v2")]
+        [Authorize(Roles = "Owner, ManagerCourtCluster, ManagerBooking")]
         public async Task<IActionResult> GetBookingV2([FromQuery] BookingSpecParam bookingSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new ListV2.Query() { BookingSpecParam = bookingSpecParam }, ct));
@@ -83,10 +84,12 @@ namespace API.Controllers
         /// <param name="id"></param>
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
         [HttpPut("completed/{id}")]
-        [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
+        [Authorize(Roles = "Admin ,Owner, ManagerCourtCluster, ManagerBooking")]
         public async Task<IActionResult> CompletedBooking(int id)
         {
-            return HandleResult(await Mediator.Send(new CompletedBooking.Command() { Id = id }));
+            var result = await Mediator.Send(new CompletedBooking.Command() { Id = id });
+            await HandleAdminUpdateBookingRealTime(result);
+            return HandleResult(result);
         }
 
         /// <summary>
@@ -96,9 +99,11 @@ namespace API.Controllers
         /// <returns>Trả lại đối tượng tương ứng với đối tượng trả về trong list booking V1</returns>
         [HttpPut("payment-success/{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
-        public async Task<IActionResult> PaymentSuccess(int id)
+        public async Task<IActionResult> PaymentSuccess(int id, [FromQuery] bool includeOrder = false)
         {
-            return HandleResult(await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id }));
+            var result = await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id, IncludeOrder = includeOrder });
+            await HandleAdminUpdateBookingRealTime(result);
+            return HandleResult(result);
         }
 
         /// <summary>
@@ -110,7 +115,10 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> AcceptedBooking(int id)
         {
-            return HandleResult(await Mediator.Send(new AcceptedBooking.Command() { Id = id }));
+            var result = await Mediator.Send(new AcceptedBooking.Command() { Id = id });
+            await HandleAdminUpdateBookingRealTime(result);
+            await HandleUserUpdateBookingRealTime(result);
+            return HandleResult(result);
         }
         /// <summary>
         ///  Dùng để huỷ lịch đặt
@@ -120,7 +128,9 @@ namespace API.Controllers
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            return HandleResult(await Mediator.Send(new CancelBooking.Command() { Id = id }));
+            var result = await Mediator.Send(new CancelBooking.Command() { Id = id });
+            await HandleAdminUpdateBookingRealTime(result);
+            return HandleResult(result);
         }
         /// <summary>
         /// Dùng để từ chối lịch đặt
@@ -131,7 +141,9 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> DenyBooking(int id)
         {
-            return HandleResult(await Mediator.Send(new DenyBooking.Command() { Id = id }));
+            var result = await Mediator.Send(new DenyBooking.Command() { Id = id });
+            await HandleAdminUpdateBookingRealTime(result);
+            return HandleResult(result);
         }
 
         /// <summary>
@@ -168,7 +180,9 @@ namespace API.Controllers
 
         public async Task<IActionResult> BookingCombo([FromBody] BookingWithComboDto bookingWithComboDto, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct));
+            var result = await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct);
+            await HandleAdminCreateBookingRealTime(result);
+            return HandleResult(result);
         }
 
         [AllowAnonymous]
@@ -189,7 +203,9 @@ namespace API.Controllers
         [HttpPost("byDay")]
         public async Task<IActionResult> BookingByDay([FromBody] BookingByDayDto bookingByDay, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new BookingByDay.Command() { Booking = bookingByDay }, ct));
+            var result = await Mediator.Send(new BookingByDay.Command() { Booking = bookingByDay }, ct);
+            await HandleAdminCreateBookingRealTime(result);
+            return HandleResult(result);
         }
     }
 }

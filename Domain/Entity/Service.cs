@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
@@ -15,7 +16,8 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá dịch vụ
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        [AllowNull]
+        public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
         public virtual ICollection<ServiceLog> ServiceLogs { get; set; } = new List<ServiceLog>();
     }
 }

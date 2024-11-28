@@ -33,7 +33,8 @@ namespace Application.Core
                                 opt.MapFrom(src => src.Payment.Status);
                             })
                 .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
-                .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id));
+                .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id))
+                .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId));
             #endregion
 
             #region Booking for schedule
@@ -44,7 +45,8 @@ namespace Application.Core
                                 opt.Condition(src => src.Payment != null);
                                 opt.MapFrom(src => src.Payment.Status);
                             })
-                .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName));
+                .ForMember(b => b.CourtName, o => o.MapFrom(s => s.Court.CourtName))
+                .ForMember(b => b.CourtClusterId, o => o.MapFrom(src => src.Court.CourtClusterId));
 
             #endregion
 

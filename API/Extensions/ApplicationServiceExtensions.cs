@@ -1,5 +1,7 @@
+using System.Threading.Channels;
 using API.DTOs;
 using API.Services;
+using API.SocketSignalR;
 using Application.Core;
 using Application.DTOs;
 using Application.Handler.Categories;
@@ -30,7 +32,15 @@ namespace API.Extensions
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
+            services.AddSignalR();
 
+            services.AddSingleton<BookingRealTimeService>();
+            services.AddSingleton(Channel.CreateUnbounded<(BookingDtoV1 booking, string groupId)>());
+            services.AddSingleton(Channel.CreateUnbounded<(BookingDtoV2 booking, string groupId)>());
+
+            services.AddHostedService<BookingBackGroundService>();
+
+            
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<Create>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

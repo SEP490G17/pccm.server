@@ -12,13 +12,11 @@ namespace API.Controllers
 {
     public class PayMentController : BaseApiController
     {
-        private readonly IMediator _mediator;
         private readonly IVnPayService _vnpayService;
         private readonly DataContext _context;
 
-        public PayMentController(IMediator mediator, IVnPayService vnpayService, DataContext context)
+        public PayMentController(IVnPayService vnpayService, DataContext context)
         {
-            _mediator = mediator;
             _vnpayService = vnpayService;
             _context = context;
         }
@@ -43,10 +41,22 @@ namespace API.Controllers
 
             if (type == (int)PaymentType.Booking)
             {
+                var vnpayAmount = decimal.Parse(callback.vnp_Amount);
                 var booking = await _context.Bookings.Include(b => b.Payment).FirstAsync(b => b.Id == BillPayId);
                 if (booking == null)
                 {
                     return NotFound("Booking not found.");
+                }
+                if (booking.TotalPrice < vnpayAmount)
+                {
+                    var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId && o.Payment.Status == PaymentStatus.Pending);
+                    var totalAmount = order.TotalAmount + booking.TotalPrice;
+                    if (vnpayAmount == totalAmount)
+                    {
+                        order.Payment.Status = PaymentStatus.Success;
+                        _context.Update(order);
+                    }
+
                 }
                 booking.Payment.Status = paymentStatus;
                 _context.Update(booking);

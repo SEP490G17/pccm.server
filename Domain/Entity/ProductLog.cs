@@ -1,6 +1,7 @@
 using Domain.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
@@ -9,7 +10,8 @@ namespace Domain.Entity
         public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         public int? CategoryId { get; set; }
         [StringLength(255)]
-        public string? ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
+        [AllowNull]
+        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
         [StringLength(255)]
         public string ProductName { get; set; }  // Tên sản phẩm
         [StringLength(255)]
@@ -18,7 +20,8 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }  // Giá sản phẩm
         [ForeignKey("CategoryId")]
-        public virtual Category? Category { get; set; }  // Liên kết với bảng Categories
+        [AllowNull]
+        public virtual Category Category { get; set; }  // Liên kết với bảng Categories
         [ForeignKey("CourtClusterId")]
         public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
 
