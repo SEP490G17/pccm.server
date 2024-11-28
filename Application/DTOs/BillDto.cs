@@ -1,11 +1,15 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Application.DTOs
 {
     public class BillDto
     {
         public BookingBillDto booking { get; set; }
         public CourtClusterBillDto courtCluster { get; set; }
-        public List<ProductBillDto>? products { get; set; }
-        public List<ServiceBillDto>? services { get; set; }
+        [AllowNull]
+        public List<ProductBillDto> products { get; set; }
+        [AllowNull]
+        public List<ServiceBillDto> services { get; set; }
     }
 
     public class ProductBillDto

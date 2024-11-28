@@ -1,5 +1,3 @@
-using Domain.Entity;
-
 namespace Application.DTOs
 {
     public class CourtClusterDto

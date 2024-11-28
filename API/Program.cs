@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using API.Extensions;
 using API.Middleware;
+using API.SocketSignalR;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ app.UseCors("Policy");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<AppHub>("/pccm-socket");
 
 app.MapControllers();
 

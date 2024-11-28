@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
@@ -16,9 +17,11 @@ namespace Domain.Entity
         [ForeignKey("OrderId")]
         public virtual Order Order { get; set; }  // Liên kết với bảng Orders
         [ForeignKey("ProductId")]
-        public virtual Product? Product { get; set; }  // Liên kết với bảng Products
+        [AllowNull]
+        public virtual Product Product { get; set; }  // Liên kết với bảng Products
         [ForeignKey("ServiceId")]
-        public virtual Service? Service { get; set; }  // Liên kết với bảng Services
+        [AllowNull]
+        public virtual Service Service { get; set; }  // Liên kết với bảng Services
     }
 
 }

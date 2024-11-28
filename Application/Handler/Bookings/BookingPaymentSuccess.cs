@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Core;
 using Application.DTOs;
 using AutoMapper;
@@ -17,6 +13,7 @@ namespace Application.Handler.Bookings
         public class Command : IRequest<Result<BookingDtoV2>>
         {
             public int Id { get; set; }
+            public bool IncludeOrder {get;set;}
         }
 
         public class Handler : IRequestHandler<Command, Result<BookingDtoV2>>
@@ -41,9 +38,16 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
                 }
+                if(request.IncludeOrder){
+                    var order = await _context.Orders.Include(o=>o.Payment).Where(o=>o.BookingId == booking.Id).ToListAsync(cancellationToken);
+                    if(order.Count > 0){
+                        order.ForEach(o=>o.Payment.Status = PaymentStatus.Success);
+                        _context.UpdateRange(order);
+                    }
+                }
                 booking.Payment.Status = PaymentStatus.Success;
                 _context.Bookings.Update(booking);
-                var result = await _context.SaveChangesAsync() > 0;
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
                 return Result<BookingDtoV2>.Success(_mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity));
             }

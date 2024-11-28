@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace Domain.Entity
@@ -16,7 +17,8 @@ namespace Domain.Entity
         public int? BookingId { get; set; }
 
         [ForeignKey("BookingId")]
-        public virtual Booking? Booking { get; set; }
+        [AllowNull]
+        public virtual Booking Booking { get; set; }
         [ForeignKey("CreatedBy")]
         public virtual StaffDetail Staff { get; set; }  // Liên kết với bảng StaffDetails
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

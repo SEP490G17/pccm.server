@@ -29,14 +29,23 @@ namespace Application.Handler.Payments
             public async Task<Result<string>> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                if ((int)request.Type == (int)PaymentType.Booking)
+                if (request.Type == (int)PaymentType.Booking)
                 {
-                    var booking = await _context.Bookings.Include(b => b.Payment).FirstOrDefaultAsync(b => b.Id == request.BillPayId);
+                    var booking = await _context.Bookings.Include(b => b.Payment).FirstOrDefaultAsync(b => b.Id == request.BillPayId,cancellationToken);
                     if (booking == null)
                     {
                         return Result<string>.Failure("Booking not found.");
                     }
-                    var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, booking.TotalPrice, request.Type);
+                    var order = await _context.Orders.Include(o=>o.Payment).Where(o=>o.Payment.Status == PaymentStatus.Pending && o.BookingId == request.BillPayId).ToListAsync(cancellationToken);
+                    if(order.Count > 1){
+                        return Result<string>.Failure("Đang tồn tại 2 order chưa được thanh toán cùng 1 lúc, vui lòng thanh toán trước 1 cái");
+                    }
+                    var amountOfOrder = decimal.Zero;
+                    if(order.Count == 1){
+                        amountOfOrder = order[0].TotalAmount;
+                    }
+                    var totalAmount = booking.TotalPrice + amountOfOrder;
+                    var paymentUrl = _vnpayService.GeneratePaymentUrl(request.BillPayId, totalAmount, request.Type);
 
                     if (booking.Payment == null)
                     {

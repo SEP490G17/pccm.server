@@ -10,7 +10,7 @@ namespace Application.DTOs
         public int CourtId { get; set; }
         public string CourtName { get; set; }
         public string CourtClusterName { get; set; }
-
+        public int CourtClusterId { get; set; }
         public string PlayTime { get; set; } // Thời gian bắt đầu đặt sân
         public DateTime StartDay { get; set; }
         public DateTime EndDay { get; set; }

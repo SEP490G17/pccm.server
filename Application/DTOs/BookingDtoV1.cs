@@ -4,6 +4,7 @@ namespace Application.DTOs
     {
         public int Id { get; set; }
         public string PhoneNumber { get; set; }
+        public int CourtClusterId { get; set; }
         public string FullName { get; set; }
         public int CourtId { get; set; }
         public string CourtName { get; set; }

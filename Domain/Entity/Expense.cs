@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
@@ -17,7 +18,8 @@ namespace Domain.Entity
         private DateTime _expenseAt;
         public int? CourtClusterId { get; set; }
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster? CourtCluster { get; set; }
+        [AllowNull]
+        public virtual CourtCluster CourtCluster { get; set; }
 
         [NotMapped]
         public int ExpenseYear

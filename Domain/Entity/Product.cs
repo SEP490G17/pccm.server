@@ -1,12 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entity
 {
     public class Product : BaseNeedLogEntity
     {
         [StringLength(255)]
-        public string? ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
+        [AllowNull]
+        public string ThumbnailUrl { get; set; } // URL ảnh đại diện cho Product
         public int? CourtClusterId { get; set; }  // Mã định danh của cụm sân (có thể null)
         public int? CategoryId { get; set; }
         [Required]
@@ -24,9 +26,11 @@ namespace Domain.Entity
         [Column(TypeName = "decimal(10, 2)")]
         public decimal ImportFee { get; set; }
         [ForeignKey("CategoryId")]
-        public virtual Category? Category { get; set; }  // Liên kết với bảng Categories
+        [AllowNull]
+        public virtual Category Category { get; set; }  // Liên kết với bảng Categories
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster? CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
+        [AllowNull]
+        public virtual CourtCluster CourtCluster { get; set; }  // Liên kết với bảng Court Clusters
         public virtual List<ProductLog> ProductLogs { get; set; } = new List<ProductLog>();
     }
 

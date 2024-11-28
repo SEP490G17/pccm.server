@@ -4,6 +4,7 @@ using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -22,7 +23,7 @@ namespace Application.Handler.Bookings
             private readonly DataContext _context;
             private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
             {
                 _mapper = mapper;
                 _context = context;
@@ -144,9 +145,10 @@ namespace Application.Handler.Bookings
                 };
                 booking.Payment = payment;
                 _context.Bookings.Update(booking);
-                var result = await _context.SaveChangesAsync() > 0;
+                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV2>.Failure("Accept booking failed.");
-                return Result<BookingDtoV2>.Success(_mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity));
+                var bookingResponse = _mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity);
+                return Result<BookingDtoV2>.Success(bookingResponse);
             }
         }
     }

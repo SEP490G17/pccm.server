@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using Domain.Enum;
 
 namespace Domain.Entity
@@ -19,7 +20,8 @@ namespace Domain.Entity
         [Required]
         public CourtStatus Status { get; set; } = CourtStatus.Available; // Trạng thái của sân
         [ForeignKey("CourtClusterId")]
-        public virtual CourtCluster? CourtCluster { get; set; }
+        [AllowNull]
+        public virtual CourtCluster CourtCluster { get; set; }
         public ICollection<CourtPrice> CourtPrices { get; set; } = new List<CourtPrice>();
         public ICollection<CourtCombo> CourtCombos { get; set; } = new List<CourtCombo>();
     }
