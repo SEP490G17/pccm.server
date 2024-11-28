@@ -14,7 +14,7 @@ namespace Application.Handler.CourtClusters
     public class ListAllUserSite
     {
         public class Query : IRequest<Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>> { 
-              public BaseSpecWithFilterParam  BaseSpecWithFilterParam { get; set; }
+              public CourtClusterSpecParam  CourtClusterSpecParam { get; set; }
 
         }
 
@@ -22,10 +22,10 @@ namespace Application.Handler.CourtClusters
         {
             public async Task<Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                  var querySpec = request.BaseSpecWithFilterParam;
+                  var querySpec = request.CourtClusterSpecParam;
 
-                  var spec = new CourtClustersSpecification(querySpec);
-                  var specCount = new CourtClustersCountSpecification(querySpec);
+                  var spec = new CourtClustersUserSiteSpecification(querySpec);
+                  var specCount = new CourtClustersUserSiteCountSpecification(querySpec);
                   var totalElement = await unitOfWork.Repository<CourtCluster>().CountAsync(specCount, cancellationToken);
 
                   var data = await unitOfWork.Repository<CourtCluster>().QueryList(spec)
