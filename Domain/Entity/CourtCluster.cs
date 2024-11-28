@@ -29,6 +29,9 @@ namespace Domain.Entity
         public List<Product> Products { get; set; } = new List<Product>();
         public virtual ICollection<StaffAssignment> StaffAssignments { get; set; } = new List<StaffAssignment>();
         public virtual ICollection<Court> Courts { get; set; } = new List<Court>();
+        
+        // Navigation property for Reviews
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
 
     }
