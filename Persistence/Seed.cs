@@ -26,6 +26,7 @@ namespace Persistence
             {
               FirstName="Chủ cụm sân",
               UserName="courtOwner",
+              LastName="1",
               Email="courtOwner@test.com",
               ImageUrl = ""
             }
