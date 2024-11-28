@@ -4,10 +4,12 @@ using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using Domain;
+using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Persistence;
 using System.Security.Claims;
 
 
@@ -23,7 +25,8 @@ namespace API.Controllers
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
         private readonly IMapper _mapper;
-        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService, IMapper mapper)
+        private readonly DataContext _context;
+        public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService, IMapper mapper, DataContext context)
         {
             _tokenService = tokenService;
             _userManager = userManager;
@@ -31,6 +34,7 @@ namespace API.Controllers
             _emailService = emailService;
             _sendSmsService = sendSmsService;
             _mapper = mapper;
+            _context = context;
         }
 
         [AllowAnonymous]
@@ -120,6 +124,87 @@ namespace API.Controllers
             if (result.Succeeded)
             {
                 var res = _mapper.Map<UserDto>(await _userManager.FindByEmailAsync(registerDto.Email));
+                return res;
+            }
+            return BadRequest(result.Errors);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("createStaff")]
+        public async Task<ActionResult<StaffDto>> CreateStaff(StaffInputDto staffInput)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName == staffInput.userName))
+            {
+                ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.Email == staffInput.Email))
+            {
+                ModelState.AddModelError("Email", "Email đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.PhoneNumber == staffInput.PhoneNumber))
+            {
+                ModelState.AddModelError("PhoneNumber", "Số điện thoại đã tồn tại");
+                return ValidationProblem();
+            }
+            var user = new AppUser
+            {
+                Email = staffInput.Email,
+                UserName = staffInput.userName,
+                FirstName = staffInput.FirstName,
+                LastName = staffInput.LastName,
+                PhoneNumber = staffInput.PhoneNumber,
+                JoiningDate = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, staffInput.Password);
+
+            if (result.Succeeded)
+            {
+                var staff = await _userManager.FindByEmailAsync(staffInput.Email);
+                var staffdetails = new StaffDetail()
+                {
+                    UserId = staff.Id,
+                    PositionId = staffInput.PositionId,
+                    Salary = 0
+                };
+                await _context.StaffDetails.AddAsync(staffdetails);
+                var _result = await _context.SaveChangesAsync();
+                if (_result <= 0) return BadRequest("Error saving staff details.");
+
+                var position = await _context.StaffPositions.FirstOrDefaultAsync(s => s.Id == staffInput.PositionId);
+                foreach (var role in position.DefaultRoles)
+                {
+                    var _role = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == role.ToLower());
+                    var userRole = new IdentityUserRole<string>()
+                    {
+                        RoleId = _role.Id,
+                        UserId = staff.Id
+                    };
+                    await _context.UserRoles.AddAsync(userRole);
+                }
+
+                var staffdetail = await _context.StaffDetails.FirstOrDefaultAsync(s => s.UserId == staff.Id);
+                foreach (var courtCluster in staffInput.CourtCluster)
+                {
+                    var staffAssignment = new StaffAssignment()
+                    {
+                        StaffId = staffdetail.Id,
+                        CourtClusterId = courtCluster,
+                        CourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(c => c.Id == courtCluster)
+                    };
+                    await _context.StaffAssignments.AddAsync(staffAssignment);
+                }
+                var result1 = await _context.SaveChangesAsync();
+                if (result1 < 0) return BadRequest("Error saving staff details.");
+                var staffdto = await _context.StaffDetails
+                .Include(s => s.User)
+                .Include(s => s.Position)
+                .Include(s => s.StaffAssignments)
+                .ThenInclude(x => x.CourtCluster)
+                .FirstOrDefaultAsync(x => x.Id == staffdetail.Id);
+                var res = _mapper.Map<StaffDto>(staffdto);
                 return res;
             }
             return BadRequest(result.Errors);

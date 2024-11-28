@@ -18,7 +18,7 @@ namespace Application.SpecParams.StaffSpecification
         )
         {
             ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);
-
+            AddOrderByDescending(x => x.User.JoiningDate);
         }
     }
 }

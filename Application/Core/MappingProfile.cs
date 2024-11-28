@@ -149,6 +149,15 @@ namespace Application.Core
                 .ForMember(st => st.Roles, o => o.MapFrom(s => s.Position.DefaultRoles))
                 .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
                 .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.CourtClusterName)));
+
+            CreateMap<StaffDetail, StaffDetailDto>()
+                .ForMember(st => st.FirstName, o => o.MapFrom(s => s.User.FirstName))
+                .ForMember(st => st.LastName, o => o.MapFrom(s => s.User.LastName))
+                .ForMember(st => st.Email, o => o.MapFrom(s => s.User.Email))
+                .ForMember(st => st.Position, o => o.MapFrom(s => s.Position.Id))
+                .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
+                .ForMember(st => st.UserName, o => o.MapFrom(st => st.User.UserName))
+                .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.Id)));
         }
 
     }
