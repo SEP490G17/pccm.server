@@ -77,20 +77,19 @@ namespace Persistence
         var managerStaff = "ManagerStaff";
         var managerCourtCluster = "ManagerCourtCluster";
         var managerBooking = "ManagerBooking";
-        var managerOrder = "ManagerOrder";
         var managerCustomer = "ManagerCustomer";
 
 
         var managerPosition = new StaffPosition()
         {
           Name = "Quản lý",
-          DefaultRoles = [managerBanner, managerNews, managerStaff, managerCourtCluster, managerBooking, managerOrder]
+          DefaultRoles = [managerBanner, managerNews, managerStaff, managerCourtCluster, managerBooking]
         };
 
         var staffOne = new StaffPosition()
         {
           Name = "Nhân viên tiếp tân",
-          DefaultRoles = [managerBooking, managerOrder, managerCustomer]
+          DefaultRoles = [managerBooking, managerCustomer]
         };
 
         var staffTwo = new StaffPosition()
