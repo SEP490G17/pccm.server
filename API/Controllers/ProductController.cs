@@ -55,6 +55,18 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { product = updatedProduct, Id = id, userName = userName }, ct));
         }
 
+        [HttpPut("import/{id}")]
+        [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
+        public async Task<IActionResult> ImportProduct([FromRoute] int id, ProductImportDto productImport, CancellationToken ct)
+        {
+            string userName = _userAccessor.GetUserName();
+            if (string.IsNullOrEmpty(userName))
+            {
+                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new ImportProduct.Command() { product = productImport, Id = id, userName = userName }, ct));
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteProduct(int id)
