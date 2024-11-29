@@ -101,21 +101,21 @@ namespace Application.Handler.Bookings
                         // Nếu khoảng thời gian lặp lại nằm sau currentTime, tính giờ trống
                         if (repeatedStartTime > currentTime)
                         {
-                            availableSlots.Add($"{currentTime:HH\\:mm} - {repeatedStartTime:HH\\:mm}");
+                            availableSlots.Add($"{currentTime:HH\\:mm} - {repeatedStartTime.AddHours(7):HH\\:mm}");
                         }
 
                         // Cập nhật currentTime tới thời gian kết thúc booking
-                        currentTime = repeatedEndTime > currentTime ? repeatedEndTime : currentTime;
+                        currentTime = repeatedEndTime > currentTime ? repeatedEndTime.AddHours(7) : currentTime.AddHours(7);
                     }
                     else if (booking.StartTime.Date == targetDate.Date)
                     {
                         // Nếu booking không lặp lại, xử lý như bình thường
                         if (booking.StartTime > currentTime)
                         {
-                            availableSlots.Add($"{currentTime:HH\\:mm} - {booking.StartTime:HH\\:mm}");
+                            availableSlots.Add($"{currentTime:HH\\:mm} - {booking.StartTime.AddHours(7):HH\\:mm}");
                         }
 
-                        currentTime = booking.EndTime > currentTime ? booking.EndTime : currentTime;
+                        currentTime = booking.EndTime > currentTime ? booking.EndTime.AddHours(7) : currentTime.AddHours(7);
                     }
                 }
 
