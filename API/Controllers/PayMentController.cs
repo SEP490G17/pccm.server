@@ -1,6 +1,10 @@
+using API.SocketSignalR;
 using Application.DTOs;
+using Application.Handler.Notifications;
 using Application.Handler.Payments;
 using Application.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +18,18 @@ namespace API.Controllers
     {
         private readonly IVnPayService _vnpayService;
         private readonly DataContext _context;
+        private readonly BookingRealTimeService _bookingRealTimeService;
+        private readonly IMapper _mapper;
 
-        public PayMentController(IVnPayService vnpayService, DataContext context)
+        private readonly NotificationService _notificationService;
+
+        public PayMentController(IVnPayService vnpayService, DataContext context, IMapper mapper, NotificationService notificationService, BookingRealTimeService bookingRealTimeService)
         {
             _vnpayService = vnpayService;
             _context = context;
+            _mapper = mapper;
+            _bookingRealTimeService = bookingRealTimeService;
+            _notificationService = notificationService;
         }
 
         [HttpPost("{type}/{id}/process-payment")]
@@ -47,7 +58,7 @@ namespace API.Controllers
                 {
                     return NotFound("Booking not found.");
                 }
-                if (booking.TotalPrice < vnpayAmount)
+                if (booking.TotalPrice < vnpayAmount / 100)
                 {
                     var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId && o.Payment.Status == PaymentStatus.Pending);
                     var totalAmount = order.TotalAmount + booking.TotalPrice;
@@ -60,7 +71,25 @@ namespace API.Controllers
                 }
                 booking.Payment.Status = paymentStatus;
                 _context.Update(booking);
+                var realTimeResponse = await _context.Bookings.ProjectTo<BookingDtoV2>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(b => b.Id == booking.Id);
+                if (realTimeResponse != null)
+                {
+                    realTimeResponse.PaymentStatus = PaymentStatus.Success;
+                    await _bookingRealTimeService.NotifyUpdateBookingAsync(realTimeResponse, $"admin{realTimeResponse.CourtClusterId}");
+                }
+                var notiuser = await Mediator.Send(new BookingNotification.Command()
+                {
+                    BookingId = BillPayId,
+                    Message = $"Thánh toán đơn {BillPayId} thành công",
+                    Url = $"{BillPayId}",
+                    Title = "Thanh toán",
+                    Type = NotificationType.Payment,
 
+                });
+                if (notiuser != null)
+                {
+                    await _notificationService.NotificationForUser(notiuser.NotificationDto, notiuser.PhoneNumber);
+                }
             }
             if (type == (int)PaymentType.Order)
             {

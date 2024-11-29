@@ -90,7 +90,7 @@ namespace Application.Core
             CreateMap<ProfileInputDto, AppUser>();
 
             CreateMap<AppUser, ProfileDto>();
-            
+
             CreateMap<AppUser, UserDto>()
                 .ForMember(u => u.FullName, o => o.MapFrom(au => $"{au.FirstName} {au.LastName}"));
             #endregion
@@ -149,6 +149,12 @@ namespace Application.Core
                 .ForMember(st => st.Roles, o => o.MapFrom(s => s.Position.DefaultRoles))
                 .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
                 .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.CourtClusterName)));
+
+
+            #region  Notification Profile
+            CreateMap<Notification, NotificationDto>()
+            .ForMember(x => x.IsRead, opt => opt.MapFrom(src => src.ReadAt != null));
+            #endregion
         }
 
     }

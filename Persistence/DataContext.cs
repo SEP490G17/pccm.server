@@ -35,6 +35,7 @@ namespace Persistence
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Revenue> Revenues { get; set; }
         public DbSet<CourtCombo> CourtCombos { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

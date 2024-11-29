@@ -1,14 +1,19 @@
 using API.SocketSignalR;
 using Application.DTOs;
 using Application.Handler.Bookings;
+using Application.Handler.Notifications;
+using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.BookingSpecification;
+using Domain;
+using Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class BookingController : BaseApiController
+    public class BookingController(IUserAccessor _userAccessor, UserManager<AppUser> _userManager, NotificationService _notificationService) : BaseApiController
     {
 
         [AllowAnonymous]
@@ -103,6 +108,18 @@ namespace API.Controllers
         {
             var result = await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id, IncludeOrder = includeOrder });
             await HandleAdminUpdateBookingRealTime(result);
+            var notification = await Mediator.Send(new BookingNotification.Command()
+            {
+                BookingId = id,
+                Message = "Lịch đặt của bạn đã được thanh toán thành công",
+                Title = "Đặt lịch",
+                Type = NotificationType.Booking,
+                Url = id.ToString(),
+            });
+            if (notification != null)
+            {
+                await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+            }
             return HandleResult(result);
         }
 
@@ -118,8 +135,21 @@ namespace API.Controllers
             var result = await Mediator.Send(new AcceptedBooking.Command() { Id = id });
             await HandleAdminUpdateBookingRealTime(result);
             await HandleUserUpdateBookingRealTime(result);
+            var notification = await Mediator.Send(new BookingNotification.Command()
+            {
+                BookingId = id,
+                Message = "Lịch đặt của bạn đã được xác nhận thành công",
+                Title = "Đặt lịch",
+                Type = NotificationType.Booking,
+                Url = id.ToString(),
+            });
+            if (notification != null)
+            {
+                await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+            }
             return HandleResult(result);
         }
+
         /// <summary>
         ///  Dùng để huỷ lịch đặt
         /// </summary>
@@ -130,6 +160,19 @@ namespace API.Controllers
         {
             var result = await Mediator.Send(new CancelBooking.Command() { Id = id });
             await HandleAdminUpdateBookingRealTime(result);
+            await HandleUserUpdateBookingRealTime(result);
+            var notification = await Mediator.Send(new BookingNotification.Command()
+            {
+                BookingId = id,
+                Message = "Lịch đặt của bạn đã bị hủy",
+                Title = "Đặt lịch",
+                Type = NotificationType.Booking,
+                Url = id.ToString(),
+            });
+            if (notification != null)
+            {
+                await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+            }
             return HandleResult(result);
         }
         /// <summary>
@@ -143,6 +186,18 @@ namespace API.Controllers
         {
             var result = await Mediator.Send(new DenyBooking.Command() { Id = id });
             await HandleAdminUpdateBookingRealTime(result);
+            var notification = await Mediator.Send(new BookingNotification.Command()
+            {
+                BookingId = id,
+                Message = "Lịch đặt của bạn đã bị từ chối",
+                Title = "Đặt lịch",
+                Type = NotificationType.Booking,
+                Url = id.ToString(),
+            });
+            if (notification != null)
+            {
+                await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+            }
             return HandleResult(result);
         }
 
@@ -182,6 +237,25 @@ namespace API.Controllers
         {
             var result = await Mediator.Send(new BookingWithCombo.Command() { Booking = bookingWithComboDto }, ct);
             await HandleAdminCreateBookingRealTime(result);
+            await HandlUserCreateBookingRealTime(result);
+            if (result.IsSuccess)
+            {
+
+                var user = await _userManager.FindByNameAsync(_userAccessor.GetUserName());
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Count == 0)
+                {
+                    var notification = await Mediator.Send(new CreateNotification.Command()
+                    {
+                        Title = "Đặt lịch",
+                        Message = "Đặt lịch thành công, vui lòng chờ xác nhận lịch",
+                        Type = NotificationType.Booking,
+                        Url = $"{result.Value.Id}",
+                        AppUser = user,
+                    });
+                    await _notificationService.NotificationForUser(notification, user.PhoneNumber);
+                }
+            }
             return HandleResult(result);
         }
 
@@ -205,6 +279,25 @@ namespace API.Controllers
         {
             var result = await Mediator.Send(new BookingByDay.Command() { Booking = bookingByDay }, ct);
             await HandleAdminCreateBookingRealTime(result);
+            await HandlUserCreateBookingRealTime(result);
+            if (result.IsSuccess)
+            {
+
+                var user = await _userManager.FindByNameAsync(_userAccessor.GetUserName());
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Count == 0)
+                {
+                    var notification = await Mediator.Send(new CreateNotification.Command()
+                    {
+                        Title = "Đặt lịch",
+                        Message = "Đặt lịch thành công, vui lòng chờ xác nhận lịch",
+                        Type = NotificationType.Booking,
+                        Url = $"{result.Value.Id}",
+                        AppUser = user,
+                    },ct);
+                    await _notificationService.NotificationForUser(notification, user.PhoneNumber);
+                }
+            }
             return HandleResult(result);
         }
     }

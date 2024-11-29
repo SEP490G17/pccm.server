@@ -3,7 +3,9 @@ using API.Helper;
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Enum;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Payment
@@ -12,11 +14,13 @@ namespace Infrastructure.Payment
     {
         private readonly VnPaySettings _settings;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWebHostEnvironment _env;
 
-        public VnPayService(IOptions<VnPaySettings> settings, IHttpContextAccessor httpContextAccessor)
+        public VnPayService(IOptions<VnPaySettings> settings, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment env)
         {
             _settings = settings.Value;
             _httpContextAccessor = httpContextAccessor;
+            _env = env;
         }
 
         public string GeneratePaymentUrl(int billPaymentId, decimal amount, PaymentType type)
@@ -41,7 +45,7 @@ namespace Infrastructure.Payment
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", $"Thanh toan don hang: {billPaymentId}");
             vnPay.AddRequestData("vnp_OrderType", $"{type.ToString()}");
-            vnPay.AddRequestData("vnp_ReturnUrl", _settings.ReturnUrl);
+            vnPay.AddRequestData("vnp_ReturnUrl", _env.IsProduction()? _settings.ReturnUrl:"http://localhost:5000/api/payment/vnpay-callback");
             vnPay.AddRequestData("vnp_IpAddr", string.IsNullOrEmpty(ipAddress) ? "127.0.0.1" : ipAddress);
 
             return vnPay.CreateRequestUrl(_settings.Url, _settings.HashSecret);

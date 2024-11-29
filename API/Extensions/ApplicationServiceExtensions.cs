@@ -35,10 +35,16 @@ namespace API.Extensions
             services.AddSignalR();
 
             services.AddSingleton<BookingRealTimeService>();
+            services.AddSingleton<NotificationService>();
+
             services.AddSingleton(Channel.CreateUnbounded<(BookingDtoV1 booking, string groupId)>());
             services.AddSingleton(Channel.CreateUnbounded<(BookingDtoV2 booking, string groupId)>());
+            services.AddSingleton(Channel.CreateUnbounded<(NotificationDto booking, string groupId)>());
+
 
             services.AddHostedService<BookingBackGroundService>();
+            services.AddHostedService<NotificationBackgroundService>();
+
 
             
             services.AddFluentValidationAutoValidation();

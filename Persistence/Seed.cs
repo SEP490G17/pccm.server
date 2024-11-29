@@ -56,7 +56,7 @@ namespace Persistence
 
       var rolesData = File.ReadAllText("../Persistence/SeedData/roles.json");
       var roles = JsonSerializer.Deserialize<List<IdentityRole>>(rolesData);
-      if (context.Roles.Count() < roles.Count())
+      if (context.Roles.Count() == 0)
       {
         var dbRoles = context.Roles.ToList();
         var roleName = new List<string>();
@@ -70,7 +70,7 @@ namespace Persistence
         }
       }
 
-      if (!context.StaffPositions.Any())
+      if (context.StaffPositions.Count() == 0)
       {
         var managerBanner = "ManagerBanner";
         var managerNews = "ManagerNews";
@@ -141,7 +141,7 @@ namespace Persistence
 
 
 
-      if (!context.StaffDetails.Any())
+      if (context.StaffDetails.Count() == 0)
       {
         var users = new List<AppUser>();
         var staffPositions = await context.StaffPositions.ToListAsync();
@@ -169,9 +169,9 @@ namespace Persistence
             {
               Position = quanly,
               UserId = results[0].Id,
-              Salary = 1000000
             }
         };
+        await context.AddRangeAsync(staffs);
         await context.SaveChangesAsync();
         await userManager.AddToRolesAsync(results[0], quanly.DefaultRoles);
         for (int i = 1; i < results.Count(); i++)

@@ -1,6 +1,7 @@
 using API.SocketSignalR;
 using Application.Core;
 using Application.DTOs;
+using Domain.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -53,6 +54,18 @@ namespace API.Controllers
                 await notificationUpdate.NotifyCreateBookingAsync(result.Value, $"admin{result.Value.CourtClusterId}");
             }
         }
+
+
+        protected async Task HandlUserCreateBookingRealTime(Result<BookingDtoV1> result)
+        {
+            if (result != null && result.IsSuccess && result.Value.Status == (int)BookingStatus.Confirmed)
+            {
+                var notificationUpdate = HttpContext.RequestServices.GetRequiredService<BookingRealTimeService>();
+                await notificationUpdate.NotifyCreateBookingAsync(result.Value, $"user{result.Value.CourtClusterId}");
+            }
+        }
+
+ 
 
     }
 }

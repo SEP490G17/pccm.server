@@ -23,7 +23,7 @@ namespace Application.Handler.Bookings
             private readonly DataContext _context;
             private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+            public Handler(DataContext context, IMapper mapper)
             {
                 _mapper = mapper;
                 _context = context;
@@ -37,7 +37,7 @@ namespace Application.Handler.Bookings
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 
                 var today = DateTime.UtcNow.AddHours(7);
-                if(booking.StartTime < today){
+                if(booking.StartTime.AddHours(7) < today){
                     return Result<BookingDtoV2>.Failure("Lịch đặt đã quá hạn");
                 }
 
