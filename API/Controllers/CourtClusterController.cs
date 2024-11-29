@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
 using Application.SpecParams;
+using Application.SpecParams.CourtClusterSpecification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +25,9 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet("list-all-usersite")]
-        public async Task<IActionResult> GetAllCourtClustersUserSite(CancellationToken ct)
+        public async Task<IActionResult> GetAllCourtClustersUserSite([FromQuery] CourtClusterSpecParam courtClusterSpecParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ListAllUserSite.Query(), ct));
+            return HandleResult(await Mediator.Send(new ListAllUserSite.Query() { CourtClusterSpecParam = courtClusterSpecParam }, ct));
         }
 
         /// <summary>

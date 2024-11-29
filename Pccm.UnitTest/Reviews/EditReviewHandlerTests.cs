@@ -37,7 +37,6 @@ namespace Pccm.UnitTest.Reviews
                 var reviewInputDto = new ReviewInputDto()
                 {
                     Id = id,
-                    UserId = UserId,
                     CourtClusterId = CourtClusterId,
                     Rating = Rating,
                     Comment = Comment,

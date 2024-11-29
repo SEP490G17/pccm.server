@@ -155,6 +155,14 @@ namespace Application.Core
             CreateMap<Notification, NotificationDto>()
             .ForMember(x => x.IsRead, opt => opt.MapFrom(src => src.ReadAt != null));
             #endregion
+            CreateMap<StaffDetail, StaffDetailDto>()
+                .ForMember(st => st.FirstName, o => o.MapFrom(s => s.User.FirstName))
+                .ForMember(st => st.LastName, o => o.MapFrom(s => s.User.LastName))
+                .ForMember(st => st.Email, o => o.MapFrom(s => s.User.Email))
+                .ForMember(st => st.Position, o => o.MapFrom(s => s.Position.Id))
+                .ForMember(st => st.PhoneNumber, o => o.MapFrom(st => st.User.PhoneNumber))
+                .ForMember(st => st.UserName, o => o.MapFrom(st => st.User.UserName))
+                .ForMember(st => st.CourtCluster, o => o.MapFrom(s => s.StaffAssignments.Select(sa => sa.CourtCluster.Id)));
         }
 
     }
