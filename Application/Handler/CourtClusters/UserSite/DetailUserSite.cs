@@ -21,10 +21,16 @@ namespace Application.Handler.CourtClusters
             public async Task<Result<CourtClusterDto.CourtClusterListPageUserSite>> Handle(
                 Query request, CancellationToken cancellationToken)
             {
-                var court = await _context.CourtClusters
-                     .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(_mapper.ConfigurationProvider)
+                var courtcluster = await _context.CourtClusters
+                    .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
-                return Result<CourtClusterDto.CourtClusterListPageUserSite>.Success(court);
+                var courts = await _context.Courts
+                    .Where(x => x.CourtCluster.Id == request.Id)
+                    .ProjectTo<CourtOfClusterDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
+                    courtcluster.Courts = courts;
+                    courtcluster.NumbOfCourts = courts.Count();
+                return Result<CourtClusterDto.CourtClusterListPageUserSite>.Success(courtcluster);
             }
         }
     }
