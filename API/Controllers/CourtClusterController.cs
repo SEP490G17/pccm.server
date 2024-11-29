@@ -1,5 +1,6 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
+using Application.Handler.CourtClusters.UserSite;
 using Application.SpecParams;
 using Application.SpecParams.CourtClusterSpecification;
 using Microsoft.AspNetCore.Authorization;
@@ -84,5 +85,13 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new ToggleVisible.Command() { Id = id, IsVisible = isVisible }));
         }
+
+        [HttpGet("top-courtcluster")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TopCourtCluster([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new TopCourtUserSite.Query(){ BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+        }
+
     }
 }
