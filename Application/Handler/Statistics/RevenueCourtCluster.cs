@@ -38,8 +38,9 @@ namespace Application.Handler.Statistics
                                  b.Court.CourtClusterId == request.CourtClusterId &&
                                  b.Status == BookingStatus.Confirmed &&
                                  b.AcceptedAt != null &&
-                                 b.Payment.Status == PaymentStatus.Success &&
-                                 b.Payment.PaidAt != null)
+                                 b.Payment.Status == PaymentStatus.Success 
+                                //  && b.Payment.PaidAt != null
+                                 )
                     .ToListAsync(cancellationToken);
 
                 var bookingDetailsGrouped = bookingDetails
