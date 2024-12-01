@@ -35,10 +35,11 @@ namespace Application.Handler.Bookings
                 .Include(b => b.Court)
                 .ThenInclude(b => b.CourtCluster)
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
-                var cultureInfo = new CultureInfo("vi-VN")
-                {
-                    NumberFormat = { CurrencySymbol = "₫", CurrencyDecimalDigits = 0 }
-                };
+                var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+                cultureInfo.NumberFormat.CurrencySymbol = "₫";
+                cultureInfo.NumberFormat.CurrencyDecimalDigits = 0;
+                cultureInfo.NumberFormat.NumberGroupSeparator = ".";
+                cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
                 if (booking == null)
                 {
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
