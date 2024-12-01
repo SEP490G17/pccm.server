@@ -85,13 +85,21 @@ namespace Application.Handler.Bookings
                                     (int)x.Status == (int)BookingStatus.Pending && // Lịch đang chờ xác nhận
                                     !x.UntilTime.HasValue &&
                                     (
-                                        (x.StartTime.AddHours(7) < startDateWithTime && x.EndTime.AddHours(7) > startDateWithTime)
+                                        (x.StartTime.AddHours(7) <= startDateWithTime && x.EndTime.AddHours(7) >= endDateWithTime) // ( [ ] ) [] booking accept () booking check
                                         ||
-                                        (x.StartTime.AddHours(7) > startDateWithTime && x.EndTime.AddHours(7) < endDateWithTime)
+                                        (x.StartTime.AddHours(7) >= startDateWithTime && x.EndTime.AddHours(7) <= endDateWithTime) //  [ ( ) ] 
                                         ||
-                                        (x.StartTime.AddHours(7) > startDateWithTime && bookingAccept.UntilTime.HasValue && x.EndTime.AddHours(7) < bookingAccept.UntilTime.Value.AddHours(7))
+                                        (bookingAccept.UntilTime.HasValue
+                                        && x.StartTime.AddHours(7) < bookingAccept.UntilTime.Value.AddHours(7)
+                                        && x.EndTime.AddHours(7) > bookingAccept.UntilTime.Value.AddHours(7)) // check trường hợp nếu đơn accept là đơn combo thì phải check đến until time cho các đơn ngày. Chứ ko để check endtime được vì endtime chỉ trong ngày nên những lịch ngày hôm sau sẽ không check trùng
                                         ||
-                                        (x.StartTime.AddHours(7) < endDateWithTime && x.EndTime.AddHours(7) > endDateWithTime)
+                                        (bookingAccept.UntilTime.HasValue
+                                        && x.StartTime.AddHours(7) < bookingAccept.UntilTime.Value.AddHours(7)
+                                        && x.EndTime.AddHours(7) < bookingAccept.UntilTime.Value.AddHours(7)) // check trường hợp nếu đơn accept là đơn combo thì phải check đến until time cho các đơn ngày. Chứ ko để check endtime được vì endtime chỉ trong ngày nên những lịch ngày hôm sau sẽ không check trùng
+                                        ||
+                                        (x.StartTime.AddHours(7) < endDateWithTime && x.StartTime.AddHours(7) > startDateWithTime) // [ ( ] )  
+                                        ||
+                                        (x.EndTime.AddHours(7) < endDateWithTime && x.EndTime.AddHours(7) > startDateWithTime) // ( [ ) ]
                                     )
                                 )
                                 .ProjectTo<BookingDtoV2>(_mapper.ConfigurationProvider)
@@ -104,17 +112,44 @@ namespace Application.Handler.Bookings
                         (int)x.Status == (int)BookingStatus.Pending && // Lịch đang chờ xác nhận
                         x.UntilTime.HasValue && // Là lịch combo
                         (
-                           startDateWithTime.Date >= x.StartTime.AddHours(7).Date
-                           &&
-                           endDateWithTime.Date <= x.UntilTime.Value.AddHours(7).Date
-                           &&
-                           (
-                               (x.StartTime.AddHours(7).TimeOfDay <= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay > endDateWithTime.TimeOfDay)
-                               ||
-                               (x.StartTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay <= endDateWithTime.TimeOfDay)
-                               ||
-                               (x.StartTime.AddHours(7).TimeOfDay < endDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay)
-                           )
+                                bookingAccept.UntilTime.HasValue &&
+                                (
+                                    (startDateWithTime.Date >= x.StartTime.AddHours(7).Date
+                                    && bookingAccept.UntilTime.Value.AddHours(7) <= x.UntilTime.Value.AddHours(7).Date) // ( [  ] ) [] booking accept () booking check
+                                    ||
+                                    (startDateWithTime.Date <= x.StartTime.AddHours(7).Date
+                                    && bookingAccept.UntilTime.Value.AddHours(7) >= x.UntilTime.Value.AddHours(7).Date) // [ (  ) ]
+                                    ||
+                                    (startDateWithTime.Date < x.UntilTime.Value.AddHours(7).Date
+                                    && bookingAccept.UntilTime.Value.AddHours(7) > x.UntilTime.Value.AddHours(7).Date) // ( [ ) ]
+                                    ||
+                                    (startDateWithTime.Date < x.StartTime.AddHours(7).Date
+                                    && bookingAccept.UntilTime.Value.AddHours(7) > x.StartTime.AddHours(7).Date) // [ ( ] ) 
+                                )
+                                ||
+                                !bookingAccept.UntilTime.HasValue &&
+                                (
+                                    (startDateWithTime.Date >= x.StartTime.AddHours(7).Date
+                                    && endDateWithTime.Date <= x.UntilTime.Value.AddHours(7).Date) // ( [  ] ) [] booking accept () booking check
+                                    ||
+                                    (startDateWithTime.Date <= x.StartTime.AddHours(7).Date
+                                    && endDateWithTime.Date >= x.UntilTime.Value.AddHours(7).Date) // [ (  ) ]
+                                    ||
+                                    (startDateWithTime.Date < x.UntilTime.Value.AddHours(7).Date
+                                    && endDateWithTime.Date > x.UntilTime.Value.AddHours(7).Date) // ( [ ) ]
+                                    ||
+                                    (startDateWithTime.Date < x.StartTime.AddHours(7).Date
+                                    && endDateWithTime.Date > x.StartTime.AddHours(7).Date) // [ ( ] )
+                                )
+
+                        )
+                        &&
+                        (
+                            (x.StartTime.AddHours(7).TimeOfDay <= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay > endDateWithTime.TimeOfDay)
+                            ||
+                            (x.StartTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay <= endDateWithTime.TimeOfDay)
+                            ||
+                            (x.StartTime.AddHours(7).TimeOfDay < endDateWithTime.TimeOfDay && x.EndTime.AddHours(7).TimeOfDay >= startDateWithTime.TimeOfDay)
                         )
                     )
                     .ProjectTo<BookingDtoV2>(_mapper.ConfigurationProvider)
