@@ -24,7 +24,7 @@ namespace Pccm.UnitTest.Bookings
         }
 
 
-        [TestCase("123456789", "John Doe", 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", null, "Weekly", ExpectedResult = true)]
+        [TestCase("123456789", "John Doe", 25, "2025-11-11T10:00:00", "2025-11-11T12:00:00", null, null, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldCreateBooking_WhenValidData(
             string PhoneNumber,
             string FullName,
@@ -32,7 +32,7 @@ namespace Pccm.UnitTest.Bookings
             string StartTime,
             string EndTime,
             string? UntilTime,
-            string RecurrenceRule)
+            string? RecurrenceRule)
         {
             try
             {

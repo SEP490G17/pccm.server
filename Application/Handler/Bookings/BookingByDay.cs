@@ -159,7 +159,12 @@ namespace Application.Handler.Bookings
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
                 }
+               
                 await _context.AddAsync(booking, cancellationToken);
+
+           
+                  //  await _context.SaveChangesAsync(cancellationToken);
+               
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
                 var newBooking = _context.Entry(booking).Entity;

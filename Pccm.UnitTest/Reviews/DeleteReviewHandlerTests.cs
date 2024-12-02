@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(2, ExpectedResult = true)]
+        [TestCase(6, ExpectedResult = true)]
         public async Task<bool> Handle_DeleteReview_WhenValidId(
             int id)
         {

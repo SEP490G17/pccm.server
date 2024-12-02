@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, ExpectedResult = true)]
+        [TestCase(21, ExpectedResult = true)]
         public async Task<bool> Handle_DeleteOrder_WhenValid(
             int id)
         {

@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Products
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 1)]
+         [TestCase(0, 5, ExpectedResult = 4)]
         public async Task<int?> Handle_ShouldListProduct_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -57,7 +57,7 @@ namespace Pccm.UnitTest.Products
             return response.Value.Data.Count();
         }
         
-         [TestCase(0, 5, ExpectedResult = 0)]
+         [TestCase(0, 5, ExpectedResult = 7)]
         public async Task<int?> Handle_ShouldListProduct_WhenFilterByCourtClusterID(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

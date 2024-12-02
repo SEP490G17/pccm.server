@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Bookings
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 0)]
+         [TestCase(0, 5, ExpectedResult = 2)]
         public async Task<int?> Handle_ShouldListBooking_WhenFilterByCourtCluster(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

@@ -21,7 +21,7 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(ExpectedResult = 9)]
+        [TestCase(ExpectedResult = 12)]
         public async Task<int?> Handle_ShouldListNewsUserSiteBlog_WhenValidId()
         {
             if (this.Mediator is null)

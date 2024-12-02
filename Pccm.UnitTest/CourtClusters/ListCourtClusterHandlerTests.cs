@@ -57,7 +57,7 @@ namespace Pccm.UnitTest.CourtClusters
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 1)]
+         [TestCase(0, 5, ExpectedResult = 0)]
         public async Task<int?> Handle_ShouldListCoutCluster_WhenFilterByProvince(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

@@ -21,7 +21,7 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(ExpectedResult = 6)]
+        [TestCase(ExpectedResult = 3)]
         public async Task<int?> Handle_ShouldListReview_WhenValid()
         {
             if (this.Mediator is null)

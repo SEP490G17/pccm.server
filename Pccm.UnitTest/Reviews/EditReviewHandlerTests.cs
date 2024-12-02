@@ -23,10 +23,9 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(2,"0327aee1-dc23-46f1-8a5b-343d669afd85", 4, 5, "Great service!", "2024-11-11T10:00:00", ExpectedResult = true)]
+        [TestCase(5, 4, 4, "Great service!", "2024-11-11T10:00:00", ExpectedResult = true)]
         public async Task<bool> Handle_EditReview_WhenValid(
             int id, 
-            string UserId,
             int CourtClusterId,
             int Rating,
             string Comment,

@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(2, ExpectedResult = true)]
+        [TestCase(20, ExpectedResult = true)]
         public async Task<bool> Handle_DeleteNewsBlog_WhenValidId(
             int id)
         {

@@ -21,7 +21,7 @@ namespace Pccm.UnitTest.Reviews
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
-        [TestCase(2, ExpectedResult = true)]
+        [TestCase(1, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailReview_WhenValidId(
            int id)
         {

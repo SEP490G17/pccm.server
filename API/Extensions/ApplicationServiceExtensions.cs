@@ -27,7 +27,8 @@ namespace API.Extensions
                 opt =>
                 {
                     opt.UseMySql(configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(10, 11, 9)));
-                }
+                },
+                ServiceLifetime.Transient
             );
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));

@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(5, 1, ExpectedResult = true)]
+        [TestCase(20, 0, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldEditNewsBlog_WhenValidId(
             int id,
             int status)

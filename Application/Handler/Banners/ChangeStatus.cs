@@ -26,17 +26,31 @@ namespace Application.Handler.Banners
             public async Task<Result<Banner>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var banner = await _context.Banners.FindAsync(request.Id);
-                if (request.status == 1)
+
+                if (banner == null)
                 {
-                    banner.Status = BannerStatus.Display;
+                    return Result<Banner>.Failure("Banner not found");
                 }
-                else
+
+                if (banner.Status != (BannerStatus)request.status)
                 {
-                    banner.Status = BannerStatus.Hidden;
+                    banner.Status = (request.status == 1) ? BannerStatus.Display : BannerStatus.Hidden;
                 }
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Banner>.Failure("Faild to change status banner");
-                return Result<Banner>.Success(banner);
+
+                try
+                {
+                    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                    if (!result)
+                    {
+                        return Result<Banner>.Failure("Failed to change status banner");
+                    }
+
+                    return Result<Banner>.Success(banner);
+                }
+                catch (Exception ex)
+                {
+                    return Result<Banner>.Failure($"Error: {ex.Message}");
+                }
             }
         }
     }

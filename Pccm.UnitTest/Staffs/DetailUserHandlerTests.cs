@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Staffs
         }
 
 
-        [TestCase("06b243a8-8158-4a9c-845e-63054506a1b8", ExpectedResult = true)]
+        [TestCase("staff9", ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailStaff_WhenStaffExist(
             string username)
         {

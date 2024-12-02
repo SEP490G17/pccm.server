@@ -17,13 +17,14 @@ namespace Pccm.UnitTest.Bookings
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
 
-        [TestCase(1, ExpectedResult = true)]
+        [TestCase(13, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldBookingDetails_WhenValidData(
             int id)
         {

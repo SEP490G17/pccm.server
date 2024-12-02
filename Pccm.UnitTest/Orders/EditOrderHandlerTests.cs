@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, 4, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = true)]
+        [TestCase(8, 4, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = true)]
         public async Task<bool> Handle_EditOrder_WhenValid(
             int id,
             int BookingId,

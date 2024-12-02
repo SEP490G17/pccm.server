@@ -24,7 +24,7 @@ namespace Pccm.UnitTest.Services
         }
 
 
-        [TestCase(new int[] { 1 }, "Premium Service 2", "High-quality tennis court rental", 150, ExpectedResult = true)]
+        [TestCase(new int[] { 1 }, "Chơi cùng gái HN", "High-quality tennis court rental", 150, ExpectedResult = true)]
         public async Task<bool> Handle_CreateService_WhenValid(
             int[] CourtClusterId,
             string ServiceName,

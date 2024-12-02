@@ -1,15 +1,26 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
 using Application.Handler.CourtClusters.UserSite;
+using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.CourtClusterSpecification;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     public class CourtClusterController : BaseApiController
     {
+        private readonly IUserAccessor _userAccessor;
+         private readonly UserManager<AppUser> _userManager;
+        public CourtClusterController(IUserAccessor userAccessor, UserManager<AppUser> userManager)
+        {
+            _userAccessor = userAccessor;
+            _userManager = userManager;
+        }
+        
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetCourtClusters([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
@@ -76,7 +87,12 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteCourtCluster(int id)
         {
-            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
+            var user = await _userManager.FindByNameAsync(_userAccessor.GetUserName());
+            if (user == null)
+            {
+                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
+            }
+            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userApp = user }));
         }
 
         [HttpPut("visible/{id}")]
@@ -90,7 +106,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> TopCourtCluster([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new TopCourtUserSite.Query(){ BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+            return HandleResult(await Mediator.Send(new TopCourtUserSite.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
     }
