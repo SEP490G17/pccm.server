@@ -34,10 +34,11 @@ namespace Application.Handler.Products
                 var product = request.product;
                 var userName = request.userName;
                 var repo = unitOfWork.Repository<Product>();
-                var cultureInfo = new CultureInfo("vi-VN")
-                {
-                    NumberFormat = { CurrencySymbol = "₫", CurrencyDecimalDigits = 0 }
-                };
+                var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+                cultureInfo.NumberFormat.CurrencySymbol = "₫";
+                cultureInfo.NumberFormat.CurrencyDecimalDigits = 0;
+                cultureInfo.NumberFormat.NumberGroupSeparator = ".";
+                cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
                 var productToUpdate = await repo.GetByIdAsync(request.Id);
                 if (productToUpdate == null)
                 {

@@ -57,7 +57,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new CompleteOrder.Command() { Id = id }));
         }
 
-        // // chạy swagger bị lỗi nên cmt lại
         [HttpPut("edit")]
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster,ManagerBooking")]
         public async Task<IActionResult> UpdateOrderV1([FromBody] OrderEditV1.Command command)

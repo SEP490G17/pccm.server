@@ -40,6 +40,9 @@ namespace Application.Handler.Orders
                 {
                     return Result<OrderOfBookingDto>.Failure("Order đã được thanh toán không thể cancel");
                 }
+                if(order.Payment.Status == PaymentStatus.Cancel){
+                    return Result<OrderOfBookingDto>.Failure("Order đã được huỷ trước đó");
+                }
                 var productsRollBack = new List<Product>();
                 order.OrderDetails.ToList().ForEach(x=>{
                     if(x.Product != null){

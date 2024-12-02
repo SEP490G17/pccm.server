@@ -10,6 +10,9 @@ namespace Persistence
   {
     public static async Task SeedData(DataContext context, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
+
+
+
       if (!userManager.Users.Any())
       {
         var users = new List<AppUser>
@@ -38,6 +41,8 @@ namespace Persistence
           await userManager.CreateAsync(user, "123456aA@");
         }
       }
+
+
 
       // if (!context.Banners.Any())
       // {

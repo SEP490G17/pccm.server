@@ -62,7 +62,7 @@ namespace Application.Handler.Bookings
                     var bookings = await _context.Bookings
                         .Where(b =>
                             b.Court.Id == court.Id &&
-                            b.Status != BookingStatus.Cancelled &&
+                            b.Status == BookingStatus.Confirmed &&
                             b.StartTime.Date <= parsedDate.Date &&
                             (b.UntilTime == null || b.UntilTime.Value.Date >= parsedDate.Date))
                         .OrderBy(b => b.StartTime)

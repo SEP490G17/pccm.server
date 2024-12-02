@@ -85,39 +85,45 @@ namespace Application.Core
                                            .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
                            .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id))
                            .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId))
+                           .ForMember(dest => dest.CourtClusterName, opt => opt.MapFrom(src => src.Court.CourtCluster.CourtClusterName))
                            .ForMember(dest => dest.Address, opt =>
                                     opt.MapFrom(src => $"{src.Court.CourtCluster.Address}, {src.Court.CourtCluster.WardName}, {src.Court.CourtCluster.DistrictName}, {src.Court.CourtCluster.ProvinceName}"));
 
             //2. Order
             CreateMap<Order, OrderDetailsResponse>()
                 .ForMember(dest => dest.PaymentStatus, opt =>
-                    {
-                        opt.Condition(src => src.Payment != null);
-                        opt.MapFrom(src => src.Payment.Status);
-                    })
-                .ForMember(o => o.OrderForProducts, opt => opt.MapFrom
-                    (
-                        src => src.OrderDetails
-                                .Where(od => od.ProductId != null)
-                                .Select
-                                    (od => new OrderForProductCreateDto
-                                    {
-                                        ProductId = od.ProductId.Value,
-                                        Quantity = od.Quantity
-                                    }
-                                    )
-                        )
-                    )
-                .ForMember(o => o.OrderForServices,
-                    opt => opt.MapFrom(
-                            src => src.OrderDetails
-                                    .Where(od => od.ServiceId != null)
-                                    .Select(od => new OrderForServiceCreateDto
-                                    {
-                                        ServiceId = od.ServiceId.Value
-                                    }
-                            )
-                        ));
+                {
+                    opt.Condition(src => src.Payment != null);
+                    opt.MapFrom(src => src.Payment.Status);
+                })
+                .ForMember(dest => dest.OrderForProducts, opt => opt.MapFrom(src =>
+                    src.OrderDetails
+                        .Where(od => od.ProductId != null)
+                        .Select(od => new ProductsForOrderDetailsResponse
+                        {
+                            ProductId = od.ProductId.Value,
+                            Quantity = od.Quantity,
+                            ProductName = od.Product.ProductName,
+                            Price = od.Price,
+                            CurrPrice = od.Product.Price,
+                            TotalPrice = od.Price * (decimal)od.Quantity,
+                            CurrTotalPrice = od.Product.Price * (decimal)od.Quantity
+                        })
+                ))
+                .ForMember(dest => dest.OrderForServices, opt => opt.MapFrom(src =>
+                    src.OrderDetails
+                        .Where(od => od.ServiceId != null)
+                        .Select(od => new ServicesForOrderDetailsResponse
+                        {
+                            ServiceId = od.ServiceId.Value,
+                            ServiceName = od.Service.ServiceName,
+                            Price = od.Price,
+                            CurrPrice = od.Service.Price,
+                            TotalPrice = od.Price * (decimal)od.Quantity,
+                            CurrTotalPrice = od.Service.Price * (decimal)od.Quantity
+                        })
+                ));
+
 
             CreateMap<Order, OrderOfBookingDto>()
                 .ForMember(dest => dest.PaymentStatus, opt =>
