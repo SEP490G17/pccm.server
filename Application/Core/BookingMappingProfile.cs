@@ -85,6 +85,7 @@ namespace Application.Core
                                            .ForMember(dest => dest.PaymentUrl, opt => opt.MapFrom(src => src.Payment.PaymentUrl))
                            .ForMember(dest => dest.CourtId, opt => opt.MapFrom(src => src.Court.Id))
                            .ForMember(dest => dest.CourtClusterId, opt => opt.MapFrom(src => src.Court.CourtClusterId))
+                           .ForMember(dest => dest.CourtClusterName, opt => opt.MapFrom(src => src.Court.CourtCluster.CourtClusterName))
                            .ForMember(dest => dest.Address, opt =>
                                     opt.MapFrom(src => $"{src.Court.CourtCluster.Address}, {src.Court.CourtCluster.WardName}, {src.Court.CourtCluster.DistrictName}, {src.Court.CourtCluster.ProvinceName}"));
 
