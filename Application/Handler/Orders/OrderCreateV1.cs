@@ -15,8 +15,8 @@ namespace Application.Handler.Orders
         public class Command : IRequest<Result<OrderOfBookingDto>>
         {
             public int BookingId { get; set; }
-            public List<OrderForProductCreateDto> OrderForProducts { get; set; }
-            public List<OrderForServiceCreateDto> OrderForServices { get; set; }
+            public List<ProductsForOrderCreateDto> OrderForProducts { get; set; }
+            public List<ServicesForOrderCreateDto> OrderForServices { get; set; }
 
         }
 
@@ -41,7 +41,7 @@ namespace Application.Handler.Orders
                 }
                 var order = new Order();
                 decimal sum = 0;
-                var booking = _context.Bookings.Include(b => b.Orders).ThenInclude(c => c.Payment).FirstOrDefault(b => b.Id == request.BookingId);
+                var booking = await _context.Bookings.Include(b => b.Orders).ThenInclude(c => c.Payment).FirstOrDefaultAsync(b => b.Id == request.BookingId, cancellationToken);
                 if (booking == null) return Result<OrderOfBookingDto>.Failure("Booking không tồn tại");
                 if (booking.Orders.Any(b => b.Payment.Status == PaymentStatus.Pending))
                 {
@@ -52,7 +52,7 @@ namespace Application.Handler.Orders
                 {
                     var orderDetails = new OrderDetail();
 
-                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productItem.ProductId && p.DeletedAt == null);
+                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productItem.ProductId && p.DeletedAt == null, cancellationToken);
                     if (product != null)
                     {
                         if (product.Quantity < (decimal)productItem.Quantity)
@@ -63,7 +63,6 @@ namespace Application.Handler.Orders
                         orderDetails.ProductId = product.Id;
                         orderDetails.Price = product.Price;
                         orderDetails.Quantity = productItem.Quantity;
-                        order.OrderDetails.Add(orderDetails);
                         sum += product.Price * (decimal)productItem.Quantity;
                         product.Quantity -= (decimal)productItem.Quantity;
                         products.Add(product);
@@ -79,7 +78,7 @@ namespace Application.Handler.Orders
                 foreach (var serviceItem in request.OrderForServices)
                 {
                     var orderDetails = new OrderDetail();
-                    var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceItem.ServiceId || s.DeletedAt == null, cancellationToken);
+                    var service = await _context.Services.FirstOrDefaultAsync(s => s.Id == serviceItem.ServiceId && s.DeletedAt == null, cancellationToken);
                     if (service != null)
                     {
                         var quantity =  Math.Round((double)booking.Duration / 60, 2);
@@ -87,7 +86,6 @@ namespace Application.Handler.Orders
                         orderDetails.ServiceId = service.Id;
                         orderDetails.Price = service.Price;
                         orderDetails.Quantity =  quantity;
-                        order.OrderDetails.Add(orderDetails);
                         sum += service.Price * (decimal)quantity;
                     }
                     else

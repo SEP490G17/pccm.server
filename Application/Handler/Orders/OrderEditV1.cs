@@ -17,8 +17,8 @@ namespace Application.Handler.Orders
         {
             public int Id { get; set; }
             public int BookingId { get; set; }
-            public List<OrderForProductCreateDto> OrderForProducts { get; set; }
-            public List<OrderForServiceCreateDto> OrderForServices { get; set; }
+            public List<ProductsForOrderCreateDto> OrderForProducts { get; set; }
+            public List<ServicesForOrderCreateDto> OrderForServices { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -100,13 +100,12 @@ namespace Application.Handler.Orders
                         newOrderDetails.ProductId = product.Id;
                         newOrderDetails.Price = product.Price;
                         newOrderDetails.Quantity = productItem.Quantity;
-                        order.OrderDetails.Add(newOrderDetails);
                         sum += product.Price * (decimal)productItem.Quantity;
                         product.Quantity -= (decimal)productItem.Quantity;
                         products.Add(product);
+                        order.OrderDetails.Add(newOrderDetails);
                     }
 
-                    order.OrderDetails.Add(newOrderDetails);
                 }
 
                 foreach (var serviceItem in request.OrderForServices)
@@ -124,10 +123,10 @@ namespace Application.Handler.Orders
                         newOrderDetails.ServiceId = service.Id;
                         newOrderDetails.Price = service.Price;
                         newOrderDetails.Quantity = (double)booking.Duration / 60;
-                        order.OrderDetails.Add(newOrderDetails);
                         sum += service.Price * booking.Duration / 60;
+                        order.OrderDetails.Add(newOrderDetails);
+
                     }
-                    order.OrderDetails.Add(newOrderDetails);
                 }
 
                 order.Payment.Amount = sum;
