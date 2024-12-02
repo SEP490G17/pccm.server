@@ -44,10 +44,11 @@ namespace Application.Handler.Services
                 serviceExist.UpdatedAt = DateTime.Now;
                 serviceExist.UpdatedBy = "Anonymous";
                 string description = "đã thay đổi ";
-                var cultureInfo = new CultureInfo("vi-VN")
-                {
-                    NumberFormat = { CurrencySymbol = "₫", CurrencyDecimalDigits = 0 }
-                };
+                var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+                cultureInfo.NumberFormat.CurrencySymbol = "₫";
+                cultureInfo.NumberFormat.CurrencyDecimalDigits = 0;
+                cultureInfo.NumberFormat.NumberGroupSeparator = ".";
+                cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
                 if (serviceExist.ServiceName != request.Service.ServiceName)
                 {
                     description += $"tên dịch vụ {serviceExist.ServiceName} thành {request.Service.ServiceName} ";

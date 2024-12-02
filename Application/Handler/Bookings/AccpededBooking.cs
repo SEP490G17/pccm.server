@@ -138,6 +138,7 @@ namespace Application.Handler.Bookings
                 }
 
                 booking.Status = BookingStatus.Confirmed;
+                booking.AcceptedAt = DateTime.Now;
                 var payment = new Payment()
                 {
                     Amount = booking.TotalPrice,

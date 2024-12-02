@@ -47,10 +47,11 @@ namespace Application.Handler.Products
 
                 var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == product.CategoryId);
                 var courtCluster = await _context.CourtClusters.FirstOrDefaultAsync(x => x.Id == product.CourtClusterId);
-                var cultureInfo = new CultureInfo("vi-VN")
-                {
-                    NumberFormat = { CurrencySymbol = "₫", CurrencyDecimalDigits = 0 }
-                };
+                var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+                cultureInfo.NumberFormat.CurrencySymbol = "₫";
+                cultureInfo.NumberFormat.CurrencyDecimalDigits = 0;
+                cultureInfo.NumberFormat.NumberGroupSeparator = ".";
+                cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
                 product.Category = category;
                 product.CourtCluster = courtCluster;
 
