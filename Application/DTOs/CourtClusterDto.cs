@@ -34,7 +34,7 @@ namespace Application.DTOs
             public string Ward { get; set; }  // Phường
             public string WardName { get; set; }
             public int NumbOfCourts { get; set; }
-            public int Rate { get; set; }
+            public double? Rate { get; set; }
             public string Price { get; set; }
             public string Description { get; set; }
             public TimeOnly? OpenTime { get; set; }

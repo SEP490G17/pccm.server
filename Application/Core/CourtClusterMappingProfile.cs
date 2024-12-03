@@ -43,6 +43,7 @@ namespace Application.Core
             #region CourtCluster for user page
             CreateMap<CourtCluster, CourtClusterDto.CourtClusterListPageUserSite>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.CourtClusterName))
+                .ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.Reviews.Average(r => r.Rating)))
                 .ForMember(dest => dest.NumbOfCourts, opt => opt.MapFrom(src => src.Courts.Count(
                     c => c.DeleteAt == null && c.Status == CourtStatus.Available
                 )))
