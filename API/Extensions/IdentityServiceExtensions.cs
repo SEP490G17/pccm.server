@@ -23,7 +23,10 @@ namespace API.Extensions
                 opt.AddPolicy("Policy", policy =>
                     {
                         policy.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
-                        .WithOrigins("http://localhost:3000", "http://localhost:3001", "https://admin.argonaut.asia", "https://argonaut.asia");
+                        .WithOrigins("http://localhost:3000", "http://localhost:3001", 
+                        "https://admin.argonaut.asia", "https://argonaut.asia",
+                        "https://trongnp-registry.site","https://admin.trongnp-registry.site",
+                        "https://pickleball.name.vn","https://admin.pickleball.name.vn");
                     }
                 );
             });
