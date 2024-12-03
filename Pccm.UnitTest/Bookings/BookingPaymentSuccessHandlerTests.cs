@@ -8,16 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Pccm.UnitTest.Bookings
 {
     [TestFixture]
-    public class BookingDetailsV1HandlerTests
+    public class BookingPaymentSuccessHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public BookingDetailsV1HandlerTests()
+        public BookingPaymentSuccessHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
-            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
@@ -25,12 +24,12 @@ namespace Pccm.UnitTest.Bookings
 
 
         [TestCase(13, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldBookingDetails_WhenValidData(
+        public async Task<bool> Handle_ShouldBookingPaymentSuccess_WhenValidData(
             int id)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                var result = await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -41,28 +40,12 @@ namespace Pccm.UnitTest.Bookings
         }
 
         [TestCase(111, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenNotExistBooking(
+        public async Task<bool> Handle_ShouldBookingPaymentFail_WhenNotExistBooking(
               int id)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
-         [TestCase(15, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenUserNotAllowed(
-              int id)
-        {
-            try
-            {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                var result = await Mediator.Send(new BookingPaymentSuccess.Command() { Id = id }, default);
 
                 return result.IsSuccess;
             }

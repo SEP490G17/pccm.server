@@ -62,8 +62,8 @@ namespace Pccm.UnitTest.Bookings
             _mediator = host.Services.GetRequiredService<IMediator>();
         }
 
-        [TestCase(20, 1, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldBookingWithCombo_WhenValidData(
+        [TestCase(20, 1, "John Doe", "123456789", "2025-11-02", "10:00", "12:00", ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldBookingWithComboTests(
             int courtId,
             int comboId,
             string fullName,
@@ -74,16 +74,7 @@ namespace Pccm.UnitTest.Bookings
         {
             try
             {
-                var bookingWithComboDto = new BookingWithComboDto
-                {
-                    CourtId = courtId,
-                    ComboId = comboId,
-                    FullName = fullName,
-                    PhoneNumber = phoneNumber,
-                    FromDate = DateTime.Parse(fromDate),
-                    FromTime = TimeOnly.Parse(fromTime),
-                    ToTime = TimeOnly.Parse(toTime)
-                };
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
 
                 var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
 
@@ -96,8 +87,9 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-         [TestCase(2000, 1, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingWithComboFail_WhenCourtIDNotExist(
+         
+         [TestCase(20, 2000, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingWithComboTestsFail_WhenComboIDNotExist(
             int courtId,
             int comboId,
             string fullName,
@@ -108,16 +100,7 @@ namespace Pccm.UnitTest.Bookings
         {
             try
             {
-                var bookingWithComboDto = new BookingWithComboDto
-                {
-                    CourtId = courtId,
-                    ComboId = comboId,
-                    FullName = fullName,
-                    PhoneNumber = phoneNumber,
-                    FromDate = DateTime.Parse(fromDate),
-                    FromTime = TimeOnly.Parse(fromTime),
-                    ToTime = TimeOnly.Parse(toTime)
-                };
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
 
                 var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
 
@@ -130,8 +113,8 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-         [TestCase(2000, 1, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingWithComboFail_WhenComboIDNotExist(
+        [TestCase(2000, 1, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingWithComboTestsFail_WhenCourtIDNotExist(
             int courtId,
             int comboId,
             string fullName,
@@ -142,16 +125,7 @@ namespace Pccm.UnitTest.Bookings
         {
             try
             {
-                var bookingWithComboDto = new BookingWithComboDto
-                {
-                    CourtId = courtId,
-                    ComboId = comboId,
-                    FullName = fullName,
-                    PhoneNumber = phoneNumber,
-                    FromDate = DateTime.Parse(fromDate),
-                    FromTime = TimeOnly.Parse(fromTime),
-                    ToTime = TimeOnly.Parse(toTime)
-                };
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
 
                 var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
 
@@ -162,6 +136,102 @@ namespace Pccm.UnitTest.Bookings
                 TestContext.WriteLine($"Exception occurred: {ex.Message}");
                 return false;
             }
+        }
+
+         [TestCase(2000, 1, "John Doe", "123456789", "2024-09-01", "10:00", "12:00", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingWithComboTestsFail_WhenBookingDateBeforeCurrentDate(
+            int courtId,
+            int comboId,
+            string fullName,
+            string phoneNumber,
+            string fromDate,
+            string fromTime,
+            string toTime)
+        {
+            try
+            {
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
+
+                var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                TestContext.WriteLine($"Exception occurred: {ex.Message}");
+                return false;
+            }
+        }
+
+        [TestCase(2000, 1, "John Doe", "123456789", "2024-11-11", "10:00", "12:00", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingWithComboTestsFail_WhenDuplicateBooking(
+            int courtId,
+            int comboId,
+            string fullName,
+            string phoneNumber,
+            string fromDate,
+            string fromTime,
+            string toTime)
+        {
+            try
+            {
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
+
+                var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                TestContext.WriteLine($"Exception occurred: {ex.Message}");
+                return false;
+            }
+        }
+
+         [TestCase(20, 1, "John Doe", "123456789", "2025-11-01", "10:00", "12:00", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingWithComboTestsFail_WhenDuplicateBookingCombo(
+            int courtId,
+            int comboId,
+            string fullName,
+            string phoneNumber,
+            string fromDate,
+            string fromTime,
+            string toTime)
+        {
+            try
+            {
+                var bookingWithComboDto = CreateBookingDto(courtId, comboId, fullName, phoneNumber, fromDate, fromTime, toTime);
+
+                var result = await _mediator.Send(new BookingWithCombo.Command { Booking = bookingWithComboDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                TestContext.WriteLine($"Exception occurred: {ex.Message}");
+                return false;
+            }
+        }
+
+        private static BookingWithComboDto CreateBookingDto(
+            int courtId,
+            int comboId,
+            string fullName,
+            string phoneNumber,
+            string fromDate,
+            string fromTime,
+            string toTime)
+        {
+            return new BookingWithComboDto
+            {
+                CourtId = courtId,
+                ComboId = comboId,
+                FullName = fullName,
+                PhoneNumber = phoneNumber,
+                FromDate = DateTime.Parse(fromDate),
+                FromTime = TimeOnly.Parse(fromTime),
+                ToTime = TimeOnly.Parse(toTime)
+            };
         }
 
         private Mock<UserManager<AppUser>> CreateMockUserManager()
@@ -188,8 +258,10 @@ namespace Pccm.UnitTest.Bookings
                     {
                         return new AppUser
                         {
-                            Id = "b6341ccf-1a22-426c-83bd-21f3f63cd83f",
+                            Id = "d6341ccf-1a22-426c-83bd-21f3f63cd83f",
                             UserName = "adminstrator",
+                            FirstName = "Alexandros",
+                            LastName = "Papadopoulos",
                             Email = "adminstrator@test.com"
                         };
                     }

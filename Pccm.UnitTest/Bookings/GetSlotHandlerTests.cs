@@ -8,29 +8,29 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Pccm.UnitTest.Bookings
 {
     [TestFixture]
-    public class BookingDetailsV1HandlerTests
+    public class GetSlotHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public BookingDetailsV1HandlerTests()
+        public GetSlotHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
-            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
 
-        [TestCase(13, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldBookingDetails_WhenValidData(
-            int id)
+        [TestCase("2024-11-29",4, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldAvailableSlot_WhenValidData(
+            string Date,
+            int CourtClusterId)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                var result = await Mediator.Send(new GetSlot.Query() { Date = Date, CourtClusterId =  CourtClusterId}, default);
 
                 return result.IsSuccess;
             }
@@ -40,13 +40,14 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-        [TestCase(111, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenNotExistBooking(
-              int id)
+       [TestCase("2024-1129",4, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldAvailableSlotFail_WhenInvalidDate(
+               string Date,
+            int CourtClusterId)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                var result = await Mediator.Send(new GetSlot.Query() { Date = Date, CourtClusterId =  CourtClusterId}, default);
 
                 return result.IsSuccess;
             }
@@ -56,13 +57,14 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-         [TestCase(15, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenUserNotAllowed(
-              int id)
+         [TestCase("2024-11-29",421, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldAvailableSlotFail_WhenCourtNotExist(
+               string Date,
+            int CourtClusterId)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                var result = await Mediator.Send(new GetSlot.Query() { Date = Date, CourtClusterId =  CourtClusterId}, default);
 
                 return result.IsSuccess;
             }
@@ -71,6 +73,8 @@ namespace Pccm.UnitTest.Bookings
                 return false;
             }
         }
+
+
 
     }
 }

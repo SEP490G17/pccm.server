@@ -8,29 +8,29 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Pccm.UnitTest.Bookings
 {
     [TestFixture]
-    public class BookingDetailsV1HandlerTests
+    public class DenyBookingConflictHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public BookingDetailsV1HandlerTests()
+        public DenyBookingConflictHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
-            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
 
-        [TestCase(13, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldBookingDetails_WhenValidData(
-            int id)
+        [TestCase(new[] { 14 }, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDeclineBooking_WhenValidData(
+            int[] ids)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                 var idList = ids.ToList(); 
+                var result = await Mediator.Send(new DenyBookingConflict.Command() { Id = idList }, default);
 
                 return result.IsSuccess;
             }
@@ -40,13 +40,14 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-        [TestCase(111, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenNotExistBooking(
-              int id)
+      [TestCase(new[] { 133 }, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeclineBookingFail_WhenIDNotExist(
+            int[] ids)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                 var idList = ids.ToList(); 
+                var result = await Mediator.Send(new DenyBookingConflict.Command() { Id = idList }, default);
 
                 return result.IsSuccess;
             }
@@ -56,13 +57,14 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
-         [TestCase(15, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenUserNotAllowed(
-              int id)
+         [TestCase(new[] { 14 }, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeclineBookingFail_WhenBookingIsSuccess(
+            int[] ids)
         {
             try
             {
-                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+                 var idList = ids.ToList(); 
+                var result = await Mediator.Send(new DenyBookingConflict.Command() { Id = idList }, default);
 
                 return result.IsSuccess;
             }
@@ -72,5 +74,6 @@ namespace Pccm.UnitTest.Bookings
             }
         }
 
+       
     }
 }
