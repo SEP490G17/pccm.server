@@ -1,10 +1,6 @@
 # Bước 1: Build ứng dụng
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 
-RUN apk add --no-cache tzdata chromium \
-    && ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime \
-    && echo "Asia/Bangkok" > /etc/timezone
-
 # Copy toàn bộ mã nguồn vào container
 COPY . /source
 WORKDIR /source/API
@@ -26,7 +22,10 @@ WORKDIR /app
 RUN apk add --no-cache chromium \
     && apk add --no-cache libx11 libxcomposite libxdamage libxtst
 
-
+RUN apk add --no-cache tzdata chromium \
+    && ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime \
+    && echo "Asia/Bangkok" > /etc/timezone
+    
 # Cấu hình đường dẫn đến Chromium và các tham số Puppeteer
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ENV PUPPETEER_ARGS="--no-sandbox --disable-setuid-sandbox --headless"
