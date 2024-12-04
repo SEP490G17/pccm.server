@@ -48,10 +48,25 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV1>.Failure("Username không tồn tại");
                 }
-                var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
+
+
+                var court = await _context.Courts.Include(c => c.CourtCluster).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
+
                 if (court == null)
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại");
+                }
+               
+                var courtCluster = court.CourtCluster;
+
+                if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
+                {
+                    return Result<BookingDtoV1>.Failure("Giờ bắt đầu phải lớn hơn giờ kết thúc ít nhất 1 tiếng");
+                }
+                
+                if (request.Booking.ToTime > courtCluster.CloseTime || request.Booking.FromTime < courtCluster.OpenTime)
+                {
+                    return Result<BookingDtoV1>.Failure($"Thời gian đặt sân không hợp lệ, phải đặt trong thời gian mở/đóng sân");
                 }
                 //3. Lấy combo để có endtime chuẩn
                 var combo = await _context.CourtCombos.FirstOrDefaultAsync(cc => cc.Id == request.Booking.ComboId, cancellationToken);
@@ -101,7 +116,7 @@ namespace Application.Handler.Bookings
                             (startDateWithTime.TimeOfDay < x.EndTime.AddHours(7).TimeOfDay && endDateWithTime.TimeOfDay > x.EndTime.AddHours(7).TimeOfDay)
 
                         )
-                       ),cancellationToken
+                       ), cancellationToken
                     );
                 if (hasConflictWithSingleDayBookings)
                 {

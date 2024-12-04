@@ -49,11 +49,24 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV1>.Failure("Username không tồn tại");
                 }
-                var court = await _context.Courts.Include(c => c.CourtPrices).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
+                var court = await _context.Courts.Include(c => c.CourtPrices).Include(c => c.CourtCluster).FirstOrDefaultAsync(x => x.Id == request.Booking.CourtId, cancellationToken);
+
                 if (court == null)
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại");
                 }
+
+                var courtCluster = court.CourtCluster;
+                if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
+                {
+                    return Result<BookingDtoV1>.Failure("Giờ bắt đầu phải lớn hơn giờ kết thúc ít nhất 1 tiếng");
+                }
+                
+                if (request.Booking.ToTime > courtCluster.CloseTime || request.Booking.FromTime < courtCluster.CloseTime)
+                {
+                    return Result<BookingDtoV1>.Failure($"Thời gian đặt sân không hợp lệ, phải đặt trong thời gian mở/đóng sân");
+                }
+
 
                 TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Bangkok");
 

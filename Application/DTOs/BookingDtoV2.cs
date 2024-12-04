@@ -14,6 +14,7 @@ namespace Application.DTOs
         public string PlayTime { get; set; } // Thời gian bắt đầu đặt sân
         public DateTime StartDay { get; set; }
         public DateTime EndDay { get; set; }
+        public DateTime UntilDay { get; set; }
         public PaymentStatus? PaymentStatus { get; set; }
         public string RecurrenceRule { get; set; }
         public string PaymentUrl { get; set; } = null;
@@ -23,7 +24,6 @@ namespace Application.DTOs
     }
 
     public class BookingDtoV2ForDetails:BookingDtoV2{
-        public int CourtClusterId { get; set; }
         public string Address { get; set; }
     }
 }
