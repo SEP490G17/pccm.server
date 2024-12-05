@@ -130,8 +130,8 @@ namespace API.Controllers
             return BadRequest(result.Errors);
         }
 
-        [AllowAnonymous]
         [HttpPost("createStaff")]
+        [Authorize(Roles = "Admin, Owner")]
         public async Task<ActionResult<StaffDto>> CreateStaff(StaffInputDto staffInput)
         {
             if (await _userManager.Users.AnyAsync(x => x.UserName == staffInput.userName))

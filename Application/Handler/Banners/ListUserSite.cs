@@ -27,7 +27,9 @@ namespace Application.Handler.Banners
 
             public async Task<Result<List<BannerDto>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var banners = await _context.Banners.Where(b => b.Status == Domain.Enum.BannerStatus.Display).ProjectTo<BannerDto>(_mapper.ConfigurationProvider).ToListAsync();
+                var banners = await _context.Banners
+                .Where(b => b.Status == Domain.Enum.BannerStatus.Display && b.DeletedAt == null)
+                .ProjectTo<BannerDto>(_mapper.ConfigurationProvider).ToListAsync();
                 return Result<List<BannerDto>>.Success(banners);
             }
         }
