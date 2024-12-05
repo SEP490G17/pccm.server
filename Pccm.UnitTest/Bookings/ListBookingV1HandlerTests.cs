@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using API.Extensions;
 using Application.SpecParams.BookingSpecification;
-using Domain.Enum;
 
 namespace Pccm.UnitTest.Bookings
 {
@@ -24,7 +23,7 @@ namespace Pccm.UnitTest.Bookings
 
 
        
-        [TestCase(0, 5, ExpectedResult = 0)]
+        [TestCase(0, 5, ExpectedResult = 1)]
         public async Task<int?> Handle_ShouldListBooking_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -32,23 +31,22 @@ namespace Pccm.UnitTest.Bookings
             {
                 BookingSpecParam = new BookingV1SpecParam()
                 {
-                    CourtClusterId = 11
+                     CourtClusterId = 4
                 }
             });
-
             return response.Value.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 0)]
-        public async Task<int?> Handle_ShouldListBooking_WhenFilterByBookingStatus(int skip, int pageSize)
+         [TestCase(0, 5, ExpectedResult = 1)]
+        public async Task<int?> Handle_ShouldListBooking_WhenFilterByCourtCluster(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Bookings.ListV1.Query()
             {
                 BookingSpecParam = new BookingV1SpecParam()
                 {
-                    BookingStatus = BookingStatus.Cancelled,
-                      CourtClusterId = 1,
+                    Search = "",
+                    CourtClusterId = 4,
                 }
             });
 

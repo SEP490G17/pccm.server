@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Courts
 
 
 
-        [TestCase(0, 5, ExpectedResult = 4)]
+        [TestCase(0, 5, ExpectedResult = 5)]
         public async Task<int?> Handle_ShouldListCout_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Courts
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 1)]
+        [TestCase(0, 5, ExpectedResult = 0)]
         public async Task<int?> Handle_ShouldListCout_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

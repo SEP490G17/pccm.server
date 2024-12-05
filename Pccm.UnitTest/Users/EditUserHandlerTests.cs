@@ -24,7 +24,7 @@ namespace Pccm.UnitTest.Users
         }
 
 
-        [TestCase("john_doe", "john.doe@example.com", "1234567890", true, "1990-01-01", "123 Main St", ExpectedResult = true)]
+        [TestCase("staff10", "john.doe@example.com", "1234567890", false, "1990-01-01", "123 Main St", ExpectedResult = true)]
         public async Task<bool> Handle_EditUser_WhenValid(
             string username,
             string email,
@@ -47,7 +47,7 @@ namespace Pccm.UnitTest.Users
 
                 var appUser = new AppUser()
                 {
-                  Id = "06b243a8-8158-4a9c-845e-63054506a1b8"
+                  Id = "bfc87648-2d18-453e-9995-568514268e31"
                 };
 
                 var result = await Mediator.Send(new EditProfile.Command() { ProfileInputDto = profileInputDto, User = appUser }, default);

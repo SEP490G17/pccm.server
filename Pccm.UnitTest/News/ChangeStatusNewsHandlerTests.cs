@@ -22,8 +22,25 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(5, 1, ExpectedResult = true)]
+        [TestCase(4, 1, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldEditNewsBlog_WhenValidId(
+            int id,
+            int status)
+        {
+            try
+            {
+                var result = await Mediator.Send(new ChangeStatus.Command() { Id = id, status =status }, default);
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        
+        [TestCase(5, 0, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldEditNewsBlog_WhenValidIdWithStatusDisplay(
             int id,
             int status)
         {

@@ -16,6 +16,7 @@ namespace Pccm.UnitTest.Users
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
@@ -27,9 +28,9 @@ namespace Pccm.UnitTest.Users
         public async Task<int?> Handle_ShouldListUser(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Courts.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Users.List.Query()
             {
-                BaseSpecWithFilterParam = new BaseSpecWithFilterParam()
+                BaseSpecParam = new BaseSpecParam()
                 {
                     Search = "",
                     Skip = 0,
