@@ -328,7 +328,7 @@ namespace API.Controllers
                     <p style='font-size: 16px; line-height: 1.6;'>Chào bạn,</p>
                     <p style='font-size: 16px; line-height: 1.6;'>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào nút dưới đây để đặt lại mật khẩu của bạn:</p>
                     <p style='text-align: center; margin: 30px 0;'>
-                        <a href='https://argonaut.asia/confirm-forgot-password?token={token}' 
+                        <a href='http://localhost:3000/confirm-forgot-password?token={token}' 
                         style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
                             Đặt lại mật khẩu
                         </a>
@@ -413,13 +413,13 @@ namespace API.Controllers
             }
         }
 
-        // API khi người dùng yêu cầu thay đổi mật khẩu (nhập mật khẩu hiện tại)
         [AllowAnonymous]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        public async Task<IActionResult> ChangePassword(ConfirmChangePasswordDto request)
         {
-            // Tìm người dùng theo email
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email.Equals(request.Email));
+            // // Validate token
+            var user = await _userManager.Users.FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
+
             if (user == null)
             {
                 return NotFound("Không tìm thấy người dùng");
@@ -431,53 +431,25 @@ namespace API.Controllers
                 return BadRequest("Mật khẩu hiện tại không chính xác.");
             }
 
-            // Tạo token để thay đổi mật khẩu
-            var token = _tokenService.CreatePasswordResetToken(user);
-
-            var emailMessage = $@"
-                <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
-                    <h2 style='text-align: center; color: #007BFF;'>Yêu cầu thay đổi mật khẩu</h2>
-                    <p>Chào bạn,</p>
-                    <p>Bạn đã yêu cầu thay đổi mật khẩu. Vui lòng nhấn vào liên kết dưới đây để thay đổi mật khẩu của bạn:</p>
-                    <p style='text-align: center;'>
-                        <a href='http://localhost:5000/api/Account/confirm-change-password?token={token}' style='display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;'>Thay đổi mật khẩu</a>
-                    </p>
-                    <p>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
-                    <p>Trân trọng,<br>Hệ thống PCCM.</p>
-                </div>
-            ";
-
-            await _emailService.SendEmailAsync(user.Email, "Change Password", emailMessage);
-
-            return Ok("Một email đã được gửi đến bạn để thay đổi mật khẩu.");
-        }
-
-        [AllowAnonymous]
-        [HttpPost("confirm-change-password")]
-        public async Task<IActionResult> ConfirmChangePassword([FromBody] ConfirmChangePasswordDto request)
-        {
-            // Validate token
-            var principal = _tokenService.ValidateToken(request.Token);
-            if (principal == null)
-            {
-                return BadRequest("Token không hợp lệ");
-            }
-
-            // Extract user email from token
-            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-            {
-                return NotFound("Không tìm thấy người dùng");
-            }
-
             var hashedPassword = _userManager.PasswordHasher.HashPassword(user, request.NewPassword);
             user.PasswordHash = hashedPassword;
             var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
             {
+
+                var emailMessage = $@"
+                    <div style='font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 5px; max-width: 600px; margin: 20px auto;'>
+                        <h2 style='text-align: center; color: #007BFF;'>Thay đổi mật khẩu</h2>
+                        <p>Chào bạn,</p>
+                        <p>Tài khoản của bạn vừa thay đổi mật khẩu mật khẩu thành công.</p>
+                        <p>Nếu bạn không thực hiện yêu cầu thay đổi mật khẩu này, bạn có thể thực hiện các biện pháp bảo mật để đảm bảo tài khoản của bạn.</p>
+                        <p>Trân trọng,<br>Hệ thống PCCM.</p>
+                    </div>
+                ";
+
+                await _emailService.SendEmailAsync(user.Email, "Change Password", emailMessage);
+
                 return Ok("Mật khẩu đã được thay đổi thành công.");
             }
             return BadRequest(result.Errors);
