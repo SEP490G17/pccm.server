@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Banners
         }
 
 
-        [TestCase(1, 0, ExpectedResult = true)]
+        [TestCase(1, 1, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldChangeStatusBanner_WhenValid(
              int id,
              int Status

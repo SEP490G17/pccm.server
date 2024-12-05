@@ -16,13 +16,6 @@ namespace API.Controllers
     public class BookingController(IUserAccessor _userAccessor, UserManager<AppUser> _userManager, NotificationService _notificationService) : BaseApiController
     {
 
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<IActionResult> GetBookings([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
-        {
-            return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
-        }
-
         /// <summary>
         ///  Hàm này dùng để lấy về lịch booking theo ngày, theo tuần => dùng cho lịch
         /// </summary>
@@ -50,39 +43,20 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new ListV2.Query() { BookingSpecParam = bookingSpecParam }, ct));
         }
 
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBooking(int id, CancellationToken ct)
-        {
-            return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
-        }
-
         [HttpGet("v1/{id}")]
 
         public async Task<IActionResult> GetBookingDetails(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, ct));
         }
-        [HttpPut("{id}/{status}")]
-        public async Task<IActionResult> UpdateStatusBooking(int id, string status)
-        {
-            return HandleResult(await Mediator.Send(new Edit.Command() { Id = id, Status = status }));
-        }
 
         [AllowAnonymous]
         [HttpGet("available-slots")]
         public async Task<IActionResult> GetAvailableSlots([FromQuery] string date, [FromQuery] int courtClusterId)
         {
-
             return HandleResult(await Mediator.Send(new GetSlot.Query() { Date = date, CourtClusterId = courtClusterId }));
         }
 
-
-        [HttpPost]
-        public async Task<IActionResult> CreateBooking([FromBody] BookingInputDto bookingInput, CancellationToken ct)
-        {
-            return HandleResult(await Mediator.Send(new Create.Command() { Booking = bookingInput }, ct));
-        }
         /// <summary>
         ///  Dùng để xác thực 1 booking đã được hoàn thành, và sẽ bị đóng lại
         /// </summary>

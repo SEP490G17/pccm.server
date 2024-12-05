@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Users
         }
 
 
-        [TestCase("Thanhhung", ExpectedResult = true)]
+        [TestCase("staff10", ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailUser_WhenExist(
             string username)
         {

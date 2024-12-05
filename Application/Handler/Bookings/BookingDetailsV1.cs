@@ -28,7 +28,6 @@ namespace Application.Handler.Bookings
                     var user = check.AppUser;
                     var currUser = await _userManager.FindByNameAsync(_userAccessor.GetUserName());
                     var adminRoles = new List<string>() { "ManagerCourtCluster", "Owner", "ManagerBooking" };
-;
                     var roles = await _userManager.GetRolesAsync(currUser);
                     var isAdmin = roles.Any(x=>adminRoles.Contains(x));
                     if(!isAdmin){

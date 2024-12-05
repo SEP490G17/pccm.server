@@ -17,13 +17,14 @@ namespace Pccm.UnitTest.Bookings
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
             builder.Services.AddApplicationService(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var host = builder.Build();
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
 
-        [TestCase(1, ExpectedResult = true)]
+        [TestCase(13, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldBookingDetails_WhenValidData(
             int id)
         {
@@ -41,6 +42,22 @@ namespace Pccm.UnitTest.Bookings
 
         [TestCase(111, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldBookingDetailsFail_WhenNotExistBooking(
+              int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new BookingDetailsV1.Query() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+         [TestCase(15, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldBookingDetailsFail_WhenUserNotAllowed(
               int id)
         {
             try

@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Bookings
         }
 
 
-        [TestCase(36, ExpectedResult = true)]
+        [TestCase(13, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldAcceptBooking_WhenValidData(
             int id)
         {

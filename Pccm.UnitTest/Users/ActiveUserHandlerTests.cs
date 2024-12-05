@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Users
         }
 
 
-        [TestCase("Thanhhung", true, ExpectedResult = true)]
+        [TestCase("staff10", true, ExpectedResult = true)]
         public async Task<bool> Handle_ActiveUser_WhenValid(
          string username,
          bool isActive)

@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Services
 
 
 
-        [TestCase(0, 5, ExpectedResult = 1)]
+        [TestCase(0, 5, ExpectedResult = 5)]
         public async Task<int?> Handle_ShouldListService_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Services
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 1)]
+        [TestCase(0, 5, ExpectedResult = 5)]
         public async Task<int?> Handle_ShouldListService_WhenSearchByName(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -57,7 +57,7 @@ namespace Pccm.UnitTest.Services
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 1)]
+         [TestCase(0, 5, ExpectedResult = 5)]
         public async Task<int?> Handle_ShouldListService_WhenFilterByCourtClusterID(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

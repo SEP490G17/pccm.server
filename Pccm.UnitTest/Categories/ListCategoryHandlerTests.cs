@@ -21,7 +21,7 @@ namespace Pccm.UnitTest.Categories
         }
 
 
-        [TestCase(ExpectedResult = 4)]
+        [TestCase(ExpectedResult = 35)]
         public async Task<int?> Handle_ShouldListCategories_WhenValid()
         {
             if (this.Mediator is null)

@@ -34,14 +34,6 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateReview(int id, ReviewInputDto updatedReview)
-        {
-            updatedReview.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { review = updatedReview }));
-        }
-
-        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReview(int id)
         {
