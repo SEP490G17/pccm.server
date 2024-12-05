@@ -1,17 +1,17 @@
 using API.Extensions;
-using Application.Handler.News;
+using Application.Handler.CourtClusters;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Pccm.UnitTest.News
+namespace Pccm.UnitTest.CourtClusters
 {
-    public class ChangeStatusNewsHandlerTests
+    public class DetailUserSiteHandlerTests
     {
-         private readonly IMediator Mediator;
+        private readonly IMediator Mediator;
 
-        public ChangeStatusNewsHandlerTests()
+        public DetailUserSiteHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -22,14 +22,14 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(4, 1, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldEditNewsBlog_WhenValidId(
-            int id,
-            int status)
+        [TestCase(5, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDetailCourtCluster_WhenExistCourtCluster(
+            int id)
         {
             try
             {
-                var result = await Mediator.Send(new ChangeStatus.Command() { Id = id, status =status }, default);
+                var result = await Mediator.Send(new DetailUserSite.Query() { Id = id }, default);
+
                 return result.IsSuccess;
             }
             catch (Exception ex)
@@ -38,15 +38,14 @@ namespace Pccm.UnitTest.News
             }
         }
 
-        
-        [TestCase(5, 0, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldEditNewsBlog_WhenValidIdWithStatusDisplay(
-            int id,
-            int status)
+        [TestCase(130, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDetailCourtClusterFail_WhenNotExistId(
+           int id)
         {
             try
             {
-                var result = await Mediator.Send(new ChangeStatus.Command() { Id = id, status =status }, default);
+                var result = await Mediator.Send(new DetailUserSite.Query() { Id = id }, default);
+
                 return result.IsSuccess;
             }
             catch (Exception ex)

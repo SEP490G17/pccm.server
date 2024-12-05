@@ -1,17 +1,17 @@
-using MediatR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using API.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Application.Handler.Orders;
+using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Pccm.UnitTest.Orders
 {
-    public class DeleteOrderHandlerTests
+    public class DetailV1OrderHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DeleteOrderHandlerTests()
+        public DetailV1OrderHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -22,30 +22,29 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(21, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteOrder_WhenValid(
+        [TestCase(8, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldDetailOrder_WhenValidId(
             int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new DetailV1.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }
             catch (Exception ex)
             {
-                // Log or inspect the exception as needed
                 return false;
             }
         }
 
         [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDeleteOrderFail_WhenIdNotExist(
-        int id)
+        public async Task<bool> Handle_ShouldDetailOrderFail_WhenIdNotExist(
+           int id)
         {
             try
             {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+                var result = await Mediator.Send(new DetailV1.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }

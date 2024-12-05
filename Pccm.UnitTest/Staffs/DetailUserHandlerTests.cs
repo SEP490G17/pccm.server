@@ -1,5 +1,6 @@
 using API.Extensions;
-using Application.Handler.Users;
+using Application.Handler.Staffs;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,13 +23,13 @@ namespace Pccm.UnitTest.Staffs
         }
 
 
-        [TestCase("staff9", ExpectedResult = true)]
+        [TestCase(5, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailStaff_WhenStaffExist(
-            string username)
+            int id)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { username = username }, default);
+                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -38,13 +39,13 @@ namespace Pccm.UnitTest.Staffs
             }
         }
 
-         [TestCase("06b243a8-8158-4a9c-845e-63054506a1b89", ExpectedResult = false)]
+         [TestCase(544, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDetailStaff_WhenNotExistStaff(
-            string username)
+            int id)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { username = username }, default);
+                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
                 return result.IsSuccess;
             }
             catch (Exception ex)

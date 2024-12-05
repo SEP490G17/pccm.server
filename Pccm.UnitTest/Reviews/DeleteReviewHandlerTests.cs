@@ -22,8 +22,23 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(6, ExpectedResult = true)]
+        [TestCase(8, ExpectedResult = true)]
         public async Task<bool> Handle_DeleteReview_WhenValidId(
+            int id)
+        {
+            try
+            {
+                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+          [TestCase(6, ExpectedResult = false)]
+        public async Task<bool> Handle_DeleteReview_WhenIDNotExist(
             int id)
         {
             try

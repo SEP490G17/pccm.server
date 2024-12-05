@@ -23,100 +23,185 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(8, 4, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = true)]
+       [TestCase(94, 10, ExpectedResult = true)]
         public async Task<bool> Handle_EditOrder_WhenValid(
-            int id,
-            int BookingId,
-            int StaffId,
-            string StartTime,
-            string EndTime,
-            decimal TotalAmount,
-            string Status)
+            int Id ,
+         int bookingId)
         {
             try
             {
-                var orderInputDto = new OrderInputDto()
+                var orderForProductsList = new List<ProductsForOrderCreateDto>
                 {
-                    Id = id,
-                    BookingId = BookingId,
-                    StaffId = StaffId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    TotalAmount = TotalAmount,
-                    Status = Status
+                    new ProductsForOrderCreateDto
+                    {
+                        ProductId = 8,
+                        Quantity = 1
+                    }
                 };
 
-                var result = await Mediator.Send(new Edit.Command() { order = orderInputDto }, default);
+                // Giả sử không có dịch vụ, khởi tạo danh sách rỗng cho orderForServices
+                var orderForServices = new List<ServicesForOrderCreateDto>();
 
+                // Gửi command để tạo order
+                var result = await Mediator.Send(new OrderEditV1.Command()
+                {
+                    Id = Id,
+                    BookingId = bookingId,
+                    OrderForProducts = orderForProductsList,
+                    OrderForServices = orderForServices
+                }, default);
+
+                // Kiểm tra kết quả trả về
                 return result.IsSuccess;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        [TestCase(7, 114, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = false)]
-        public async Task<bool> Handle_EditOrderFail_WhenBookingIdNotExist(
-           int id,
-           int BookingId,
-           int StaffId,
-           string StartTime,
-           string EndTime,
-           decimal TotalAmount,
-           string Status)
+        [TestCase(944, 10, ExpectedResult = false)]
+        public async Task<bool> Handle_EditOrder_WhenOrderNotExist(
+            int Id ,
+         int bookingId)
         {
             try
             {
-                var orderInputDto = new OrderInputDto()
+                var orderForProductsList = new List<ProductsForOrderCreateDto>
                 {
-                    Id = id,
-                    BookingId = BookingId,
-                    StaffId = StaffId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    TotalAmount = TotalAmount,
-                    Status = Status
+                    new ProductsForOrderCreateDto
+                    {
+                        ProductId = 8,
+                        Quantity = 1
+                    }
                 };
 
-                var result = await Mediator.Send(new Edit.Command() { order = orderInputDto }, default);
+                // Giả sử không có dịch vụ, khởi tạo danh sách rỗng cho orderForServices
+                var orderForServices = new List<ServicesForOrderCreateDto>();
 
+                // Gửi command để tạo order
+                var result = await Mediator.Send(new OrderEditV1.Command()
+                {
+                    Id = Id,
+                    BookingId = bookingId,
+                    OrderForProducts = orderForProductsList,
+                    OrderForServices = orderForServices
+                }, default);
+
+                // Kiểm tra kết quả trả về
                 return result.IsSuccess;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        [TestCase(7, 4, 111, "2024-11-11T10:00:00", "2024-11-11T12:00:00", 1000.00, "Pending", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldEditOrderFail_WhenStaffIdNotExist(
-          int id,
-          int BookingId,
-          int StaffId,
-          string StartTime,
-          string EndTime,
-          decimal TotalAmount,
-          string Status)
+       [TestCase(94, 10, ExpectedResult = false)]
+        public async Task<bool> Handle_EditOrderFail_WhenListProductIsEmpt(
+            int Id ,
+         int bookingId)
         {
             try
             {
-                var orderInputDto = new OrderInputDto()
+                var orderForProductsList = new List<ProductsForOrderCreateDto>
                 {
-                    Id = id,
-                    BookingId = BookingId,
-                    StaffId = StaffId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    TotalAmount = TotalAmount,
-                    Status = Status
+                    new ProductsForOrderCreateDto
+                    {
+                    }
                 };
 
-                var result = await Mediator.Send(new Edit.Command() { order = orderInputDto }, default);
+                // Giả sử không có dịch vụ, khởi tạo danh sách rỗng cho orderForServices
+                var orderForServices = new List<ServicesForOrderCreateDto>();
 
+                // Gửi command để tạo order
+                var result = await Mediator.Send(new OrderEditV1.Command()
+                {
+                    Id = Id,
+                    BookingId = bookingId,
+                    OrderForProducts = orderForProductsList,
+                    OrderForServices = orderForServices
+                }, default);
+
+                // Kiểm tra kết quả trả về
                 return result.IsSuccess;
             }
-            catch (Exception ex)
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        [TestCase(94, 10, ExpectedResult = false)]
+        public async Task<bool> Handle_EditOrderFail_WhenProductNotExist(
+            int Id ,
+         int bookingId)
+        {
+            try
+            {
+                var orderForProductsList = new List<ProductsForOrderCreateDto>
+                {
+                    new ProductsForOrderCreateDto
+                    {
+                        ProductId = 811,
+                        Quantity = 1
+                    }
+                };
+
+                // Giả sử không có dịch vụ, khởi tạo danh sách rỗng cho orderForServices
+                var orderForServices = new List<ServicesForOrderCreateDto>();
+
+                // Gửi command để tạo order
+                var result = await Mediator.Send(new OrderEditV1.Command()
+                {
+                    Id = Id,
+                    BookingId = bookingId,
+                    OrderForProducts = orderForProductsList,
+                    OrderForServices = orderForServices
+                }, default);
+
+                // Kiểm tra kết quả trả về
+                return result.IsSuccess;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+
+         [TestCase(14, 10, ExpectedResult = false)]
+        public async Task<bool> Handle_EditOrderFail_WhenInValidProductQuantity(
+            int Id ,
+         int bookingId)
+        {
+            try
+            {
+                var orderForProductsList = new List<ProductsForOrderCreateDto>
+                {
+                    new ProductsForOrderCreateDto
+                    {
+                        ProductId = 8,
+                        Quantity = 1
+                    }
+                };
+
+                // Giả sử không có dịch vụ, khởi tạo danh sách rỗng cho orderForServices
+                var orderForServices = new List<ServicesForOrderCreateDto>();
+
+                // Gửi command để tạo order
+                var result = await Mediator.Send(new OrderEditV1.Command()
+                {
+                    Id = Id,
+                    BookingId = bookingId,
+                    OrderForProducts = orderForProductsList,
+                    OrderForServices = orderForServices
+                }, default);
+
+                // Kiểm tra kết quả trả về
+                return result.IsSuccess;
+            }
+            catch (Exception)
             {
                 return false;
             }

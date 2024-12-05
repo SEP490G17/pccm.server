@@ -77,5 +77,32 @@ namespace Pccm.UnitTest.Courts
                 return false;
             }
         }
+
+         [TestCase(144, null, 1, CourtStatus.Available, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditCourtFail_WhenNameIsNull(
+            int id,
+                string? CourtName,
+                int? CourtClusterId,
+                CourtStatus Status)
+        {
+            try
+            {
+                var courtInputDto = new Court
+                {
+                    Id = id,
+                    CourtName = CourtName, 
+                    CourtClusterId = CourtClusterId, 
+                    Status = Status
+                };
+
+                var result = await Mediator.Send(new Edit.Command() { court = courtInputDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

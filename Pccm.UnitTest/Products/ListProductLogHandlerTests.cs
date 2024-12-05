@@ -7,11 +7,11 @@ using API.Extensions;
 
 namespace Pccm.UnitTest.Products
 {
-    public class ListProductHandlerTests
+    public class ListProductLogHandlerTests
     {
         public readonly IMediator Mediator;
 
-        public ListProductHandlerTests()
+        public ListProductLogHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -24,12 +24,12 @@ namespace Pccm.UnitTest.Products
 
        
         [TestCase(0, 5, ExpectedResult = 5)]
-        public async Task<int?> Handle_ShouldListProduct_WhenValid(int skip, int pageSize)
+        public async Task<int?> Handle_ShouldListProductLog_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Products.List.Query()
+            var response = await this.Mediator.Send(new Application.Handler.Products.ListProductLog.Query()
             {
-                SpecParam = new ProductSpecParams()
+                SpecParam = new ProductLogSpecParams()
                 {
                     Search = "",
                     Skip = 0,
@@ -40,23 +40,7 @@ namespace Pccm.UnitTest.Products
             return response.Value.Data.Count();
         }
 
-         [TestCase(0, 5, ExpectedResult = 4)]
-        public async Task<int?> Handle_ShouldListProduct_WhenSearch(int skip, int pageSize)
-        {
-            if (this.Mediator is null) return null;
-            var response = await this.Mediator.Send(new Application.Handler.Products.List.Query()
-            {
-                SpecParam = new ProductSpecParams()
-                {
-                    Search = "Sandwich",
-                    Skip = 0,
-                    PageSize = 5
-                }
-            });
-
-            return response.Value.Data.Count();
-        }
         
-      
+       
     }
 }

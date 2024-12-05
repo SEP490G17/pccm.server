@@ -4,13 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using API.Extensions;
 
-namespace Pccm.UnitTest.Categories
+namespace Pccm.UnitTest.Statistics
 {
-    public class ListCategoryHandlerTests
+    public class GetYearsHandlerTests
     {
         public readonly IMediator Mediator;
 
-        public ListCategoryHandlerTests()
+        public GetYearsHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -21,15 +21,15 @@ namespace Pccm.UnitTest.Categories
         }
 
 
-        [TestCase(ExpectedResult = 35)]
-        public async Task<int?> Handle_ShouldListCategories_WhenValid()
+        [TestCase(ExpectedResult = 2)]
+        public async Task<int?> Handle_ShouldListReview_WhenValid()
         {
             if (this.Mediator is null)
             {
-                return null;
+                return null; 
             }
 
-            var response = await this.Mediator.Send(new Application.Handler.Categories.List.Query());
+            var response = await this.Mediator.Send(new Application.Handler.Statistics.GetYears.Query());
 
             return response.Value.Count();
         }

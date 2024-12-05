@@ -1,17 +1,18 @@
-using API.Extensions;
-using Application.Handler.Orders;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using API.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Application.Handler.Courts;
 
-namespace Pccm.UnitTest.Orders
+
+namespace Pccm.UnitTest.Courts
 {
-    public class DetailOrderHandlerTests
+    public class ToggleCourtHandlerTests
     {
-        private readonly IMediator Mediator;
+          private readonly IMediator Mediator;
 
-        public DetailOrderHandlerTests()
+        public ToggleCourtHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -22,13 +23,14 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(8, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDetailOrder_WhenValidId(
-            int id)
+        [TestCase(10,1, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldUpdateCourt(
+            int id,
+             int Status)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new ToggleCourt.Command() { Id = id, Status =Status }, default);
 
                 return result.IsSuccess;
             }
@@ -38,13 +40,14 @@ namespace Pccm.UnitTest.Orders
             }
         }
 
-        [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailOrderFail_WhenIdNotExist(
-           int id)
+         [TestCase(457,1, ExpectedResult = false)]
+        public async Task<bool> Handle_UpdateCourtFail_WhenNotExistCourt(
+            int id,
+            int Status)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new ToggleCourt.Command() { Id = id, Status = Status }, default);
 
                 return result.IsSuccess;
             }
