@@ -248,6 +248,16 @@ namespace API.Controllers
         public async Task<ActionResult<UserResponseDto>> UpdateProfileUser([FromBody] ProfileUpdateDto request)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(p => p.Email.Equals(User.FindFirstValue(ClaimTypes.Email)));
+            if (await _userManager.Users.AnyAsync(x => x.Email == request.Email && x.Id != user.Id))
+            {
+                ModelState.AddModelError("Email", "Email đã tồn tại");
+                return ValidationProblem();
+            }
+            if (await _userManager.Users.AnyAsync(x => x.PhoneNumber == request.PhoneNumber && x.Id != user.Id))
+            {
+                ModelState.AddModelError("PhoneNumber", "Số điện thoại đã tồn tại");
+                return ValidationProblem();
+            }
             if (DateTime.TryParse(request.BirthDate, out DateTime birthDate))
             {
                 user.BirthDate = birthDate;

@@ -27,19 +27,15 @@ namespace Application.Handler.Statistics
 
             public async Task<Result<List<BookingDtoStatistic>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                List<BookingDtoStatistic> recent = new List<BookingDtoStatistic>();
-                var data = await _context.Bookings
+                List<BookingDtoStatistic> recent = await _context.Bookings
                 .Include(b => b.AppUser)
                 .Include(b => b.Court)
                 .ThenInclude(b => b.CourtCluster)
+                .OrderByDescending(b => b.CreatedAt)
                 .Take(8)
+                .Select(b => _mapper.Map<BookingDtoStatistic>(b))
                 .ToListAsync();
 
-                foreach (var item in data)
-                {
-                    var booking = _mapper.Map<BookingDtoStatistic>(item);
-                    recent.Add(booking);
-                }
                 return Result<List<BookingDtoStatistic>>.Success(recent);
             }
         }
