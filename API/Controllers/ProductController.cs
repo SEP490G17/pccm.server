@@ -22,6 +22,12 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new List.Query() { SpecParam = specWithFilterParam }, ct));
 
         }
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetProductsAdmin([FromQuery] ProductSpecParams specWithFilterParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListAdmin.Query() { SpecParam = specWithFilterParam }, ct));
+
+        }
 
         [AllowAnonymous]
         [HttpGet("{id}")]
@@ -35,12 +41,7 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> PostProduct([FromBody] ProductInputDto product, CancellationToken ct)
         {
-            string userName = _userAccessor.GetUserName();
-            if (string.IsNullOrEmpty(userName))
-            {
-                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
-            }
-            return HandleResult(await Mediator.Send(new Create.Command() { product = product, userName = userName }, ct));
+            return HandleResult(await Mediator.Send(new Create.Command() { product = product }, ct));
         }
 
         [HttpPut("{id}")]

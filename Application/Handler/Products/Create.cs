@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Persistence;
 using Domain.Enum;
 using System.Globalization;
+using Application.Interfaces;
+using Application.Handler.StaffPositions;
 
 namespace Application.Handler.Products
 {
@@ -17,7 +19,6 @@ namespace Application.Handler.Products
         public class Command : IRequest<Result<ProductDto>>
         {
             public ProductInputDto product { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -30,10 +31,15 @@ namespace Application.Handler.Products
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private readonly IMediator _mediator;
+            private readonly IUserAccessor _userAccessor;
+
+            public Handler(DataContext context, IMapper mapper, IMediator mediator, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _mapper = mapper;
-                this._context = context;
+                _mediator = mediator;
+                _context = context;
             }
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -43,6 +49,12 @@ namespace Application.Handler.Products
                     return Result<ProductDto>.Failure("Product data is required.");
                 }
 
+                List<int> courtClusterId = await _mediator.Send(new GetCurrentStaffCluster.Query(), cancellationToken);
+
+                if (courtClusterId != null && !courtClusterId.Contains(request.product.CourtClusterId))
+                {
+                    return Result<ProductDto>.Failure("Bạn không có quyền thực hiện quyền này");
+                }
                 var product = _mapper.Map<Product>(request.product);
 
                 var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == product.CategoryId);
@@ -66,7 +78,7 @@ namespace Application.Handler.Products
                 productLog.CategoryId = product.CategoryId;
                 productLog.CourtClusterId = product.CourtClusterId;
                 productLog.ProductId = product.Id;
-                productLog.CreatedBy = request.userName;
+                productLog.CreatedBy = _userAccessor.GetUserName();
                 productLog.Description = "đã nhập " + product.Quantity + " " + product.ProductName + " với giá nhập là " + string.Format(cultureInfo, "{0:C}", product.ImportFee);
                 productLog.LogType = LogType.Create;
 

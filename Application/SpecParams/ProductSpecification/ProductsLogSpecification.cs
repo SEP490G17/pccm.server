@@ -5,7 +5,7 @@ namespace Application.SpecParams.ProductSpecification
 {
     public class ProductsLogSpecification : BaseSpecification<ProductLog>
     {
-        public ProductsLogSpecification(ProductLogSpecParams specParam) : base(
+        public ProductsLogSpecification(ProductLogSpecParams specParam, List<int> courtClusterId = null) : base(
             x =>
                 (
                     string.IsNullOrEmpty(specParam.Search) ||
@@ -28,6 +28,7 @@ namespace Application.SpecParams.ProductSpecification
                     x.CreatedAt >= DateTime.ParseExact(specParam.fromDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
                     && x.CreatedAt <= DateTime.ParseExact(specParam.toDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
                 )
+                && (courtClusterId == null || courtClusterId.Contains(x.CourtClusterId.GetValueOrDefault(0)))
         )
         {
             ApplyPaging(specParam.Skip, specParam.PageSize);

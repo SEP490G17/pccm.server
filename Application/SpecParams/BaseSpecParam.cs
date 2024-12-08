@@ -21,7 +21,7 @@ namespace Application.SpecParams
         public string Search // getter setter
         {
             get => _search;
-            set => _search = value.ToLower();
+            set => _search = value.ToLower().Trim();
         }
 
     }

@@ -18,9 +18,14 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetService([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
+        public async Task<IActionResult> GetServices([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecParam = baseSpecParam }, ct));
+        }
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetServicesAdmin([FromQuery] BaseSpecWithFilterParam baseSpecParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new ListAdmin.Query() { BaseSpecParam = baseSpecParam }, ct));
         }
 
         [HttpGet("log")]

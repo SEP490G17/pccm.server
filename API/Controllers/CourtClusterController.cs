@@ -10,14 +10,12 @@ namespace API.Controllers
 {
     public class CourtClusterController : BaseApiController
     {
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetCourtClusters([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new List.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
-        [AllowAnonymous]
         [HttpGet("list-all")]
         public async Task<IActionResult> GetAllCourtClusters(CancellationToken ct)
         {

@@ -7,7 +7,7 @@ namespace Application.SpecParams.ServiceSpecification
     public class ServicesLogSpecification : BaseSpecification<ServiceLog>
     {
 
-        public ServicesLogSpecification(ServiceLogSpecParams baseSpecParam) : base(
+        public ServicesLogSpecification(ServiceLogSpecParams baseSpecParam, List<int> courtClusterId = null) : base(
             x => (string.IsNullOrEmpty(baseSpecParam.Search) ||
             (
                 x.ServiceName.ToLower().Contains(baseSpecParam.Search)
@@ -28,7 +28,9 @@ namespace Application.SpecParams.ServiceSpecification
                     x.CreatedAt >= DateTime.ParseExact(baseSpecParam.fromDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
                     && x.CreatedAt <= DateTime.ParseExact(baseSpecParam.toDate, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture)
                 )
+            && (courtClusterId == null || courtClusterId.Contains(x.CourtCluster.Id))
             )
+
 
 
 

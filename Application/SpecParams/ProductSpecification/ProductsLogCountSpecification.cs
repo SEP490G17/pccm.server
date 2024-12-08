@@ -4,7 +4,7 @@ namespace Application.SpecParams.ProductSpecification
 {
     public class ProductsLogCountSpecification : BaseSpecification<ProductLog>
     {
-        public ProductsLogCountSpecification(ProductLogSpecParams specParam) : base(
+        public ProductsLogCountSpecification(ProductLogSpecParams specParam, List<int> courtClusterId = null) : base(
             x =>
                 (string.IsNullOrEmpty(specParam.Search) ||
                 (
@@ -19,6 +19,8 @@ namespace Application.SpecParams.ProductSpecification
                     specParam.LogType == null ||
                     x.LogType.Equals(specParam.LogType)
                 )
+                && (courtClusterId == null || courtClusterId.Contains(x.CourtClusterId.GetValueOrDefault(0)))
+
         )
         {
         }

@@ -4,7 +4,7 @@ namespace Application.SpecParams.ProductSpecification
 {
     public class ProductsCountSpecification : BaseSpecification<Product>
     {
-        public ProductsCountSpecification(ProductSpecParams specParam) : base(
+        public ProductsCountSpecification(ProductSpecParams specParam, List<int> courtClusterId = null) : base(
             x =>
                 (string.IsNullOrEmpty(specParam.Search) ||
                 (
@@ -19,7 +19,9 @@ namespace Application.SpecParams.ProductSpecification
                     specParam.Category == null ||
                     x.CategoryId.Equals(specParam.Category)
                 )
-                && x.DeletedAt == null // ??m b?o ch? tính các s?n ph?m ch?a b? xóa
+                && x.DeletedAt == null // ??m b?o ch? tï¿½nh cï¿½c s?n ph?m ch?a b? xï¿½a
+                && (courtClusterId == null || courtClusterId.Contains(x.CourtClusterId.GetValueOrDefault(0)))
+
         )
         {
         }
