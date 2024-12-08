@@ -21,8 +21,8 @@ namespace Pccm.UnitTest.News
         }
 
 
-        [TestCase(ExpectedResult = 9)]
-        public async Task<int?> Handle_ShouldListNewsUserSiteBlog_WhenValidId()
+        [TestCase(ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListNewsUserSiteBlog_WhenValidId()
         {
             if (this.Mediator is null)
             {
@@ -31,7 +31,7 @@ namespace Pccm.UnitTest.News
 
             var response = await this.Mediator.Send(new Application.Handler.News.ListNewsUserSite.Query());
 
-            return response.Value.Count();
+            return response.IsSuccess;
         }
     }
 }

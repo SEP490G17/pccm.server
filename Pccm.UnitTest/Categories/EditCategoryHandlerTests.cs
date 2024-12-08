@@ -69,5 +69,31 @@ namespace Pccm.UnitTest.Categories
                 return false;
             }
         }
+
+         [TestCase(12, null, ExpectedResult = false)]
+         [TestCase(1, "", ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditCategoryFail_WhenNotExistCategoryID(
+          int id,
+        string? CategoryName)
+        {
+            try
+            {
+                var category = new Category
+                {
+                    Id = id,
+                    CategoryName = CategoryName
+                };
+
+                var result = await Mediator.Send(new Edit.Command() { Category = category }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        
     }
 }

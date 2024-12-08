@@ -25,18 +25,32 @@ namespace Pccm.UnitTest.Courts
         }
 
 
-        [TestCase("Premium Service 2", 1, CourtStatus.Available, ExpectedResult = true)]
+        [TestCase("Sân 44", 4, CourtStatus.Available, 200000, "08:00", "18:00", ExpectedResult = true)]
         public async Task<bool> Handle_CreateCourt_WhenValid(
-                string CourtName,
-                int CourtClusterId,
-                CourtStatus Status)
+               string courtName,
+                int courtClusterId,
+                CourtStatus status,
+                decimal courtPrice,
+                string fromTime,
+                string toTime)
         {
             try
             {
+                var courtPrices = new List<CourtPricesDto>
+                {
+                    new CourtPricesDto 
+                    { 
+                        Price = courtPrice, 
+                        FromTime = TimeOnly.Parse(fromTime), 
+                        ToTime = TimeOnly.Parse(toTime) 
+                    }
+                };
+
                 var courtInputDto = new CourtCreateDto
                 {
-                    CourtName = CourtName,
-                    CourtClusterId = CourtClusterId,
+                    CourtName = courtName,
+                    CourtClusterId = courtClusterId,
+                    CourtPrice = courtPrices
                 };
 
                 var result = await Mediator.Send(new Create.Command() { Court = courtInputDto }, default);

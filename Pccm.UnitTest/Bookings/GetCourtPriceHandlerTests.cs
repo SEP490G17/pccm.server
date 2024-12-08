@@ -1,17 +1,18 @@
-using API.Extensions;
-using Application.Handler.Orders;
+using Application.Handler.Bookings;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using API.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Pccm.UnitTest.Orders
+namespace Pccm.UnitTest.Bookings
 {
-    public class DetailOrderHandlerTests
+    [TestFixture]
+    public class GetCourtPriceHandlerTests
     {
         private readonly IMediator Mediator;
 
-        public DetailOrderHandlerTests()
+        public GetCourtPriceHandlerTests()
         {
             var builder = Host.CreateEmptyApplicationBuilder(new());
             builder.Configuration.AddJsonFile("appsettings.json");
@@ -22,13 +23,13 @@ namespace Pccm.UnitTest.Orders
         }
 
 
-        [TestCase(7, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDetailOrder_WhenValidId(
+        [TestCase(3, ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldCourtPrice_WhenValidData(
             int id)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new GetCourtPrice.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -38,13 +39,13 @@ namespace Pccm.UnitTest.Orders
             }
         }
 
-        [TestCase(117, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDetailOrderFail_WhenIdNotExist(
-           int id)
+      [TestCase(1111, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldDeclineBookingFail_WhenNotExistCourtID(
+            int id)
         {
             try
             {
-                var result = await Mediator.Send(new Detail.Query() { Id = id }, default);
+                var result = await Mediator.Send(new GetCourtPrice.Query() { Id = id }, default);
 
                 return result.IsSuccess;
             }
@@ -53,5 +54,7 @@ namespace Pccm.UnitTest.Orders
                 return false;
             }
         }
+
+       
     }
 }

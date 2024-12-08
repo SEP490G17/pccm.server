@@ -72,20 +72,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
 
-        [AllowAnonymous]
-        [HttpGet("search/{value}")]
-        public async Task<IActionResult> SearchCourt(string value, CancellationToken ct)
-        {
-            return HandleResult(await Mediator.Send(new Search.Query() { value = value }, ct));
-        }
-
-        [AllowAnonymous]
-        [HttpGet("filter/{valueFilter}")]
-        public async Task<IActionResult> FilterCourt(string valueFilter, CancellationToken ct)
-        {
-            return HandleResult(await Mediator.Send(new Filter.Query() { value = valueFilter }, ct));
-        }
-
         [HttpPut("toggle/{id}")]
         public async Task<IActionResult> ToggleCourt([FromRoute] int id, [FromQuery] int status, CancellationToken ct)
         {

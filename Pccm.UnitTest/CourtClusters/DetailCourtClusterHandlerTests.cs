@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
 
-        [TestCase(4, ExpectedResult = true)]
+        [TestCase(5, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDetailCourtCluster_WhenExistCourtCluster(
             int id)
         {

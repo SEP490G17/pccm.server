@@ -33,7 +33,7 @@ namespace Application.Handler.Bookings
                 .ThenBy(p => p.FromTime)
                 .ToListAsync();
 
-                if (prices == null) return Result<List<PriceCourtDto>>.Failure("Booking not found");
+                if (prices.Count == 0) return Result<List<PriceCourtDto>>.Failure("Booking not found");
                 var data = _mapper.Map<List<PriceCourtDto>>(prices);
                 return Result<List<PriceCourtDto>>.Success(data);
             }

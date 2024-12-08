@@ -1,4 +1,7 @@
 using API.Extensions;
+using Application.DTOs;
+using Application.Handler.CourtClusters;
+using Domain.Enum;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,47 +23,152 @@ namespace Pccm.UnitTest.CourtClusters
             Mediator = host.Services.GetRequiredService<IMediator>();
         }
 
-        //[TestCase("Cụm sân A", "HCM", "TP Hồ Chí Minh", "Q1", "Quận 1", "Phường 1", "Phuong 1", "Ha Nam", "f4a3747c-afa1-4ae2-831e-c4867dc2d3b0", ExpectedResult = true)]
-        //public async Task<bool> Handle_ShouldEditCourtCluster_WhenValid(
-        //     string title,
-        //     string province,
-        //     string provinceName,
-        //     string district,
-        //     string districtName,
-        //     string ward,
-        //     string wardName,
-        //     string address,
-        //     string ownerId)
-        //{
-        //    try
-        //    {
-        //        var courtClusterInputDto = new CourtClustersInputDto
-        //        {
-        //            Title = title,
-        //            Province = province,
-        //            ProvinceName = provinceName,
-        //            District = district,
-        //            DistrictName = districtName,
-        //            Ward = ward,
-        //            WardName = wardName,
-        //            Address = address,
-        //            OwnerId = ownerId,
-        //            OpenTime = new TimeOnly(6, 0),
-        //            CloseTime = new TimeOnly(22, 0),
-        //            CreatedAt = DateTime.Now,
-        //            Description = "Mô tả chi tiết về cụm sân",
-        //            Images = new string[] { "image1.jpg", "image2.jpg" }
-        //        };
+        [TestCase(
+                 4,
+                 "Sân pickleball",
+                 "83",
+                 "Tỉnh Bến Tre",
+                 "834",
+                 "Huyện Giồng Trôm",
+                 "29047",
+                 "Xã Hưng Lễ",
+                 "Ngõ 182",
+                 "b6341ccf-1a22-426c-83bd-21f3f63cd83f",
+                 ExpectedResult = true)]
+        public async Task<bool> Handle_ShouldEditCourtCluster_WhenValid(
+                 int id,
+                 string title,
+                 string province,
+                 string provinceName,
+                 string district,
+                 string districtName,
+                 string ward,
+                 string wardName,
+                 string address,
+                 string ownerId)
+        {
+            try
+            {
+                // Arrange: Tạo đối tượng CourtClustersInputDto
+                var courtClusterInputDto = new CourtClustersInputDto
+                {
+                    Title = title,
+                    Province = province,
+                    ProvinceName = provinceName,
+                    District = district,
+                    DistrictName = districtName,
+                    Ward = ward,
+                    WardName = wardName,
+                    Address = address,
+                    OwnerId = ownerId,
+                    OpenTime = TimeOnly.Parse("05:00:00"),
+                    CloseTime = TimeOnly.Parse("22:00:00"),
+                    CreatedAt = DateTime.Now,
+                    Description = "<p>sân</p>",
+                    Images = new string[]
+                    {
+                "https://res.cloudinary.com/dasy5hwz4/image/upload/v1733157906/jwno28yfi8l6cpgzsz8y.jpg",
+                "https://res.cloudinary.com/dasy5hwz4/image/upload/v1733157912/sxno17t5bwuwxl7dmqvv.jpg"
+                    },
+                    CourtDetails = new List<CourtDetailsDto>
+            {
+                new CourtDetailsDto
+                {
+                    CourtName = "Sân 44",
+                    Status = CourtStatus.Available
+                }
+            }
+                };
 
-        //        var result = await Mediator.Send(new Edit.Command { court = courtClusterInputDto }, default);
+                // Act: Gửi command Edit
+                var result = await Mediator.Send(new Edit.Command
+                {
+                    courtCluster = courtClusterInputDto,
+                    id = id
+                }, default);
 
-        //        return result.IsSuccess;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return false;
-        //    }
-        //}
+                // Assert: Kiểm tra kết quả
+                return result.IsSuccess;
+            }
+            catch (Exception)
+            {
+                // Trả về false nếu xảy ra lỗi
+                return false;
+            }
+        }
 
+        [TestCase(
+        411,
+        "Sân pickleball",
+        "83",
+        "Tỉnh Bến Tre",
+        "834",
+        "Huyện Giồng Trôm",
+        "29047",
+        "Xã Hưng Lễ",
+        "Ngõ 182",
+        "b6341ccf-1a22-426c-83bd-21f3f63cd83f",
+        ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditCourtCluster_WhenCourtClusterNotFound(
+        int id,
+        string title,
+        string province,
+        string provinceName,
+        string district,
+        string districtName,
+        string ward,
+        string wardName,
+        string address,
+        string ownerId)
+        {
+            try
+            {
+                // Arrange: Tạo đối tượng CourtClustersInputDto
+                var courtClusterInputDto = new CourtClustersInputDto
+                {
+                    Title = title,
+                    Province = province,
+                    ProvinceName = provinceName,
+                    District = district,
+                    DistrictName = districtName,
+                    Ward = ward,
+                    WardName = wardName,
+                    Address = address,
+                    OwnerId = ownerId,
+                    OpenTime = TimeOnly.Parse("05:00:00"),
+                    CloseTime = TimeOnly.Parse("22:00:00"),
+                    CreatedAt = DateTime.Now,
+                    Description = "<p>sân</p>",
+                    Images = new string[]
+                    {
+                "https://res.cloudinary.com/dasy5hwz4/image/upload/v1733157906/jwno28yfi8l6cpgzsz8y.jpg",
+                "https://res.cloudinary.com/dasy5hwz4/image/upload/v1733157912/sxno17t5bwuwxl7dmqvv.jpg"
+                    },
+                    CourtDetails = new List<CourtDetailsDto>
+            {
+                new CourtDetailsDto
+                {
+                    CourtName = "Sân 44",
+                    Status = CourtStatus.Available
+                }
+            }
+                };
+
+                // Act: Gửi command Edit
+                var result = await Mediator.Send(new Edit.Command
+                {
+                    courtCluster = courtClusterInputDto,
+                    id = id
+                }, default);
+
+                // Assert: Kiểm tra kết quả
+                return result.IsSuccess;
+            }
+            catch (Exception)
+            {
+                // Trả về false nếu xảy ra lỗi
+                return false;
+            }
+        }
     }
 }

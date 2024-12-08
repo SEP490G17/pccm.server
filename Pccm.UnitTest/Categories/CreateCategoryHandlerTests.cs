@@ -47,6 +47,7 @@ namespace Pccm.UnitTest.Categories
 
 
         [TestCase(null, ExpectedResult = false)]
+         [TestCase("", ExpectedResult = false)]
         public async Task<bool> Handle_ShouldCreateCategoryFail_WhenNameIsNull(
           string? CategoryName)
         {
@@ -66,5 +67,8 @@ namespace Pccm.UnitTest.Categories
                 return false;
             }
         }
+
+   
+       
     }
 }

@@ -80,5 +80,65 @@ namespace Pccm.UnitTest.Services
                 return false;
             }
         }
+
+         [TestCase(140, new int[] { 2 }, "Premium Service", null, 150.00, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditServiceFail_WhenDescriptionIsNull(
+            int Id,
+            int[] CourtClusterId,
+            string ServiceName,
+            string? Description,
+            decimal Price)
+        {
+            try
+            {
+                var serviceInputDto = new ServiceInputDto()
+                {
+                    Id = Id,
+                    CourtClusterId = CourtClusterId,
+                    ServiceName = ServiceName,
+                    Description = Description,
+                    Price = Price
+                };
+
+                var result = await Mediator.Send(new Edit.Command() { Service = serviceInputDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+          [TestCase(140, new int[] { 2 }, null, "High-quality tennis court rental", 150.00, ExpectedResult = false)]
+        public async Task<bool> Handle_ShouldEditServiceFail_WhenNameIsNull(
+            int Id,
+            int[] CourtClusterId,
+            string? ServiceName,
+            string Description,
+            decimal Price)
+        {
+            try
+            {
+                var serviceInputDto = new ServiceInputDto()
+                {
+                    Id = Id,
+                    CourtClusterId = CourtClusterId,
+                    ServiceName = ServiceName,
+                    Description = Description,
+                    Price = Price
+                };
+
+                var result = await Mediator.Send(new Edit.Command() { Service = serviceInputDto }, default);
+
+                return result.IsSuccess;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+         
     }
 }

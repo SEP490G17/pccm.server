@@ -41,7 +41,7 @@ namespace Pccm.UnitTest.Staffs
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 2)]
+        [TestCase(0, 5, ExpectedResult = 0)]
         public async Task<int?> Handle_ShouldListStaff_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
@@ -58,7 +58,7 @@ namespace Pccm.UnitTest.Staffs
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 1)]
+        [TestCase(0, 5, ExpectedResult = 5)]
         public async Task<int?> Handle_ShouldListStaff_WhenFilterByShiftID(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

@@ -22,7 +22,7 @@ namespace Pccm.UnitTest.Categories
         }
 
 
-        [TestCase(3, ExpectedResult = true)]
+        [TestCase(37, ExpectedResult = true)]
         public async Task<bool> Handle_ShouldDeleteCategory_WhenValidId(
             int id)
         {

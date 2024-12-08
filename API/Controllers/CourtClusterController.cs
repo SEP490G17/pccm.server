@@ -1,9 +1,12 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
 using Application.Handler.CourtClusters.UserSite;
+using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.CourtClusterSpecification;
+using Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -74,6 +77,7 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteCourtCluster(int id)
         {
+        
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
 
@@ -88,7 +92,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> TopCourtCluster([FromQuery] BaseSpecWithFilterParam baseSpecWithFilterParam, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new TopCourtUserSite.Query(){ BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
+            return HandleResult(await Mediator.Send(new TopCourtUserSite.Query() { BaseSpecWithFilterParam = baseSpecWithFilterParam }, ct));
         }
 
     }
