@@ -37,14 +37,15 @@ namespace Application.Handler.Bookings
                 .FirstOrDefaultAsync(x => x.Id == request.Id);
                 
                 var today = DateTime.UtcNow.AddHours(7);
-                if(booking.StartTime.AddHours(7) < today){
-                    return Result<BookingDtoV2>.Failure("Lịch đặt đã quá hạn");
-                }
-
                 if (booking == null)
                 {
                     return Result<BookingDtoV2>.Failure("Booking không được tìm thấy");
                 }
+
+                if(booking.StartTime.AddHours(7) < today){
+                    return Result<BookingDtoV2>.Failure("Lịch đặt đã quá hạn");
+                }
+
                 if (!string.IsNullOrEmpty(booking.RecurrenceRule))
                 {
                     var hasConflictWithSingleDayBookings = await _context.Bookings

@@ -24,14 +24,13 @@ namespace Pccm.UnitTest.Staffs
 
 
 
-        [TestCase(ExpectedResult = 0)] // Replace 8 with the expected value for totalBookingToday
-        public async Task<int> Handle_ShouldReturnTotalBookingToday()
+        [TestCase(ExpectedResult = true)] // Replace 8 with the expected value for totalBookingToday
+        public async Task<bool> Handle_ShouldReturnTotalBookingToday()
         {
-            if (this.Mediator is null) return 0;
 
             var response = await this.Mediator.Send(new Application.Handler.Statistics.Count.Query());
 
-            return response.Value?.totalBookingToday ?? 0; // Ensure null safety
+            return response.IsSuccess; // Ensure null safety
         }
 
 

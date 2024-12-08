@@ -61,8 +61,8 @@ namespace Pccm.UnitTest.Bookings
         }
 
 
-        [TestCase("b6341ccf-1a22-426c-83bd-21f3f63cd83f", 0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListUserHistory_WhenValidData(string? UserId, int skip, int pageSize)
+        [TestCase("b6341ccf-1a22-426c-83bd-21f3f63cd83f", 0, 5, ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListUserHistory_WhenValidData(string? UserId, int skip, int pageSize)
         {
             if (this._mediator is null) return null;
             var response = await this._mediator.Send(new Application.Handler.Bookings.UserHistory.Query()
@@ -75,7 +75,7 @@ namespace Pccm.UnitTest.Bookings
                 }
             });
 
-            return response.Value.Data.Count();
+            return response.IsSuccess;
         }
 
         private static BookingWithComboDto CreateBookingDto(

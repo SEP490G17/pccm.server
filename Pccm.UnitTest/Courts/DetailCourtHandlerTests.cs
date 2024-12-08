@@ -38,7 +38,7 @@ namespace Pccm.UnitTest.Courts
             }
         }
 
-         [TestCase(130, ExpectedResult = false)]
+         [TestCase(int.MaxValue, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDetailCourtFail_WhenNotExistId(
             int id)
         {

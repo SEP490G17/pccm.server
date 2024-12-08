@@ -38,7 +38,7 @@ namespace Pccm.UnitTest.News
             }
         }
 
-        [TestCase(115, ExpectedResult = false)]
+        [TestCase(int.MaxValue, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDetailNewsBlogFail_WhenNotExistNews(
            int id)
         {

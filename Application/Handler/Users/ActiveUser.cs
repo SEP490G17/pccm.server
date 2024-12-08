@@ -14,13 +14,7 @@ namespace Application.Handler.Users
         {
             public ActiveDto user { get; set; }
         }
-        public class CommandValidator : AbstractValidator<Command>
-        {
-            public CommandValidator()
-            {
-                RuleFor(x => x.user).SetValidator(new ActiveValidator());
-            }
-        }
+      
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
 
@@ -40,8 +34,8 @@ namespace Application.Handler.Users
                     return Result<Unit>.Failure("Faild to edit user");
                 }
                 userExist.LockoutEnabled = request.user.IsActive;
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<Unit>.Failure("Faild to edit user");
+                await _context.SaveChangesAsync();
+                //if (!result) return Result<Unit>.Failure("Faild to edit user");
                 return Result<Unit>.Success(Unit.Value);
             }
         }

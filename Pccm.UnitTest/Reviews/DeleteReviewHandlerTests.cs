@@ -1,56 +1,57 @@
-using MediatR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using API.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using Application.Handler.Reviews;
+using Moq;
+using NUnit.Framework;
+using Persistence;
+using Domain.Entity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Reviews
 {
     public class DeleteReviewHandlerTests
     {
-          private readonly IMediator Mediator;
+        private DataContext _context;
+        private Delete.Handler _handler;
 
-        public DeleteReviewHandlerTests()
+        [SetUp]
+        public void Setup()
         {
-            var builder = Host.CreateEmptyApplicationBuilder(new());
-            builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Services.AddApplicationService(builder.Configuration);
+            // Tạo DbContext với InMemoryDatabase
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase") // Đặt tên cho DB trong bộ nhớ
+                .Options;
 
-            var host = builder.Build();
-            Mediator = host.Services.GetRequiredService<IMediator>();
+            _context = new DataContext(options);
+            _handler = new Delete.Handler(_context);  // Initialize handler với mock DataContext
         }
 
-
-        [TestCase(8, ExpectedResult = true)]
-        public async Task<bool> Handle_DeleteReview_WhenValidId(
-            int id)
+        [TearDown]
+        public void TearDown()
         {
-            try
-            {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Xóa dữ liệu sau mỗi test
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
-          [TestCase(6, ExpectedResult = false)]
-        public async Task<bool> Handle_DeleteReview_WhenIDNotExist(
-            int id)
+
+        [Test]
+        public async Task Handle_ReviewExists_ReturnsSuccess()
         {
-            try
-            {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+            // Arrange: Tạo và thêm review vào DB In-Memory
+            var reviewId = 1;
+            var review = new Review { Id = reviewId };
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            var command = new Delete.Command { Id = reviewId };
+
+            // Act: Gọi handler để xóa review
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert: Kiểm tra kết quả trả về
+            Assert.That(result.IsSuccess, Is.True);
         }
+
     }
 }

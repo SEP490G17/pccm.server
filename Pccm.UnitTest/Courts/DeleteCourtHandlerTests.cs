@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Courts
         }
 
 
-        [TestCase(200, ExpectedResult = false)]
+        [TestCase(int.MaxValue, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDeleteCourtFail_WhenNotExistCourt(
             int id)
         {

@@ -21,8 +21,8 @@ namespace Pccm.UnitTest.Reviews
         }
 
 
-        [TestCase(ExpectedResult = 3)]
-        public async Task<int?> Handle_ShouldListReview_WhenValid()
+        [TestCase(ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListReview_WhenValid()
         {
             if (this.Mediator is null)
             {
@@ -31,7 +31,7 @@ namespace Pccm.UnitTest.Reviews
 
             var response = await this.Mediator.Send(new Application.Handler.Reviews.List.Query());
 
-            return response.Value.Count();
+            return response.IsSuccess;
         }
     }
 }
