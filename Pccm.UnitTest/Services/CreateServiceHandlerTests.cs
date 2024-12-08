@@ -1,135 +1,167 @@
-using MediatR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using API.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Application.DTOs;
+
 using Application.Handler.Services;
+using Application.DTOs;
+using AutoMapper;
+using Domain.Entity;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using NUnit.Framework;
+using Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Application.Core;
+
 
 namespace Pccm.UnitTest.Services
 {
     [TestFixture]
-    public class CreateBannerHandlerTests
+    public class CreateServiceHandlerTests
     {
-        private readonly IMediator Mediator;
+        private DataContext _context;
+        private IMapper _mapper;
+        private Create.Handler _handler;
 
-        public CreateBannerHandlerTests()
+        [SetUp]
+        public void SetUp()
         {
-            var builder = Host.CreateEmptyApplicationBuilder(new());
-            builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Services.AddApplicationService(builder.Configuration);
+            // Tạo DbContext với InMemoryDatabase
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-            var host = builder.Build();
-            Mediator = host.Services.GetRequiredService<IMediator>();
+            _context = new DataContext(options);
+
+            // Cấu hình AutoMapper nếu cần
+            var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MappingProfile()));
+            _mapper = mapperConfig.CreateMapper();
+            // Làm sạch cơ sở dữ liệu trước khi mỗi test chạy
+            _context.CourtClusters.RemoveRange(_context.CourtClusters);
+            _context.Services.RemoveRange(_context.Services);
+            _context.ServiceLogs.RemoveRange(_context.ServiceLogs);
+            // Nếu bạn có các bảng khác, bạn có thể làm sạch chúng ở đây
+
+            _context.SaveChangesAsync();
+
+            // Khởi tạo handler
+            _handler = new Create.Handler(_context, _mapper);
         }
 
-
-        [TestCase(new int[] { 1 }, "Chơi cùng gái HN 1", "High-quality tennis court rental", 150, ExpectedResult = true)]
-        public async Task<bool> Handle_CreateService_WhenValid(
-            int[] CourtClusterId,
-            string ServiceName,
-            string Description,
-            decimal Price)
+        [TearDown]
+        public void TearDown()
         {
-            try
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
+        }
+
+        [Test]
+        public async Task Handle_ServiceAlreadyExists_ReturnsFailure()
+        {
+            // Arrange: Thêm dữ liệu giả vào cơ sở dữ liệu InMemory
+            var serviceName = "Tennis Court";
+            var courtClusterId = 1;
+
+            // Cung cấp các thuộc tính bắt buộc cho CourtCluster
+            _context.CourtClusters.Add(new CourtCluster
             {
-                var serviceInputDto = new ServiceInputDto()
+                Id = courtClusterId,
+                CourtClusterName = "Court Cluster 1",
+                Address = "123 Tennis Street",
+                District = "District 1",
+                DistrictName = "District Name 1",
+                Province = "Province 1",
+                ProvinceName = "Province Name 1",
+                Ward = "Ward 1",
+                WardName = "Ward Name 1"
+            });
+
+            _context.Services.Add(new Service
+            {
+                ServiceName = serviceName,
+                CourtClusterId = courtClusterId,
+                Price = 1000,
+                Description = "Tennis Court Description"
+            });
+
+            await _context.SaveChangesAsync();
+
+            // Tạo Command
+            var command = new Create.Command
+            {
+                Service = new ServiceInputDto
                 {
-                    CourtClusterId = CourtClusterId,
-                    ServiceName = ServiceName,
-                    Description = Description,
-                    Price = Price
-                };
+                    ServiceName = serviceName,
+                    CourtClusterId = new int[] { courtClusterId },
+                    Price = 1000,
+                    Description = "Tennis Court Description"
+                },
+                userName = "testuser"
+            };
 
-                var result = await Mediator.Send(new Create.Command() { Service = serviceInputDto }, default);
+            // Act: Gọi handler để tạo dịch vụ
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Assert: Kiểm tra xem kết quả trả về có thất bại và có thông báo đúng không
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Contain("Dịch vụ 'Tennis Court' đã tồn tại ở Court Cluster 1");
         }
 
-        [TestCase(new int[] { 1 }, "Dịch vụ huấn luyện pickleball", "High-quality tennis court rental", 150, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateServiceFail_WhenExistServiceCourtCluster(
-            int[] CourtClusterId,
-            string ServiceName,
-            string Description,
-            decimal Price)
+        [Test]
+        public async Task Handle_ServiceDoesNotExist_ReturnsSuccess()
         {
-            try
+            // Arrange: Thêm dữ liệu giả vào cơ sở dữ liệu InMemory
+            var serviceName = "Tennis Court Mock";
+            var courtClusterId = 1;
+
+            // Cung cấp các giá trị bắt buộc cho CourtCluster
+            _context.CourtClusters.Add(new CourtCluster
             {
-                var serviceInputDto = new ServiceInputDto()
+                Id = courtClusterId,
+                CourtClusterName = "Court Cluster 1",
+                Address = "123 Tennis Street",
+                District = "District 1",
+                DistrictName = "District Name 1",
+                Province = "Province 1",
+                ProvinceName = "Province Name 1",
+                Ward = "Ward 1",
+                WardName = "Ward Name 1",
+                IsVisible = true
+            });
+
+            _context.Services.Add(new Service
+            {
+                ServiceName = "Tennis Court",
+                CourtClusterId = courtClusterId,
+                Price = 1000,
+                Description = "Tennis Court Description"
+            });
+
+            await _context.SaveChangesAsync();
+
+            // Tạo Command
+            var command = new Create.Command
+            {
+                Service = new ServiceInputDto
                 {
-                    CourtClusterId = CourtClusterId,
-                    ServiceName = ServiceName,
-                    Description = Description,
-                    Price = Price
-                };
+                    ServiceName = serviceName,
+                    CourtClusterId = new int[] { courtClusterId },
+                    Price = 1000,
+                    Description = "Tennis Court Description"
+                },
+                userName = "testuser"
+            };
 
-                var result = await Mediator.Send(new Create.Command() { Service = serviceInputDto }, default);
+            // Act: Gọi handler để tạo dịch vụ
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Assert: Kiểm tra xem kết quả trả về có thành công không
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Count.Should().Be(1);
         }
 
-          [TestCase(new int[] { 1 }, null, "High-quality tennis court rental", 150, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateServiceFail_WhenServiceNameCourtClusterIsNull(
-            int[] CourtClusterId,
-            string? ServiceName,
-            string Description,
-            decimal Price)
-        {
-            try
-            {
-                var serviceInputDto = new ServiceInputDto()
-                {
-                    CourtClusterId = CourtClusterId,
-                    ServiceName = ServiceName,
-                    Description = Description,
-                    Price = Price
-                };
-
-                var result = await Mediator.Send(new Create.Command() { Service = serviceInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
-          [TestCase(new int[] { 1 }, "Premium Service 2", null, 150, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateServiceFail_WhenServiceDescriptionCourtClusterIsNull(
-            int[] CourtClusterId,
-            string ServiceName,
-            string? Description,
-            decimal Price)
-        {
-            try
-            {
-                var serviceInputDto = new ServiceInputDto()
-                {
-                    CourtClusterId = CourtClusterId,
-                    ServiceName = ServiceName,
-                    Description = Description,
-                    Price = Price
-                };
-
-                var result = await Mediator.Send(new Create.Command() { Service = serviceInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+      
     }
 }

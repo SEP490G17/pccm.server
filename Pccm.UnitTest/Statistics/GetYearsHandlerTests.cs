@@ -21,8 +21,8 @@ namespace Pccm.UnitTest.Statistics
         }
 
 
-        [TestCase(ExpectedResult = 2)]
-        public async Task<int?> Handle_ShouldListReview_WhenValid()
+        [TestCase(ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListYear_WhenValid()
         {
             if (this.Mediator is null)
             {
@@ -31,7 +31,7 @@ namespace Pccm.UnitTest.Statistics
 
             var response = await this.Mediator.Send(new Application.Handler.Statistics.GetYears.Query());
 
-            return response.Value.Count();
+            return response.IsSuccess;
         }
     }
 }

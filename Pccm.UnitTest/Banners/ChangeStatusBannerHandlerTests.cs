@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Banners
             }
         }
 
-        [TestCase(111, 1, ExpectedResult = false)]
+        [TestCase(int.MaxValue, 1, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldChangeStatusBannerFail_WhenNotExistBannerID(
              int id,
              int Status

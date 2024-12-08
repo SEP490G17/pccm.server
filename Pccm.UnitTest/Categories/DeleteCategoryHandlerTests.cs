@@ -1,58 +1,75 @@
 using Application.Handler.Categories;
-using MediatR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using API.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using Application.Core;
+using Domain.Entity;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
+using Persistence;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Categories
 {
     public class DeleteCategoryHandlerTests
     {
-        private readonly IMediator Mediator;
+       private DataContext _context;
+        private Delete.Handler _handler;
 
-        public DeleteCategoryHandlerTests()
+        [SetUp]
+        public async Task SetUp()
         {
-            var builder = Host.CreateEmptyApplicationBuilder(new());
-            builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Services.AddApplicationService(builder.Configuration);
+            // Thiết lập DbContext với InMemoryDatabase
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
 
-            var host = builder.Build();
-            Mediator = host.Services.GetRequiredService<IMediator>();
+            _context = new DataContext(options);
+
+            // Thêm dữ liệu giả vào cơ sở dữ liệu
+            _context.Categories.Add(new Category { Id = 1, CategoryName = "Category 1" });
+            _context.Categories.Add(new Category { Id = 2, CategoryName = "Category 2" });
+
+            await _context.SaveChangesAsync();
+
+            // Khởi tạo handler
+            _handler = new Delete.Handler(_context);
         }
 
-
-        [TestCase(37, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldDeleteCategory_WhenValidId(
-            int id)
+        [TearDown]
+        public void TearDown()
         {
-            try
-            {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Xóa toàn bộ cơ sở dữ liệu sau mỗi test
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
 
-
-        [TestCase(1, ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldDeleteCategoryFail_WhenCategoryIsUsed(
-            int id)
+        [Test]
+        public async Task Handle_CategoryExists_ReturnsSuccess()
         {
-            try
-            {
-                var result = await Mediator.Send(new Delete.Command() { Id = id }, default);
+            // Arrange
+            var command = new Delete.Command { Id = 1 };
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+            _context.Categories.Find(1).Should().BeNull(); // Kiểm tra xem category đã bị xóa
         }
+
+        [Test]
+        public async Task Handle_CategoryDoesNotExist_ReturnsNull()
+        {
+            // Arrange
+            var command = new Delete.Command { Id = 999 }; // ID không tồn tại
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+       
     }
 }

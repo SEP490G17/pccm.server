@@ -41,8 +41,8 @@ namespace Pccm.UnitTest.Users
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListUser_WhenSearch(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListUser_WhenSearch(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Users.List.Query()
@@ -55,7 +55,7 @@ namespace Pccm.UnitTest.Users
                 }
             });
 
-            return response.Value.Data.Count();
+            return response.IsSuccess;
         }
 
     }

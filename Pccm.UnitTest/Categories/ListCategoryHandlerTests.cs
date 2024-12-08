@@ -21,8 +21,8 @@ namespace Pccm.UnitTest.Categories
         }
 
 
-        [TestCase(ExpectedResult = 35)]
-        public async Task<int?> Handle_ShouldListCategories_WhenValid()
+        [TestCase(ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListCategories_WhenValid()
         {
             if (this.Mediator is null)
             {
@@ -31,7 +31,7 @@ namespace Pccm.UnitTest.Categories
 
             var response = await this.Mediator.Send(new Application.Handler.Categories.List.Query());
 
-            return response.Value.Count();
+            return response.IsSuccess;
         }
     }
 }

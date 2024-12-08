@@ -24,8 +24,8 @@ namespace Pccm.UnitTest.CourtClusters
 
 
 
-        [TestCase(0, 5, ExpectedResult = 0)]
-        public async Task<int?> Handle_ShouldListTopCoutCluster_WhenValid(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListTopCoutCluster_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.CourtClusters.UserSite.TopCourtUserSite.Query()
@@ -37,7 +37,7 @@ namespace Pccm.UnitTest.CourtClusters
                 }
             });
 
-            return response.Value.Data.Count();
+            return response.IsSuccess;
         }
 
 

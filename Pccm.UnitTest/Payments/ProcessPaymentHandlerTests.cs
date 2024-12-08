@@ -1,185 +1,192 @@
-using API.Extensions;
-using Application.DTOs;
-using Application.Handler.Orders;
+using Application.Core;
 using Application.Handler.Payments;
+using Application.Interfaces;
 using Domain.Entity;
 using Domain.Enum;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Moq;
+using NUnit.Framework;
+using Persistence;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using FluentAssertions;
 
 namespace Pccm.UnitTest.Payments
 {
+    [TestFixture]
     public class ProcessPaymentHandlerTests
     {
-        private readonly IMediator Mediator;
+        private DataContext _context;
+        private Mock<IVnPayService> _vnpayServiceMock;
+        private ProcessPayment.Handler _handler;
 
-        public ProcessPaymentHandlerTests()
+        [SetUp]
+        public void SetUp()
         {
-            var builder = Host.CreateEmptyApplicationBuilder(new());
-            builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Services.AddApplicationService(builder.Configuration);
+            // Create a mock of IVnPayService
+            _vnpayServiceMock = new Mock<IVnPayService>();
+            _vnpayServiceMock.Setup(v => v.GeneratePaymentUrl(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<PaymentType>()))
+                             .Returns("http://payment-url.com");
 
-            var host = builder.Build();
-            Mediator = host.Services.GetRequiredService<IMediator>();
+            // Create an in-memory database for testing
+            var options = new DbContextOptionsBuilder<DataContext>()
+                            .UseInMemoryDatabase(databaseName: "TestDb")
+                            .Options;
+            _context = new DataContext(options);
+
+            _handler = new ProcessPayment.Handler(_context, _vnpayServiceMock.Object);
         }
 
-
-    //    [TestCase(14, ExpectedResult = true)]
-    //     public async Task<bool> Handle_ShouldPayment_WhenValid(
-    //         int Id )
-    //     {
-    //         try
-    //         {
-    //             var result = await Mediator.Send(new ProcessPayment.Command()
-    //             {
-    //                 BillPayId = Id,
-    //                 Type = PaymentType.Order
-    //             }, default);
-
-    //             return result.IsSuccess;
-    //         }
-    //         catch (Exception)
-    //         {
-    //             return false;
-    //         }
-    //     }
-
-    //   [TestCase(2, ExpectedResult = false)]
-    //     public async Task<bool> Handle_ShouldPaymentFail_WhenExistOrderNotPayMent(
-    //         int Id )
-    //     {
-    //         try
-    //         {
-    //             var result = await Mediator.Send(new ProcessPayment.Command()
-    //             {
-    //                 BillPayId = Id,
-    //                 Type = PaymentType.Order
-    //             }, default);
-
-    //             // Kiểm tra kết quả trả về
-    //             return result.IsSuccess;
-    //         }
-    //         catch (Exception)
-    //         {
-    //             return false;
-    //         }
-    //     }
-
-
-        [TestCase(14, PaymentType.Order, ExpectedResult = true)] // Valid Order Payment
-        public async Task<bool> Handle_ShouldPayment_WhenValid(int billPayId, PaymentType paymentType)
+        [TearDown]
+        public void TearDown()
         {
-            try
-            {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            // Xóa dữ liệu sau mỗi test
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
 
-        [TestCase(2, PaymentType.Order, ExpectedResult = false)] // Order Not Found
-        public async Task<bool> Handle_ShouldPaymentFail_WhenOrderNotFound(int billPayId, PaymentType paymentType)
+        [Test]
+        public async Task Handle_BookingExists_ReturnsPaymentUrl()
         {
-            try
+            // Arrange
+            var bookingId = 1;
+            var booking = new Booking
             {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
+                Id = bookingId,
+                TotalPrice = 500,
+                Payment = null,
+                PhoneNumber = "0929939393"
+            };
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync();
 
-                return result.IsSuccess;
-            }
-            catch (Exception)
+            var command = new ProcessPayment.Command
             {
-                return false;
-            }
+                BillPayId = bookingId,
+                Type = PaymentType.Booking
+            };
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().Be("http://payment-url.com");
+            var updatedBooking = await _context.Bookings.FindAsync(bookingId);
+            updatedBooking.Payment.Should().NotBeNull();
+            updatedBooking.Payment.PaymentUrl.Should().Be("http://payment-url.com");
         }
 
-        [TestCase(14, PaymentType.Booking, ExpectedResult = true)] // Valid Booking Payment
-        public async Task<bool> Handle_ShouldPayment_WhenBookingValid(int billPayId, PaymentType paymentType)
+        [Test]
+        public async Task Handle_BookingNotFound_ReturnsFailure()
         {
-            try
+            // Arrange
+            var command = new ProcessPayment.Command
             {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
+                BillPayId = 999, // Invalid booking ID
+                Type = PaymentType.Booking
+            };
 
-                return result.IsSuccess;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Be("Booking not found.");
         }
 
-        [TestCase(14, PaymentType.Booking, ExpectedResult = false)] // Booking Not Found
-        public async Task<bool> Handle_ShouldPaymentFail_WhenBookingNotFound(int billPayId, PaymentType paymentType)
+        [Test]
+        public async Task Handle_MultipleOrdersPending_ReturnsFailure()
         {
-            try
-            {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
+            // Arrange
+            var booking = new Booking { Id = 1, TotalPrice = 500,  PhoneNumber = "0929939393" };
+            _context.Bookings.Add(booking);
+            var order1 = new Order { Id = 1, TotalAmount = 200, BookingId = 1, Payment = new Payment { Status = PaymentStatus.Pending } };
+            var order2 = new Order { Id = 2, TotalAmount = 300, BookingId = 1, Payment = new Payment { Status = PaymentStatus.Pending } };
+            _context.Orders.AddRange(order1, order2);
+            await _context.SaveChangesAsync();
 
-                return result.IsSuccess;
-            }
-            catch (Exception)
+            var command = new ProcessPayment.Command
             {
-                return false;
-            }
+                BillPayId = 1,
+                Type = PaymentType.Booking
+            };
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Be("Đang tồn tại 2 order chưa được thanh toán cùng 1 lúc, vui lòng thanh toán trước 1 cái");
         }
 
-        [TestCase(2, PaymentType.Booking, ExpectedResult = false)] // Multiple Pending Orders for Booking
-        public async Task<bool> Handle_ShouldFail_WhenMultipleOrdersPending(int billPayId, PaymentType paymentType)
+        [Test]
+        public async Task Handle_OrderExists_ReturnsPaymentUrl()
         {
-            try
+            // Arrange
+            var orderId = 1;
+            var order = new Order
             {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
+                Id = orderId,
+                TotalAmount = 1000,
+                Payment = null
+            };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
 
-                return result.IsSuccess;
-            }
-            catch (Exception)
+            var command = new ProcessPayment.Command
             {
-                return false;
-            }
+                BillPayId = orderId,
+                Type = PaymentType.Order
+            };
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().Be("http://payment-url.com");
+            var updatedOrder = await _context.Orders.FindAsync(orderId);
+            updatedOrder.Payment.Should().NotBeNull();
+            updatedOrder.Payment.PaymentUrl.Should().Be("http://payment-url.com");
         }
 
-        [TestCase(1000, PaymentType.Order, ExpectedResult = false)] // Invalid Payment Type
-        public async Task<bool> Handle_ShouldFail_WhenInvalidPaymentType(int billPayId, PaymentType paymentType)
+        [Test]
+        public async Task Handle_OrderNotFound_ReturnsFailure()
         {
-            try
+            // Arrange
+            var command = new ProcessPayment.Command
             {
-                var result = await Mediator.Send(new ProcessPayment.Command()
-                {
-                    BillPayId = billPayId,
-                    Type = paymentType
-                }, default);
+                BillPayId = 999, // Invalid order ID
+                Type = PaymentType.Order
+            };
 
-                return result.IsSuccess;
-            }
-            catch (Exception)
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Be("Order not found.");
+        }
+
+        [Test]
+        public async Task Handle_InvalidPaymentType_ReturnsFailure()
+        {
+            // Arrange
+            var command = new ProcessPayment.Command
             {
-                return false;
-            }
+                BillPayId = 1,
+                Type = (PaymentType)999 // Invalid payment type
+            };
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Be("Không đúng định dạng");
         }
     }
 }

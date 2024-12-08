@@ -38,7 +38,7 @@ namespace Pccm.UnitTest.CourtClusters
             }
         }
 
-        [TestCase(130, ExpectedResult = false)]
+        [TestCase(int.MaxValue, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDetailCourtClusterFail_WhenNotExistId(
            int id)
         {

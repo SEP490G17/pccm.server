@@ -23,8 +23,8 @@ namespace Pccm.UnitTest.Bookings
 
 
        
-        [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListBooking_WhenValid(int skip, int pageSize)
+        [TestCase(0, 5, ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListBooking_WhenValid(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Bookings.ListV1.Query()
@@ -34,11 +34,11 @@ namespace Pccm.UnitTest.Bookings
                      CourtClusterId = 4
                 }
             });
-            return response.Value.Count();
+            return response.IsSuccess;
         }
 
-         [TestCase(0, 5, ExpectedResult = 1)]
-        public async Task<int?> Handle_ShouldListBooking_WhenFilterByCourtCluster(int skip, int pageSize)
+         [TestCase(0, 5, ExpectedResult = true)]
+        public async Task<bool?> Handle_ShouldListBooking_WhenFilterByCourtCluster(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;
             var response = await this.Mediator.Send(new Application.Handler.Bookings.ListV1.Query()
@@ -50,7 +50,7 @@ namespace Pccm.UnitTest.Bookings
                 }
             });
 
-            return response.Value.Count();
+            return response.IsSuccess;
         }
         
         

@@ -23,7 +23,7 @@ namespace Pccm.UnitTest.Products
         }
 
 
-        [TestCase(200, ExpectedResult = false)]
+        [TestCase(int.MaxValue, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldDeleteProductFail_WhenNotExistProduct(
             int id)
         {

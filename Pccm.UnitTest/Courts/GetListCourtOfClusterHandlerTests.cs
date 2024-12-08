@@ -37,7 +37,7 @@ namespace Pccm.UnitTest.Courts
             return response.IsSuccess;
         }
 
-        [TestCase(0, 5, 111, ExpectedResult = false)]
+        [TestCase(0, 5, int.MaxValue, ExpectedResult = false)]
         public async Task<bool?> Handle_ShouldListCout_WhenNotExistCourtID(int skip, int pageSize, int courtClusterId)
         {
             if (this.Mediator is null) return null;
