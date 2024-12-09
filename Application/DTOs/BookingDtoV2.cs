@@ -14,7 +14,7 @@ namespace Application.DTOs
         public string PlayTime { get; set; } // Thời gian bắt đầu đặt sân
         public DateTime StartDay { get; set; }
         public DateTime EndDay { get; set; }
-        public DateTime UntilDay { get; set; }
+        public DateTime? UntilDay { get; set; } = null;
         public PaymentStatus? PaymentStatus { get; set; }
         public string RecurrenceRule { get; set; }
         public string PaymentUrl { get; set; } = null;

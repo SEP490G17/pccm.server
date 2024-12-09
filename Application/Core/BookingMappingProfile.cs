@@ -27,7 +27,7 @@ namespace Application.Core
                 .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
                 .ForMember(dest => dest.EndDay,
                             opt => opt.MapFrom(src => src.EndTime))
-                .ForMember(dest=>dest.UntilDay, opt=>opt.MapFrom(src => src.UntilTime)) 
+                .ForMember(dest => dest.UntilDay, opt => opt.MapFrom(src => src.UntilTime))
                 .ForMember(dest => dest.PaymentStatus, opt =>
                             {
                                 opt.Condition(src => src.Payment != null);
@@ -78,7 +78,11 @@ namespace Application.Core
                            .ForMember(dest => dest.StartDay, opt => opt.MapFrom(src => src.StartTime))
                            .ForMember(dest => dest.EndDay,
                                                 opt => opt.MapFrom(src => src.EndTime))
-                           .ForMember(dest => dest.UntilDay, opt => opt.MapFrom(src => src.UntilTime))
+                           .ForMember(dest => dest.UntilDay, opt =>
+                           {
+                               opt.Condition(src => src.UntilTime.HasValue);
+                               opt.MapFrom(src => src.UntilTime);
+                           })
                            .ForMember(dest => dest.PaymentStatus, opt =>
                                    {
                                        opt.Condition(src => src.Payment != null);
