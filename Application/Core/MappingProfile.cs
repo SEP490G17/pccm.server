@@ -11,6 +11,8 @@ namespace Application.Core
         {
             #region Product Profile
             CreateMap<ProductDto, Product>();
+            CreateMap<Order, OrderOfBookingDto>();
+
 
             CreateMap<Product, ProductDto>()
                 .ForMember(p => p.CategoryName, o => o.MapFrom(s => s.Category.CategoryName))

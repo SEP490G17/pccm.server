@@ -64,7 +64,7 @@ namespace Pccm.UnitTest.Banners
             }
         }
 
-        [TestCase(140, "Premium Service 2", "High-qualitl", 150, "https://example.com/image.jpg", "https://example.com", "2024-11-01", "2024-12-01", BannerStatus.Display, BannerType.Banner, BannerInPage.HomePage, ExpectedResult = false)]
+        [TestCase(int.MaxValue, "Premium Service 2", "High-qualitl", 150, "https://example.com/image.jpg", "https://example.com", "2024-11-01", "2024-12-01", BannerStatus.Display, BannerType.Banner, BannerInPage.HomePage, ExpectedResult = false)]
         public async Task<bool> Handle_ShouldEditBannerFail_WhenNotExistBanner(
                  int id,
                  string Title,

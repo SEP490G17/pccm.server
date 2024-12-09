@@ -98,7 +98,7 @@ namespace Pccm.UnitTest.CourtClusters
         }
 
         [TestCase(
-        411,
+        int.MaxValue,
         "Sân pickleball",
         "83",
         "Tỉnh Bến Tre",

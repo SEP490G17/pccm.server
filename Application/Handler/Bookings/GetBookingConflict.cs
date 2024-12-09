@@ -71,7 +71,7 @@ namespace Application.Handler.Bookings
                 // Chuyển đổi thời gian từ GMT+7 về UTC
                 DateTime startDateTimeUtc = startDateWithTime.ToUniversalTime();
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
-                var bookingAccept = await _context.Bookings.FirstAsync(b => b.Id == request.Booking.BookingId, cancellationToken);
+                var bookingAccept = await _context.Bookings.FirstOrDefaultAsync(b => b.Id == request.Booking.BookingId, cancellationToken);
                 if (bookingAccept == null)
                 {
                     return Result<List<BookingDtoV2>>.Failure("Booking không tồn tại");

@@ -38,13 +38,14 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
-             [HttpGet("edit/{id}")]
+        [HttpGet("edit/{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerStaff")]
 
         public async Task<IActionResult> GetStaffEdit(int id, CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new DetailEdit.Query() { Id = id }, ct));
         }
+
 
         [HttpPut("editStaff")]
         [Authorize(Roles = "Admin,Owner,ManagerStaff")]

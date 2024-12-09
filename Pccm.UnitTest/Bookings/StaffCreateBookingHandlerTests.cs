@@ -1,325 +1,336 @@
-using Application.Handler.Bookings;
-using MediatR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using API.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using NUnit.Framework;
+using Application.Core;
 using Application.DTOs;
+using Application.Interfaces;
+using AutoMapper;
+using Domain.Entity;
+using Domain.Enum;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Application.Handler.Bookings;
+using Microsoft.AspNetCore.Identity;
+using Domain;
+using FluentAssertions;
+using Moq.EntityFrameworkCore;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
 
 namespace Pccm.UnitTest.Bookings
 {
     [TestFixture]
     public class StaffCreateBookingHandlerTests
     {
-        private readonly IMediator Mediator;
+        private DbContextOptions<DataContext> _dbContextOptions;
+        private DataContext _dbContext;
+        private IMapper _mapper;
+        private Mock<IMapper> _mockMapper;
+        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        private StaffCreate.Handler _handler;
 
-        public StaffCreateBookingHandlerTests()
+        [SetUp]
+        public void SetUp()
         {
-            var builder = Host.CreateEmptyApplicationBuilder(new());
-            builder.Configuration.AddJsonFile("appsettings.json");
-            builder.Services.AddApplicationService(builder.Configuration);
+            _dbContextOptions = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique database for each test
+                .Options;
 
-            var host = builder.Build();
-            Mediator = host.Services.GetRequiredService<IMediator>();
-        }
+            // Initialize dependencies
+            _dbContext = new DataContext(_dbContextOptions);
+            _mockMapper = new Mock<IMapper>();
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
 
-
-        [TestCase("123456789", "John Doe", 20, "2025-11-11T10:00:00", "2025-11-11T12:00:00", null, null, ExpectedResult = true)]
-        public async Task<bool> Handle_ShouldCreateBooking_WhenValidData(
-            string PhoneNumber,
-            string FullName,
-            int CourtId,
-            string StartTime,
-            string EndTime,
-            string? UntilTime,
-            string? RecurrenceRule)
-        {
-            try
-            {
-                var bookingInputDto = new BookingInputDto()
+            var configuration = new MapperConfiguration(cfg =>
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    cfg.AddProfile(new MappingProfile()); // Your AutoMapper profile here
+                });
+            _mapper = configuration.CreateMapper();
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
+            var userClaims = new List<System.Security.Claims.Claim>
             {
-                return false;
-            }
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "administrator"),
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "Admin"),
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, "ManagerCourtCluster")
+            };
+            var identity = new System.Security.Claims.ClaimsIdentity(userClaims, "TestAuthType");
+            var principal = new System.Security.Claims.ClaimsPrincipal(identity);
+            var httpContext = new DefaultHttpContext { User = principal };
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            var user = new AppUser
+            {
+                Id = "d6341ccf-1a22-426c-83bd-21f3f63cd83f",
+                UserName = "adminstrator",
+                FirstName = "Alexandros",
+                LastName = "Papadopoulos",
+                Email = "adminstrator@test.com"
+            };
+            _dbContext.Users.Add(user);
+            _dbContext.SaveChanges();
+
+            var roles = new List<string> { "Admin", "ManagerCourtCluster" };
+
+            _handler = new StaffCreate.Handler(
+                _dbContext,
+                _mockMapper.Object
+            );
         }
 
-        [TestCase(null, "John Doe", 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenPhoneNumberIsNull(
-            string? PhoneNumber,
-            string FullName,
-            int CourtId,
-            string StartTime,
-            string EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
+        [TearDown]
+        public void TearDown()
         {
-            try
-            {
-                var bookingInputDto = new BookingInputDto()
-                {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
-
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            _dbContext.Database.EnsureDeleted();
+            _dbContext.Dispose();
         }
 
-        [TestCase("123456789", null, 1, "2024-11-11T10:00:00", "2024-11-11T12:00:00", null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenFullNameIsNull(
-            string PhoneNumber,
-            string? FullName,
-            int CourtId,
-            string StartTime,
-            string EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
+        [Test]
+        public async Task Handle_Should_Return_Failure_When_Court_Not_Found()
         {
-            try
+           var command = new StaffCreate.Command
             {
-                var bookingInputDto = new BookingInputDto()
+                Booking = new BookingInputDto
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    CourtId = 1,
+                    StartTime = DateTime.Parse("2025-12-05 03:45:00.000"),
+                    EndTime = DateTime.Parse("2025-12-05 07:45:00.000"),
+                    PhoneNumber = "0987654321",
+                    FullName = "John Doe"
+                }
+            };
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Error.Should().Be("Sân không tồn tại hoặc đã dừng hoạt động");
         }
 
-        [TestCase("123456789", "John Doe", 1111, "2024-11-11T10:00:00", "2024-11-11T12:00:00", null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenCourtIDNotExist(
-           string PhoneNumber,
-           string FullName,
-           int CourtId,
-           string? StartTime,
-           string EndTime,
-           string? UntilTime,
-           string RecurrenceRule)
+
+        [Test]
+        public async Task Handle_Should_Create_Booking_When_No_Conflicts()
         {
-            try
+
+            // 1️⃣ Arrange: Setup database context, user, court, and existing combo booking
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new DataContext(options);
+          
+            var config = new MapperConfiguration(cfg =>
             {
-                var bookingInputDto = new BookingInputDto()
+                // Add your mapping profile here
+                cfg.AddProfile<BookingMappingProfile>(); 
+            });
+            
+            _mapper = config.CreateMapper();
+
+            var user = new AppUser { Id = "user-id", UserName = "testuser", FirstName = "hung", LastName = "Thanh" };
+            await context.Users.AddAsync(user);
+
+            var court = new Court { Id = 1, CourtName = "Court 1" };
+            await context.Courts.AddAsync(court);
+
+            // // 2️⃣ Create an existing **confirmed recurring booking**
+             await context.SaveChangesAsync();
+
+          var command = new StaffCreate.Command
+            {
+                Booking = new BookingInputDto
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    CourtId = 1,
+                    StartTime = DateTime.UtcNow.Date.AddHours(30),
+                    EndTime = DateTime.UtcNow.Date.AddHours(41),
+                    PhoneNumber = "0987654321",
+                    FullName = "John Doe"
+                }
+            };
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
+            var userAccessorMock = new Mock<IUserAccessor>();
+            userAccessorMock.Setup(x => x.GetUserName()).Returns(user.UserName);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            var handler = new StaffCreate.Handler(context, _mapper);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            Assert.IsTrue(result.IsSuccess);
         }
 
-        [TestCase("123456789", "John Doe", 1, null, "2024-11-11T12:00:00", null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenStartTimeIsNull(
-            string PhoneNumber,
-            string FullName,
-            int CourtId,
-            string? StartTime,
-            string EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
+        [Test]
+        public async Task Handle_Should_Return_Failure_When_Booking_Conflicts_With_Recurring_Bookings()
         {
-            try
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new DataContext(options);
+            var config = new MapperConfiguration(cfg =>
             {
-                var bookingInputDto = new BookingInputDto()
+                cfg.AddProfile<BookingMappingProfile>(); 
+            });
+            
+            _mapper = config.CreateMapper();
+
+            var user = new AppUser { Id = "user-id", UserName = "testuser", FirstName = "hung", LastName = "Thanh" };
+            await context.Users.AddAsync(user);
+
+            var court = new Court { Id = 1, CourtName = "Court 1" };
+            await context.Courts.AddAsync(court);
+
+            var existingBooking = new Booking
+            {
+                Id = 1,
+                Court = court,
+                StartTime = DateTime.Parse("2025-12-05 03:45:00.000"),
+                EndTime = DateTime.Parse("2025-12-05 07:45:00.000"),
+                UntilTime = DateTime.Parse("2026-12-07 07:45:00.000"),
+                Status = BookingStatus.Confirmed,
+                PhoneNumber = "04949494994"
+            };
+            await context.Bookings.AddAsync(existingBooking);
+            await context.SaveChangesAsync();
+
+           var command = new StaffCreate.Command
+            {
+                Booking = new BookingInputDto
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    CourtId = 1,
+                    StartTime = DateTime.Parse("2026-11-06 04:45:00.000"),
+                    EndTime = DateTime.Parse("2026-11-06 06:45:00.000"),
+                    PhoneNumber = "0987654321",
+                    FullName = "John Doe"
+                }
+            };
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
+            var userAccessorMock = new Mock<IUserAccessor>();
+            userAccessorMock.Setup(x => x.GetUserName()).Returns(user.UserName);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+
+            var handler = new StaffCreate.Handler(context, _mapper);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            Assert.IsFalse(result.IsSuccess);
+            result.Error.Should().Be("Trùng với một số lịch đặt theo combo đã được confirm trước đó");
         }
 
-        [TestCase("123456789", "John Doe", 1, "2024-11-11T10:00:00", null, null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenEndTimeIsNull(
-            string PhoneNumber,
-            string FullName,
-            int CourtId,
-            string StartTime,
-            string? EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
+        [Test]
+        public async Task Handle_Should_Return_Failure_When_Booking_With_Before_CurrentDay_Bookings()
         {
-            try
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new DataContext(options);
+          
+            var config = new MapperConfiguration(cfg =>
             {
-                var bookingInputDto = new BookingInputDto()
+            
+                cfg.AddProfile<BookingMappingProfile>();
+            });
+            
+            _mapper = config.CreateMapper();
+
+            var user = new AppUser { Id = "user-id", UserName = "testuser", FirstName = "hung", LastName = "Thanh" };
+            await context.Users.AddAsync(user);
+
+            var court = new Court { Id = 1, CourtName = "Court 1" };
+            await context.Courts.AddAsync(court);
+
+            var existingBooking = new Booking
+            {
+                Id = 1,
+                Court = court,
+                StartTime = DateTime.Parse("2024-12-05 14:45:00.000"),
+                EndTime = DateTime.Parse("2024-12-05 20:45:00.000"),
+                Status = BookingStatus.Confirmed,
+                PhoneNumber = "04949494994"
+            };
+            await context.Bookings.AddAsync(existingBooking);
+            await context.SaveChangesAsync();
+
+             var command = new StaffCreate.Command
+            {
+                Booking = new BookingInputDto
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    CourtId = 1,
+                    StartTime = DateTime.Parse("2024-12-04 14:45:00.000"),
+                    EndTime = DateTime.Parse("2024-12-04 14:45:00.000"),
+                    PhoneNumber = "0987654321",
+                    FullName = "John Doe"
+                }
+            };
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
+            // 4️⃣ Create the handler and run the request
+            var userAccessorMock = new Mock<IUserAccessor>();
+            userAccessorMock.Setup(x => x.GetUserName()).Returns(user.UserName);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+
+            var handler = new StaffCreate.Handler(context, _mapper);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            Assert.IsFalse(result.IsSuccess);
+            result.Error.Should().Be("Không thể đặt lịch ngày trước ngày hiện tại");
         }
 
-        [TestCase("123456789", "John Doe", 1, "2024-09-09", null, null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenBookingDateBeforeCurrentDate(
-           string PhoneNumber,
-           string FullName,
-           int CourtId,
-           string StartTime,
-           string? EndTime,
-           string? UntilTime,
-           string RecurrenceRule)
+        [Test]
+        public async Task Handle_Should_Return_Failure_When_Booking_Conflicts_With_SingleDay_Bookings()
         {
-            try
+            var options = new DbContextOptionsBuilder<DataContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            var context = new DataContext(options);
+       
+            var config = new MapperConfiguration(cfg =>
             {
-                var bookingInputDto = new BookingInputDto()
+
+                cfg.AddProfile<BookingMappingProfile>(); 
+            });
+            
+            _mapper = config.CreateMapper();
+
+            var user = new AppUser { Id = "user-id", UserName = "testuser", FirstName = "Hung", LastName = "Thanh" };
+            await context.Users.AddAsync(user);
+
+            var court = new Court { Id = 1, CourtName = "Court 1" };
+            await context.Courts.AddAsync(court);
+
+            var existingBooking = new Booking
+            {
+                Id = 1,
+                Court = court,
+                StartTime = DateTime.Parse("2024-12-20 03:45:00.000"),
+                EndTime = DateTime.Parse("2024-12-20 07:45:00.000"),
+                Status = BookingStatus.Confirmed,
+                PhoneNumber = "04949494994",
+                UntilTime = null
+            };
+            await context.Bookings.AddAsync(existingBooking);
+            await context.SaveChangesAsync();
+
+            var command = new StaffCreate.Command
+            {
+                Booking = new BookingInputDto
                 {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
+                    CourtId = 1,
+                    StartTime = DateTime.Parse("2024-12-20 03:45:00.000"),
+                    EndTime = DateTime.Parse("2024-12-20 07:45:00.000"),
+                    PhoneNumber = "0987654321",
+                    FullName = "John Doe"
+                }
+            };
 
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
+            var userAccessorMock = new Mock<IUserAccessor>();
+            userAccessorMock.Setup(x => x.GetUserName()).Returns(user.UserName);
 
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            var handler = new StaffCreate.Handler(context, _mapper);
+            var result = await handler.Handle(command, CancellationToken.None);
+
+            Assert.IsFalse(result.IsSuccess);
+            Assert.AreEqual("Trùng với một số lịch đặt theo ngày đã được confirm trước đó", result.Error); // Adjust error message if needed
         }
-
-        [TestCase("123456789", "John Doe", 1, "2024-11-11", null, null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenDuplicateBooking(
-             string PhoneNumber,
-            string FullName,
-            int CourtId,
-            string StartTime,
-            string? EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
-        {
-             try
-            {
-                var bookingInputDto = new BookingInputDto()
-                {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
-
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
-        [TestCase("123456789", "John Doe", 1, "2024-11-29", null, null, "Weekly", ExpectedResult = false)]
-        public async Task<bool> Handle_ShouldCreateBookingFail_WhenDuplicateBookingCombo(
-             string PhoneNumber,
-            string FullName,
-            int CourtId,
-            string StartTime,
-            string? EndTime,
-            string? UntilTime,
-            string RecurrenceRule)
-        {
-             try
-            {
-                var bookingInputDto = new BookingInputDto()
-                {
-                    PhoneNumber = PhoneNumber,
-                    FullName = FullName,
-                    CourtId = CourtId,
-                    StartTime = DateTime.Parse(StartTime),
-                    EndTime = DateTime.Parse(EndTime),
-                    UntilTime = string.IsNullOrEmpty(UntilTime) ? (DateTime?)null : DateTime.Parse(UntilTime),
-                    RecurrenceRule = RecurrenceRule
-                };
-
-                var result = await Mediator.Send(new StaffCreate.Command() { Booking = bookingInputDto }, default);
-
-                return result.IsSuccess;
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
-
     }
 }

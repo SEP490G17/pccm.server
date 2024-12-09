@@ -60,7 +60,7 @@ namespace Pccm.UnitTest.Products
         }
 
 
-        [TestCase(100, 1, "", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
+        [TestCase(int.MaxValue, 1, "", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
         public async Task<bool> Handle_ShouldCreateProductFail_WhenNotExistCategory(
         int CategoryId,
         int CourtClusterId,
@@ -95,7 +95,7 @@ namespace Pccm.UnitTest.Products
             }
         }
 
-        [TestCase(1, 100, "", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
+        [TestCase(1, 999999999, "", "High-quality tennis balls", 100, 50.5, 30.0, "url-to-thumbnail", ExpectedResult = false)]
         public async Task<bool> Handle_ShouldCreateProductFail_WhenNotExistCourtClusterID(
         int CategoryId,
         int CourtClusterId,
