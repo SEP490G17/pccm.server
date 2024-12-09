@@ -28,6 +28,10 @@ namespace Application.Handler.StaffPositions
                 if (staffDetails != null)
                 {
                     courtClusterId = staffDetails.StaffAssignments.Select(x => x.CourtClusterId).ToList();
+                    if (courtClusterId.Count == 0)
+                    {
+                        courtClusterId.Add(-1);
+                    }
                 }
                 return courtClusterId;
             }

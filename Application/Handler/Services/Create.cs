@@ -1,5 +1,7 @@
 ﻿using Application.Core;
 using Application.DTOs;
+using Application.Handler.StaffPositions;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
@@ -14,7 +16,6 @@ namespace Application.Handler.Services
         public class Command : IRequest<Result<List<Service>>>
         {
             public ServiceInputDto Service { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -23,20 +24,25 @@ namespace Application.Handler.Services
                 RuleFor(x => x.Service).SetValidator(new ServiceInputDTOValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<List<Service>>>
+        public class Handler(DataContext _context, IMapper _mapper, IMediator _mediator, IUserAccessor _userAccessor) : IRequestHandler<Command, Result<List<Service>>>
         {
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
-            {
-                _mapper = mapper;
-                this._context = context;
-            }
+
             public async Task<Result<List<Service>>> Handle(Command request, CancellationToken cancellationToken)
             {
                 ServiceInputDto serviceDtos = request.Service;
-                List<Service> services = new List<Service>();
-                List<string> existingCourtClusters = new List<string>();
+
+                List<int> clusterIds = await _mediator.Send(new GetCurrentStaffCluster.Query(), cancellationToken);
+
+                if (clusterIds != null)
+                {
+                    var check = serviceDtos.CourtClusterId.Any(x => !clusterIds.Contains(x));
+                    if (check)
+                    {
+                        return Result<List<Service>>.Failure("Bạn không có quyền thực hiện quyền này");
+                    }
+                }
+                List<Service> services = [];
+                List<string> existingCourtClusters = [];
 
                 foreach (var courtClusterId in serviceDtos.CourtClusterId)
                 {
@@ -57,7 +63,7 @@ namespace Application.Handler.Services
                         continue;
                     }
 
-                    Service service = new Service()
+                    Service service = new()
                     {
                         CourtClusterId = courtClusterId,
                         Description = serviceDtos.Description,
@@ -87,7 +93,7 @@ namespace Application.Handler.Services
                     var serviceLog = _mapper.Map<ServiceLog>(service);
                     serviceLog.Id = 0;
                     serviceLog.CreatedAt = DateTime.Now;
-                    serviceLog.CreatedBy = request.userName;
+                    serviceLog.CreatedBy = _userAccessor.GetUserName();
                     serviceLog.LogType = Domain.Enum.LogType.Create;
                     serviceLog.CourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(c => c.Id == service.CourtClusterId);
                     serviceLog.Description = $"đã thêm dịch vụ {service.ServiceName}";

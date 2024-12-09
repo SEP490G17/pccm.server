@@ -10,11 +10,6 @@ namespace API.Controllers
 {
     public class ServiceController : BaseApiController
     {
-        private readonly IUserAccessor _userAccessor;
-        public ServiceController(IUserAccessor userAccessor)
-        {
-            _userAccessor = userAccessor;
-        }
 
         [AllowAnonymous]
         [HttpGet]
@@ -47,37 +42,23 @@ namespace API.Controllers
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> PostService([FromBody] ServiceInputDto service, CancellationToken ct)
         {
-            string userName = _userAccessor.GetUserName();
-            if (string.IsNullOrEmpty(userName))
-            {
-                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
-            }
-            return HandleResult(await Mediator.Send(new Create.Command() { Service = service, userName = userName }, ct));
+            return HandleResult(await Mediator.Send(new Create.Command() { Service = service }, ct));
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> UpdateService(int id, ServiceInputDto updatedService)
         {
-            string userName = _userAccessor.GetUserName();
-            if (string.IsNullOrEmpty(userName))
-            {
-                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
-            }
+           
             updatedService.Id = id;
-            return HandleResult(await Mediator.Send(new Edit.Command() { Service = updatedService, userName = userName }));
+            return HandleResult(await Mediator.Send(new Edit.Command() { Service = updatedService }));
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerSupplies,ManagerCourtCluster")]
         public async Task<IActionResult> DeleteService(int id)
         {
-            string userName = _userAccessor.GetUserName();
-            if (string.IsNullOrEmpty(userName))
-            {
-                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
-            }
-            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id, userName = userName }));
+            return HandleResult(await Mediator.Send(new Delete.Command() { Id = id}));
         }
     }
 }

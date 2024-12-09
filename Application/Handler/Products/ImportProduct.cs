@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Application.Core;
 using Application.DTOs;
+using Application.Handler.StaffPositions;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -18,7 +19,6 @@ namespace Application.Handler.Products
         {
             public ProductImportDto product { get; set; }
             public int Id { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -27,12 +27,12 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductImportValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDto>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IUserAccessor userAccessor, IMediator mediator) : IRequestHandler<Command, Result<ProductDto>>
         {
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var productImport = request.product;
-                var userName = request.userName;
+                var userName = userAccessor.GetUserName();
                 var repo = unitOfWork.Repository<Product>();
                 var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
                 cultureInfo.NumberFormat.CurrencySymbol = "₫";
@@ -40,13 +40,20 @@ namespace Application.Handler.Products
                 cultureInfo.NumberFormat.NumberGroupSeparator = ".";
                 cultureInfo.NumberFormat.CurrencyGroupSeparator = ".";
                 var productToUpdate = await repo.GetByIdAsync(request.Id);
+
                 if (productToUpdate == null)
                 {
-                    return Result<ProductDto>.Failure("Product not found");
+                    return Result<ProductDto>.Failure("Không tìm thấy sản phẩm");
+                }
+
+                List<int> courtClusterId = await mediator.Send(new GetCurrentStaffCluster.Query(), cancellationToken);
+                if (courtClusterId != null && !courtClusterId.Contains((int)productToUpdate.CourtClusterId))
+                {
+                    return Result<ProductDto>.Failure("Bạn không có quyền thực hiện quyền này");
                 }
                 string description = $"đã nhập thêm {productImport.Quantity} {productToUpdate.ProductName}. ";
 
-                decimal newImportFee = (productImport.ImportFee*productImport.Quantity + productToUpdate.ImportFee*productToUpdate.Quantity) / (productImport.Quantity + productToUpdate.Quantity);
+                decimal newImportFee = (productImport.ImportFee * productImport.Quantity + productToUpdate.ImportFee * productToUpdate.Quantity) / (productImport.Quantity + productToUpdate.Quantity);
 
                 description += $"Giá nhập thay đổi {string.Format(cultureInfo, "{0:C}", productToUpdate.ImportFee)} thành {string.Format(cultureInfo, "{0:C}", newImportFee)} ";
 
@@ -55,7 +62,7 @@ namespace Application.Handler.Products
                 //log
                 var productLog = mapper.Map<ProductLog>(productToUpdate);
                 productLog.Id = 0;
-                productLog.CreatedBy = request.userName;
+                productLog.CreatedBy = userName;
                 productLog.CreatedAt = DateTime.Now;
                 productLog.Description = description;
                 productLog.Price = productImport.ImportFee;
@@ -65,7 +72,7 @@ namespace Application.Handler.Products
                 logRepo.Add(productLog);
 
                 productToUpdate.UpdatedAt = DateTime.Now;
-                productToUpdate.UpdatedBy = request.userName;
+                productToUpdate.UpdatedBy = userName;
 
                 repo.Update(productToUpdate);
                 var result = await unitOfWork.Complete() > 0;

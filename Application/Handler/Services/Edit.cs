@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using Application.Core;
 using Application.DTOs;
+using Application.Handler.StaffPositions;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
 using FluentValidation;
@@ -15,7 +17,6 @@ namespace Application.Handler.Services
         public class Command : IRequest<Result<ServiceDto>>
         {
             public ServiceInputDto Service { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -24,22 +25,21 @@ namespace Application.Handler.Services
                 RuleFor(x => x.Service).SetValidator(new ServiceValidator());
             }
         }
-        public class Handler : IRequestHandler<Command, Result<ServiceDto>>
+        public class Handler(DataContext _context, IMapper _mapper, IUserAccessor _userAccessor, IMediator _mediator) : IRequestHandler<Command, Result<ServiceDto>>
         {
 
-            private readonly DataContext _context;
-            private readonly IMapper _mapper;
 
-            public Handler(DataContext context, IMapper mapper)
-            {
-                _mapper = mapper;
-                _context = context;
-            }
             public async Task<Result<ServiceDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var serviceExist = await _context.Services.Include(s => s.CourtCluster).FirstOrDefaultAsync(s => s.Id == request.Service.Id);
+                var serviceExist = await _context.Services.Include(s => s.CourtCluster)
+                .FirstOrDefaultAsync(s => s.Id == request.Service.Id && s.DeletedAt == null, cancellationToken);
                 if (serviceExist == null)
-                    return Result<ServiceDto>.Failure("Fail to edit service");
+                    return Result<ServiceDto>.Failure("Dịch vụ không tồn tại hoặc đã bị xoá");
+                List<int> clusterIds = await _mediator.Send(new GetCurrentStaffCluster.Query(), cancellationToken);
+                if (clusterIds != null && !clusterIds.Contains((int)serviceExist.CourtClusterId))
+                {
+                    return Result<ServiceDto>.Failure("Bạn không có quyền thực hiện quyền này");
+                }
                 _mapper.Map(request.Service, serviceExist);
                 serviceExist.UpdatedAt = DateTime.Now;
                 serviceExist.UpdatedBy = "Anonymous";
@@ -67,7 +67,7 @@ namespace Application.Handler.Services
                 var serviceLog = _mapper.Map<ServiceLog>(serviceExist);
                 serviceLog.Id = 0;
                 serviceLog.CreatedAt = DateTime.Now;
-                serviceLog.CreatedBy = request.userName;
+                serviceLog.CreatedBy = _userAccessor.GetUserName();
                 serviceLog.Price = serviceExist.Price;
                 serviceLog.LogType = Domain.Enum.LogType.Update;
                 serviceLog.CourtCluster = await _context.CourtClusters.FirstOrDefaultAsync(c => c.Id == serviceExist.CourtClusterId);
@@ -75,7 +75,6 @@ namespace Application.Handler.Services
                 await _context.ServiceLogs.AddAsync(serviceLog, cancellationToken);
                 var _result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result || !_result) return Result<ServiceDto>.Failure("Fail to edit service");
-                var updateService = _context.Entry(serviceExist).Entity;
                 var response = _mapper.Map<ServiceDto>(serviceExist);
                 return Result<ServiceDto>.Success(response);
             }

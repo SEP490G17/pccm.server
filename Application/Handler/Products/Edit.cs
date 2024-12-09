@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Application.Core;
 using Application.DTOs;
+using Application.Handler.StaffPositions;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -18,7 +19,6 @@ namespace Application.Handler.Products
         {
             public ProductInputDto product { get; set; }
             public int Id { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -27,12 +27,18 @@ namespace Application.Handler.Products
                 RuleFor(x => x.product).SetValidator(new ProductValidator());
             }
         }
-        public class Handler(IUnitOfWork unitOfWork, IMapper mapper) : IRequestHandler<Command, Result<ProductDto>>
+        public class Handler(IUnitOfWork unitOfWork, IMapper mapper, IUserAccessor userAccessor, IMediator mediator) : IRequestHandler<Command, Result<ProductDto>>
         {
             public async Task<Result<ProductDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var product = request.product;
-                var userName = request.userName;
+                var userName = userAccessor.GetUserName();
+                
+                List<int> courtClusterId = await mediator.Send(new GetCurrentStaffCluster.Query(), cancellationToken);
+                if (courtClusterId != null && !courtClusterId.Contains(request.product.CourtClusterId))
+                {
+                    return Result<ProductDto>.Failure("Bạn không có quyền thực hiện quyền này");
+                }
                 var repo = unitOfWork.Repository<Product>();
                 var cultureInfo = (CultureInfo)CultureInfo.InvariantCulture.Clone();
                 cultureInfo.NumberFormat.CurrencySymbol = "₫";
@@ -69,7 +75,7 @@ namespace Application.Handler.Products
                 //log
                 var productLog = mapper.Map<ProductLog>(productToUpdate);
                 productLog.Id = 0;
-                productLog.CreatedBy = request.userName;
+                productLog.CreatedBy = userName;
                 productLog.CreatedAt = DateTime.Now;
                 productLog.Description = description;
                 productLog.Price = productToUpdate.Price;
@@ -80,7 +86,7 @@ namespace Application.Handler.Products
 
                 mapper.Map(request.product, productToUpdate);
                 productToUpdate.UpdatedAt = DateTime.Now;
-                productToUpdate.UpdatedBy = request.userName;
+                productToUpdate.UpdatedBy = userName;
 
                 repo.Update(productToUpdate);
                 var result = await unitOfWork.Complete() > 0;
