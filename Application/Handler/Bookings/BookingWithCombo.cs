@@ -56,14 +56,14 @@ namespace Application.Handler.Bookings
                 {
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại");
                 }
-               
+
                 var courtCluster = court.CourtCluster;
 
                 if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
                 {
                     return Result<BookingDtoV1>.Failure("Giờ bắt đầu phải lớn hơn giờ kết thúc ít nhất 1 tiếng");
                 }
-                
+
                 if (request.Booking.ToTime > courtCluster.CloseTime || request.Booking.FromTime < courtCluster.OpenTime)
                 {
                     return Result<BookingDtoV1>.Failure($"Thời gian đặt sân không hợp lệ, phải đặt trong thời gian mở/đóng sân");
@@ -189,17 +189,25 @@ namespace Application.Handler.Bookings
                     booking.Payment = payment;
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
+                    var customer = await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(booking.PhoneNumber),cancellationToken);
+                    if (customer != null)
+                    {
+                        booking.AppUser = customer;
+                    }
                 }
-               // booking.AppUser = user;
-              
+                else
+                {
+                    booking.AppUser = user;
+                }
+
                 await _context.AddAsync(booking, cancellationToken);
-                
+
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
                 var newBooking = _context.Entry(booking).Entity;
                 var response = await _context.Bookings
                     .ProjectTo<BookingDtoV1>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(x => x.Id == newBooking.Id);
+                    .FirstOrDefaultAsync(x => x.Id == newBooking.Id,cancellationToken);
                 return Result<BookingDtoV1>.Success(response);
             }
 
