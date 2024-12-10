@@ -6,6 +6,7 @@ using Application.SpecParams.CourtClusterSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entity;
+using Domain.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,49 +24,109 @@ namespace Application.Handler.CourtClusters.UserSite
             public async Task<Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var querySpec = request.BaseSpecWithFilterParam;
+                var now = DateTime.UtcNow;
+                var today = now.Date;
+                var endOfDay = today.AddDays(1).AddSeconds(-1); // Kết thúc ngày hiện tại
 
-                // Lấy thời gian hiện tại và 30 ngày trước
-                var today = DateTime.UtcNow.Date; // Chỉ lấy ngày hiện tại
-                var thirtyDaysAgo = today.AddDays(-30); // Lấy ngày cách đây 30 ngày
-
-                // Lọc Booking trong 30 ngày qua và tính số lượng theo CourtClusterId
-                var topCourtClusterIds = await unitOfWork.Repository<Booking>()
+                // Lấy danh sách booking trong ngày hiện tại
+                var bookings = await unitOfWork.Repository<Booking>()
                     .QueryList(null)
-                    .Where(b => b.CreatedAt.Date >= thirtyDaysAgo && b.CreatedAt.Date <= today) // So sánh chỉ phần ngày
-                    .Join(
-                        unitOfWork.Repository<Court>().QueryList(null), // Join với bảng Court
-                        booking => booking.Court.Id, // Dùng Court.Id từ navigation property
-                        court => court.Id,           // Khớp với Court.Id
-                        (booking, court) => new { court.CourtClusterId } // Lấy CourtClusterId từ Court
+                    .Where(b =>
+                        (b.UntilTime == null && b.StartTime.Date == today) || // Booking theo ngày
+                        (b.UntilTime.HasValue && b.StartTime.Date <= today && b.UntilTime.Value.Date >= today) // Booking combo
                     )
-                    .Where(x => x.CourtClusterId != null) // Loại bỏ Court không có CourtClusterId
-                    .GroupBy(x => x.CourtClusterId) // Nhóm kết quả theo CourtClusterId
-                    .Select(group => new
-                    {
-                        CourtClusterId = group.Key.Value, // CourtClusterId nullable, nên cần Value
-                        BookingCount = group.Count()      // Số lượng Booking trong nhóm
-                    })
-                    .OrderByDescending(x => x.BookingCount) // Sắp xếp giảm dần theo số lượng Booking
-                    .Take(3) // Lấy top 3 CourtCluster
-                    .Select(x => x.CourtClusterId) // Lấy danh sách CourtClusterId
                     .ToListAsync(cancellationToken);
 
-                // Lấy danh sách CourtCluster tương ứng với các CourtClusterId đã lọc
-                var courtClusters = await unitOfWork.Repository<CourtCluster>()
+                // Lấy danh sách tất cả sân hiện có
+                var allCourts = await unitOfWork.Repository<Court>()
                     .QueryList(null)
-                    .Where(c => topCourtClusterIds.Contains(c.Id) && c.DeleteAt == null && c.IsVisible)
-                    .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
+                    .Where(c => c.DeleteAt == null && c.Status == CourtStatus.Available) // Chỉ lấy sân chưa bị xóa
                     .ToListAsync(cancellationToken);
 
-                // Sắp xếp danh sách CourtCluster theo thứ tự trong topCourtClusterIds
-                courtClusters = courtClusters
-                    .OrderBy(c => topCourtClusterIds.IndexOf(c.Id))  // Sắp xếp theo thứ tự trong topCourtClusterIds
+                // Tính thời gian trống cho từng sân
+                var courtFreeHours = allCourts
+                    .GroupJoin(
+                        bookings,
+                        court => court.Id,
+                        booking => booking.Court.Id,
+                        (court, courtBookings) => new
+                        {
+                            Court = court,
+                            Bookings = courtBookings.ToList()
+                        }
+                    )
+                    .Select(group =>
+                    {
+                        var court = group.Court;
+                        var bookedSlots = group.Bookings
+                            .Select(b => new
+                            {
+                                Start = b.StartTime.TimeOfDay,
+                                End = b.UntilTime == null ? b.EndTime.TimeOfDay : TimeSpan.FromHours(24) // UntilTime = 24h cho combo
+                            })
+                            .OrderBy(slot => slot.Start)
+                            .ToList();
+
+                        var freeHours = 0.0;
+                        var lastEnd = TimeSpan.Zero;
+
+                        foreach (var slot in bookedSlots)
+                        {
+                            if (slot.Start > lastEnd)
+                            {
+                                freeHours += (slot.Start - lastEnd).TotalHours;
+                            }
+                            lastEnd = TimeSpan.FromTicks(Math.Max(lastEnd.Ticks, slot.End.Ticks));
+                        }
+
+                        // Thêm khoảng trống cuối ngày nếu còn
+                        if (lastEnd < TimeSpan.FromHours(24))
+                        {
+                            freeHours += (TimeSpan.FromHours(24) - lastEnd).TotalHours;
+                        }
+
+                        // Nếu sân chưa có booking nào, toàn bộ 24 giờ được xem là thời gian trống
+                        if (!bookedSlots.Any())
+                        {
+                            freeHours = 24.0;
+                        }
+
+                        return new { CourtId = court.Id, CourtClusterId = court.CourtClusterId, FreeHours = freeHours };
+                    })
                     .ToList();
 
-                // Vì `Pagination` yêu cầu `totalElement`, sử dụng tổng số cụm sân trong kết quả
+                // Gom nhóm theo cụm sân (CourtClusterId)
+                var topCourtClusters = courtFreeHours
+                    .Where(x => x.CourtClusterId != null) // Chỉ lấy cụm sân hợp lệ
+                    .GroupBy(x => x.CourtClusterId.Value)
+                    .Select(group => new
+                    {
+                        CourtClusterId = group.Key,
+                        TotalFreeHours = group.Sum(x => x.FreeHours)
+                    })
+                    .OrderByDescending(x => x.TotalFreeHours) // Sắp xếp giảm dần theo số giờ trống
+                    .Select(x => x.CourtClusterId)
+                    .ToList();
+
+                // Lấy thông tin cụm sân
+                var courtClusters = await unitOfWork.Repository<CourtCluster>()
+                    .QueryList(null)
+                    .Where(c => topCourtClusters.Contains(c.Id) && c.DeleteAt == null && c.IsVisible)
+                    .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
+                    .Take(6)
+                    .ToListAsync(cancellationToken);
+
+                // Sắp xếp theo thứ tự trong topCourtClusters
+                courtClusters = courtClusters
+                    .OrderBy(c => topCourtClusters.IndexOf(c.Id))
+                    .ToList();
+
+                // Tính tổng số cụm sân trả về
                 var totalElement = courtClusters.Count();
 
-                return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Success(new Pagination<CourtClusterDto.CourtClusterListPageUserSite>(querySpec.PageSize, totalElement, courtClusters));
+                return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Success(
+                    new Pagination<CourtClusterDto.CourtClusterListPageUserSite>(querySpec.PageSize, totalElement, courtClusters)
+                );
             }
         }
 
