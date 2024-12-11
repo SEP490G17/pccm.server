@@ -2,7 +2,6 @@ using Application.Core;
 using Application.DTOs;
 using Application.Interfaces;
 using Application.SpecParams;
-using Application.SpecParams.CourtClusterSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entity;

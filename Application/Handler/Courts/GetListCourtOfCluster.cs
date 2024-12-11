@@ -28,7 +28,7 @@ namespace Application.Handler.Courts
                     return Result<CourtManagerResponse>.Failure("Cụm sân không tồn tại");
                 }
                 var courts = await dataContext.Courts
-                    .Where(c => c.CourtClusterId.Equals(request.CourtClusterId) && c.DeleteAt == null && c.Status == CourtStatus.Available)
+                    .Where(c => c.CourtClusterId.Equals(request.CourtClusterId) && c.DeleteAt == null)
                     .ProjectTo<CourtOfClusterDto>(mapper.ConfigurationProvider)
                     .ToListAsync(cancellationToken);
 

@@ -1,12 +1,10 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
-using FluentAssertions;
 using FluentValidation.TestHelper;
-using NUnit.Framework;
 
 namespace Pccm.UnitTest.CourtClusters
 {
-   [TestFixture]
+    [TestFixture]
     public class CourtClusterValidatorTests
     {
         private CourtClusterValidator _validator;

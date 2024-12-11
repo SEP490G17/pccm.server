@@ -1,6 +1,7 @@
 using Application.Events;
 using Application.Handler.News;
 using Application.SpecParams;
+using Application.SpecParams.NewsSpecification;
 using Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace API.Controllers
 
         [HttpGet("usersite")]
         [AllowAnonymous]
-        public async Task<IActionResult> ListNewsUserSite(CancellationToken ct)
+        public async Task<IActionResult> ListNewsUserSite([FromQuery] NewsSpecParams newsSpecParams, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ListNewsUserSite.Query(), ct));
+            return HandleResult(await Mediator.Send(new ListNewsUserSite.Query() { NewsSpecParams = newsSpecParams }, ct));
         }
 
         [HttpPost]
@@ -36,7 +37,6 @@ namespace API.Controllers
         {
             return HandleResult(await Mediator.Send(new Create.Command() { Event = events }, ct));
         }
-        [AllowAnonymous]
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> UpdateActivity(int id, NewsBlog updatedActivity)
@@ -45,7 +45,6 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Edit.Command() { Event = updatedActivity }));
         }
 
-        [AllowAnonymous]
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> DeleteActivity(int id)
@@ -53,12 +52,18 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Delete.Command() { Id = id }));
         }
 
-        [AllowAnonymous]
         [HttpPut("changestatus/{id}/{status}")]
         [Authorize(Roles = "Admin,Owner,ManagerNews")]
         public async Task<IActionResult> ChangeStatus(int id, int status)
         {
             return HandleResult(await Mediator.Send(new ChangeStatus.Command() { Id = id, status = status }));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("most-common-tags")]
+        public async Task<IActionResult> GetMostCommonTags(CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetMostCommonTags.Query(), ct));
         }
     }
 }

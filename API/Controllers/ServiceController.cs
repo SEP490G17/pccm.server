@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Application.Handler.Services;
-using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.ProductSpecification;
 using Microsoft.AspNetCore.Authorization;

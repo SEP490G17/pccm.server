@@ -1,24 +1,11 @@
 using API.Extensions;
-using Application.Core;
-using Application.DTOs;
-using Application.Handler.Notifications;
-using Application.Interfaces;
 using Application.SpecParams;
-using Application.SpecParams.NotificationSpecification;
-using AutoMapper;
-using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 namespace Pccm.UnitTest.Notifications
 {
     [TestFixture]

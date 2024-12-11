@@ -1,12 +1,10 @@
 
 using Application.DTOs;
-using Application.Interfaces;
 using AutoMapper;
 using Domain;
 using Domain.Entity;
 using Domain.Enum;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Persistence;
 
 namespace Application.Handler.Notifications

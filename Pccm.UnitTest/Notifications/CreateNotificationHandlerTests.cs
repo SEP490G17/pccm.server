@@ -5,10 +5,7 @@ using Domain;
 using Domain.Entity;
 using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Persistence;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Notifications
 {

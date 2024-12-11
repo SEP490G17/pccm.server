@@ -1,13 +1,8 @@
 using Application.Photos;
-using Application.Core;
 using Application.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using NUnit.Framework;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Notifications
 {

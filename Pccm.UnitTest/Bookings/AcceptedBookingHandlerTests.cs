@@ -1,20 +1,11 @@
 using Moq;
-using NUnit.Framework;
-using Application.Core;
-using Application.DTOs;
 using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Persistence;
 using Application.Handler.Bookings;
-using System.Linq.Expressions;
 
 namespace Pccm.UnitTest.Bookings
 {

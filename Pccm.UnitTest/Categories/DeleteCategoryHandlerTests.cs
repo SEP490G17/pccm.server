@@ -1,12 +1,8 @@
 using Application.Handler.Categories;
-using Application.Core;
 using Domain.Entity;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Persistence;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Categories
 {

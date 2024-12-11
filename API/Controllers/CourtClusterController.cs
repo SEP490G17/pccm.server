@@ -1,12 +1,9 @@
 using Application.DTOs;
 using Application.Handler.CourtClusters;
 using Application.Handler.CourtClusters.UserSite;
-using Application.Interfaces;
 using Application.SpecParams;
 using Application.SpecParams.CourtClusterSpecification;
-using Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

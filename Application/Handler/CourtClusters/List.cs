@@ -6,10 +6,8 @@ using Application.SpecParams;
 using Application.SpecParams.CourtClusterSpecification;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Domain;
 using Domain.Entity;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Handler.CourtClusters

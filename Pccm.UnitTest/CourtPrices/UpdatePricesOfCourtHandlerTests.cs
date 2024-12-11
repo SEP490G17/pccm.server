@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.DTOs;
 using Application.Handler.CourtPrices;
 using AutoMapper;
@@ -12,7 +8,7 @@ using Persistence;
 
 namespace Pccm.UnitTest.CourtPrices
 {
-   [TestFixture]
+    [TestFixture]
 public class UpdatePricesOfCourtHandlerTests
 {
     private DataContext _context;
