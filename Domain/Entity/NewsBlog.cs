@@ -15,10 +15,10 @@ namespace Domain.Entity
         [StringLength(255)]
         public string Thumbnail { get; set; } // Url Ảnh đại diện của tin tức
 
-        [StringLength(1000)]
+        [Column(TypeName = "LONGTEXT")]
         public string Description { get; set; }  // Mô tả chi tiết về sự kiện
 
-        [Column(TypeName = "TEXT")]
+        [Column(TypeName = "LONGTEXT")]
         public string Content { get; set; }  // Mô tả chi tiết về sự kiện
 
         [Required]

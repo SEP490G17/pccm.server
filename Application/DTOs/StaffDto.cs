@@ -9,7 +9,5 @@ namespace Domain.Entity
         public string[] Roles { get; set; }
         public string[] CourtCluster { get; set; }
         public string PhoneNumber { get; set; }
-
-
     }
 }
