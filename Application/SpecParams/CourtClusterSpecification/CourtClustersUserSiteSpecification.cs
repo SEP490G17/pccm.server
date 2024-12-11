@@ -29,8 +29,8 @@ namespace Application.SpecParams.CourtClusterSpecification
                  &&
                 (!baseSpecParam.MinPrice.HasValue ||
                  x.Courts.Any(c =>
-                     c.CourtPrices.Any(cp => cp.Price >= baseSpecParam.MinPrice && cp.Price <= baseSpecParam.MaxPrice))) &&
-
+                     c.CourtPrices.Any(cp => cp.Price >= baseSpecParam.MinPrice && cp.Price <= baseSpecParam.MaxPrice)))
+                &&
                 x.DeleteAt == null
             )
         )

@@ -114,15 +114,25 @@ namespace Application.Handler.CourtClusters.UserSite
                     .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
                     .Take(6)
                     .ToListAsync(cancellationToken);
-
+                
                 // Sắp xếp theo thứ tự trong topCourtClusters
                 courtClusters = courtClusters
                     .OrderBy(c => topCourtClusters.IndexOf(c.Id))
                     .ToList();
-
+                
                 // Tính tổng số cụm sân trả về
                 var totalElement = courtClusters.Count();
 
+                foreach (var item in courtClusters)
+                {
+                    var courts = await unitOfWork.Repository<Court>().QueryList(null)
+                .Where(x => x.CourtCluster.Id == item.Id)
+                .ProjectTo<CourtOfClusterDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+                    item.Courts = courts;
+                    item.NumbOfCourts = courts.Count();
+                }
+                
                 return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Success(
                     new Pagination<CourtClusterDto.CourtClusterListPageUserSite>(querySpec.PageSize, totalElement, courtClusters)
                 );

@@ -170,11 +170,11 @@ namespace Application.Handler.Bill
 
 
                         gfx.DrawString($"Giờ bắt đầu:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                        gfx.DrawString($"", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        gfx.DrawString($"{data.booking.StartTime.AddHours(7):HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
                         EnsureSpace(15);
 
                         gfx.DrawString($"Giờ kết thúc:", font, XBrushes.Black, new XRect(margin, yPos, (page.Width - 2 * margin) * 0.8, 20), XStringFormats.TopLeft);
-                        gfx.DrawString($"", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
+                        gfx.DrawString($"{data.booking.EndTime.AddHours(7):HH:mm dd/MM/yyyy}", font, XBrushes.Black, new XRect(page.Width - 60 - margin, yPos, 60, 20), XStringFormats.TopRight);
                         EnsureSpace(15);
 
 

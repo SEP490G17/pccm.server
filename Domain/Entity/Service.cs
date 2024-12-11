@@ -10,7 +10,7 @@ namespace Domain.Entity
         [Required]
         [StringLength(255)]
         public string ServiceName { get; set; }  // Tên dịch vụ
-        [StringLength(255)]
+        [Column(TypeName = "LONGTEXT")]
         public string Description { get; set; }  // Mô tả chi tiết về dịch vụ
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
