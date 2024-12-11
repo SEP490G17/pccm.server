@@ -53,7 +53,7 @@ namespace Application.Handler.Bookings
 
                 // Fetch all courts within the cluster
                 var courts = await _context.Courts
-                    .Where(c => c.CourtClusterId == request.CourtClusterId && c.DeleteAt == null)
+                    .Where(c => c.CourtClusterId == request.CourtClusterId && c.DeleteAt == null && c.Status == CourtStatus.Available)
                     .ToListAsync(cancellationToken);
 
                 foreach (var court in courts)
@@ -92,30 +92,30 @@ namespace Application.Handler.Bookings
                 foreach (var booking in bookings)
                 {
                     // Kiểm tra nếu booking có UntilTime và áp dụng logic lặp lại
-                    if (booking.UntilTime != null && booking.UntilTime.Value.Date >= targetDate.Date)
+                    if (booking.UntilTime != null && booking.UntilTime.Value.Date.AddHours(7) >= targetDate.Date)
                     {
                         // Tạo khoảng thời gian booking lặp lại trong ngày targetDate
-                        var repeatedStartTime = targetDate.Date.Add(booking.StartTime.TimeOfDay);
-                        var repeatedEndTime = targetDate.Date.Add(booking.EndTime.TimeOfDay);
+                        var repeatedStartTime = targetDate.Date.Add(booking.StartTime.AddHours(7).TimeOfDay);
+                        var repeatedEndTime = targetDate.Date.Add(booking.EndTime.AddHours(7).TimeOfDay);
 
                         // Nếu khoảng thời gian lặp lại nằm sau currentTime, tính giờ trống
                         if (repeatedStartTime > currentTime)
                         {
-                            availableSlots.Add($"{currentTime:HH\\:mm} - {repeatedStartTime.AddHours(7):HH\\:mm}");
+                            availableSlots.Add($"{currentTime:HH\\:mm} - {repeatedStartTime:HH\\:mm}");
                         }
 
                         // Cập nhật currentTime tới thời gian kết thúc booking
-                        currentTime = repeatedEndTime > currentTime ? repeatedEndTime.AddHours(7) : currentTime.AddHours(7);
+                        currentTime = repeatedEndTime > currentTime ? repeatedEndTime : currentTime;
                     }
                     else if (booking.StartTime.Date == targetDate.Date)
                     {
                         // Nếu booking không lặp lại, xử lý như bình thường
-                        if (booking.StartTime > currentTime)
+                        if (booking.StartTime.AddHours(7) > currentTime)
                         {
                             availableSlots.Add($"{currentTime:HH\\:mm} - {booking.StartTime.AddHours(7):HH\\:mm}");
                         }
 
-                        currentTime = booking.EndTime > currentTime ? booking.EndTime.AddHours(7) : currentTime.AddHours(7);
+                        currentTime = booking.EndTime.AddHours(7) > currentTime ? booking.EndTime.AddHours(7) : currentTime.AddHours(7);
                     }
                 }
 
