@@ -14,11 +14,11 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new List.Query(), ct));
         }
 
-        [HttpGet("applyToAll")]
+        [HttpPost("applyToAll")]
         [Authorize(Roles = "Admin,Owner,ManagerStaff")]
-        public async Task<IActionResult> applyRoleToAll(CancellationToken ct)
+        public async Task<IActionResult> applyRoleToAll([FromBody] List<StaffRoleInputDto> role,CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ApplyToAll.Command(), ct));
+            return HandleResult(await Mediator.Send(new ApplyToAll.Command() { data = role }, ct));
         }
 
         [HttpPost]

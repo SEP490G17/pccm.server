@@ -2,6 +2,7 @@ using Application.Core;
 using AutoMapper;
 using Domain.Entity;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -31,10 +32,30 @@ namespace Application.Handler.Staffs
                 .Include(a => a.Position)
                 .Include(a => a.StaffAssignments)
                 .ThenInclude(a => a.CourtCluster)
-                .FirstOrDefaultAsync(x => x.Id == request.Id,cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
                 if (staff == null) return Result<StaffDto>.Failure("Staff not found!");
+                var roles = await _context.UserRoles
+                .Where(ur => ur.UserId == staff.UserId)
+                .Join(
+                    _context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r
+                )
+                .ToListAsync(cancellationToken);
+
+                var rolesAdd = new List<IdentityRole>();
+                if (roles.Count() > staff.Position.DefaultRoles.Length)
+                {
+                    foreach (var item in roles)
+                    {
+                        bool exist = staff.Position.DefaultRoles.Contains(item.Name);
+                        if (!exist) rolesAdd.Add(item);
+                    }
+                }
                 var staffDtoMap = _mapper.Map<StaffDto>(staff);
+                staffDtoMap.Roles = staffDtoMap.Roles.Concat(rolesAdd.Select(role => role.Name)).ToArray();
                 return Result<StaffDto>.Success(staffDtoMap);
             }
         }

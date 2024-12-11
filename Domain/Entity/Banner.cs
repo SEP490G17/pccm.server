@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Enum;
 
 namespace Domain.Entity
@@ -16,7 +17,7 @@ namespace Domain.Entity
         public BannerType BannerType { get; set; } = BannerType.Banner; // Loại banner
         public BannerInPage BannerInPage { get; set; } = BannerInPage.HomePage; // ở trang nào
 
-        [StringLength(255)]
+        [Column(TypeName = "LONGTEXT")]
         public string Description { get; set; }  // Mô tả ngắn của banner
 
         [StringLength(255)]

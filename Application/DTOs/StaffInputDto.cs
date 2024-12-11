@@ -11,5 +11,6 @@ namespace Domain.Entity
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string? Password { get; set; }
+        public string[] RoleAdd { get; set; }
     }
 }

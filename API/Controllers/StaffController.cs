@@ -89,28 +89,27 @@ namespace API.Controllers
                 {
                     throw new Exception("staffDetail not found");
                 }
-                //nếu position thay đổi
-                if (staffDetail.PositionId != staffInput.PositionId)
+
+                //update position staff detail
+                staffDetail.PositionId = staffInput.PositionId;
+                _context.StaffDetails.Update(staffDetail);
+                //update role trong userrole
+                //xóa các role cũ đi
+                var OldRole = await _context.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
+                _context.UserRoles.RemoveRange(OldRole);
+                //thêm role mới lại
+                var position = await _context.StaffPositions.FirstOrDefaultAsync(s => s.Id == staffInput.PositionId);
+                var roles = position.DefaultRoles.ToList();
+                roles.AddRange(staffInput.RoleAdd);
+                foreach (var role in roles)
                 {
-                    //update position staff detail
-                    staffDetail.PositionId = staffInput.PositionId;
-                    _context.StaffDetails.Update(staffDetail);
-                    //update role trong userrole
-                    //xóa các role cũ đi
-                    var OldRole = await _context.UserRoles.Where(x => x.UserId == user.Id).ToListAsync();
-                    _context.UserRoles.RemoveRange(OldRole);
-                    //thêm role mới lại
-                    var position = await _context.StaffPositions.FirstOrDefaultAsync(s => s.Id == staffInput.PositionId);
-                    foreach (var role in position.DefaultRoles)
+                    var _role = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == role.ToLower());
+                    var userRole = new IdentityUserRole<string>()
                     {
-                        var _role = await _context.Roles.FirstOrDefaultAsync(r => r.Name.ToLower() == role.ToLower());
-                        var userRole = new IdentityUserRole<string>()
-                        {
-                            RoleId = _role.Id,
-                            UserId = user.Id
-                        };
-                        await _context.UserRoles.AddAsync(userRole);
-                    }
+                        RoleId = _role.Id,
+                        UserId = user.Id
+                    };
+                    await _context.UserRoles.AddAsync(userRole);
                 }
                 var OldAssignment = await _context.StaffAssignments.Where(x => x.StaffId == staffDetail.Id).ToListAsync();
                 _context.StaffAssignments.RemoveRange(OldAssignment);
@@ -133,7 +132,29 @@ namespace API.Controllers
                 .Include(s => s.StaffAssignments)
                 .ThenInclude(x => x.CourtCluster)
                 .FirstOrDefaultAsync(x => x.Id == staffDetail.Id);
+
+                var _roles = await _context.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Join(
+                    _context.Roles,
+                    ur => ur.RoleId,
+                    r => r.Id,
+                    (ur, r) => r
+                )
+                .ToListAsync();
+
+                var rolesAdd = new List<IdentityRole>();
+                if (roles.Count() > staffdto.Position.DefaultRoles.Length)
+                {
+                    foreach (var item in _roles)
+                    {
+                        bool exist = staffdto.Position.DefaultRoles.Contains(item.Name);
+                        if (!exist) rolesAdd.Add(item);
+                    }
+                }
+
                 var res = _mapper.Map<StaffDto>(staffdto);
+                res.Roles = res.Roles.Concat(rolesAdd.Select(role => role.Name)).ToArray();
                 return res;
             }
             return BadRequest(result.Errors);
