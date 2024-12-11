@@ -28,7 +28,7 @@ namespace Application.Handler.Bookings
             {
                 var prices = await _context.CourtPrices
                 .Include(c => c.Court)
-                .Where(p => p.Court.CourtClusterId == request.Id && p.Court.DeleteAt == null)
+                .Where(p => p.Court.CourtClusterId == request.Id && p.Court.DeleteAt == null && p.Court.Status == 0)
                 .OrderBy(p => p.Court.CourtName)
                 .ThenBy(p => p.FromTime)
                 .ToListAsync();
