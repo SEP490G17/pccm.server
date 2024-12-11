@@ -17,7 +17,7 @@ namespace Domain.Entity
         [Required][StringLength(255)] public string WardName { get; set; }
         [Required][StringLength(255)] public string Address { get; set; }  // Địa điểm cụ thể
         public string OwnerId { get; set; }  // Id của người sở hữu cụm sân (có thể là null)
-        [Column(TypeName = "Text")] public string Description { get; set; }  // Mô tả chi tiết về cụm sân
+        [Column(TypeName = "LONGTEXT")] public string Description { get; set; }  // Mô tả chi tiết về cụm sân
         public string[] Images { get; set; }  // Lưu danh sách ảnh dưới dạng JSON
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian tạo cụm sân
         [ForeignKey("OwnerId")] public virtual AppUser Owner { get; set; }  // Liên kết với bảng Users qua owner_id

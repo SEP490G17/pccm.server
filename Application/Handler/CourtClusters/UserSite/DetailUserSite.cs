@@ -24,12 +24,7 @@ namespace Application.Handler.CourtClusters
                 var courtcluster = await _context.CourtClusters
                     .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
-                var courts = await _context.Courts
-                    .Where(x => x.CourtCluster.Id == request.Id)
-                    .ProjectTo<CourtOfClusterDto>(_mapper.ConfigurationProvider)
-                    .ToListAsync();
-                    courtcluster.Courts = courts;
-                    courtcluster.NumbOfCourts = courts.Count();
+
                 return Result<CourtClusterDto.CourtClusterListPageUserSite>.Success(courtcluster);
             }
         }

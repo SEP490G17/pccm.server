@@ -14,7 +14,7 @@ namespace Domain.Entity
         [Required]
         [StringLength(255)]
         public string ProductName { get; set; }  // Tên sản phẩm
-        [StringLength(255)]
+        [Column(TypeName = "LONGTEXT")]
         public string Description { get; set; }  // Mô tả chi tiết về sản phẩm
         [Required]
         [Column(TypeName = "decimal(10, 2)")]
