@@ -6,7 +6,6 @@ using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain;
-using Domain.Entity;
 using Domain.Enum;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

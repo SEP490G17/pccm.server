@@ -10,9 +10,6 @@ namespace Persistence
   {
     public static async Task SeedData(DataContext context, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
     {
-
-
-
       if (!userManager.Users.Any())
       {
         var users = new List<AppUser>
@@ -41,23 +38,6 @@ namespace Persistence
           await userManager.CreateAsync(user, "123456aA@");
         }
       }
-
-
-
-      // if (!context.Banners.Any())
-      // {
-      //   var bannersData = File.ReadAllText("../Persistence/SeedData/banners.json");
-      //   var banners = JsonSerializer.Deserialize<List<Banner>>(bannersData);
-      //   context.Banners.AddRange(banners);
-
-      // }
-
-      // if (!context.NewsBlogs.Any())
-      // {
-      //   var newsData = File.ReadAllText("../Persistence/SeedData/news.json");
-      //   var newsBlogs = JsonSerializer.Deserialize<List<NewsBlog>>(newsData);
-      //   context.NewsBlogs.AddRange(newsBlogs);
-      // }
 
       var rolesData = File.ReadAllText("../Persistence/SeedData/roles.json");
       var roles = JsonSerializer.Deserialize<List<IdentityRole>>(rolesData);
@@ -145,18 +125,25 @@ namespace Persistence
       // }
 
 
-
-      if (context.StaffDetails.Count() == 0)
+      if (!context.StaffDetails.Any())  // Use Any() for better performance
       {
         var users = new List<AppUser>();
         var staffPositions = await context.StaffPositions.ToListAsync();
-        var quanly = staffPositions.FirstOrDefault(s => s.Name.Equals("Quản lý"));
-        var tieptan = staffPositions.FirstOrDefault(s => s.Name.Equals("Nhân viên tiếp tân"));
-        var truyenthong = staffPositions.FirstOrDefault(s => s.Name.Equals("Nhân viên truyền thông"));
 
+        // Find positions more efficiently by using a dictionary for lookup
+        var positionLookup = staffPositions.ToDictionary(p => p.Name, p => p);
+
+        if (!positionLookup.TryGetValue("Quản lý", out var quanly) ||
+            !positionLookup.TryGetValue("Nhân viên tiếp tân", out var tieptan) ||
+            !positionLookup.TryGetValue("Nhân viên truyền thông", out var truyenthong))
+        {
+          throw new InvalidOperationException("One or more staff positions are missing from the database.");
+        }
+
+        // Create and add users in bulk
         for (int i = 1; i <= 10; i++)
         {
-          var user = new AppUser()
+          var user = new AppUser
           {
             FirstName = $"Staff",
             LastName = $" {i}",
@@ -165,36 +152,39 @@ namespace Persistence
           };
           users.Add(user);
         }
-        await context.Users.AddRangeAsync(users);
-        await context.SaveChangesAsync();
 
-        var results = userManager.Users.Where(u => u.UserName.Contains("staff")).ToList();
-        var staffs = new List<StaffDetail>(){
-          new StaffDetail()
-            {
-              Position = quanly,
-              UserId = results[0].Id,
-            }
-        };
-        await context.AddRangeAsync(staffs);
+        await context.Users.AddRangeAsync(users);
+        await context.SaveChangesAsync();  // Save changes after user creation
+
+        // Retrieve the users created in the previous step
+        var results = await userManager.Users.Where(u => u.UserName.Contains("staff")).ToListAsync();
+
+        var staffs = new List<StaffDetail>
+                {
+                    new StaffDetail
+                    {
+                        Position = quanly,
+                        UserId = results[0].Id,
+                    }
+                };
+        // Add the first staff member with the 'Quản lý' position
+        await context.StaffDetails.AddAsync(staffs[0]);
         await context.SaveChangesAsync();
-        await userManager.AddToRolesAsync(results[0], quanly.DefaultRoles);
-        for (int i = 1; i < results.Count(); i++)
+        staffs.Clear();
+        for (int i = 1; i < results.Count; i++)
         {
           var user = results[i];
-          var isTiepTan = i % 2 == 0;
-          staffs.Add(new StaffDetail()
+          var isTiepTan = i % 2 == 0;  // Alternate between positions
+          var position = isTiepTan ? tieptan : truyenthong;
+          staffs.Add(new StaffDetail
           {
             UserId = user.Id,
-            Position = isTiepTan ? tieptan : truyenthong,
-            Salary = i * 10000
+            Position = position,
           });
-          await userManager.AddToRolesAsync(user, isTiepTan ? tieptan.DefaultRoles : truyenthong.DefaultRoles);
+          await userManager.AddToRolesAsync(user, position.DefaultRoles);
         }
-
+        // Add remaining staff details to the context
         await context.StaffDetails.AddRangeAsync(staffs);
-
-
       }
       await context.SaveChangesAsync();
     }

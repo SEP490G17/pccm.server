@@ -4,7 +4,6 @@ using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 

@@ -1,16 +1,10 @@
-using Application.Core;
 using Application.DTOs;
 using Application.Handler.CourtPrices;
 using AutoMapper;
 using Domain.Entity;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Persistence;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.CourtPrices
 {

@@ -3,7 +3,6 @@ using Application.DTOs;
 using Application.Handler.Bookings;
 using Application.Handler.Notifications;
 using Application.Interfaces;
-using Application.SpecParams;
 using Application.SpecParams.BookingSpecification;
 using Domain;
 using Domain.Enum;

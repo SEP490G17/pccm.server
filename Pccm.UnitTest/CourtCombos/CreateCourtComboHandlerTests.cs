@@ -1,14 +1,8 @@
-using Application.Handler.Notifications;
 using Application.DTOs;
 using AutoMapper;
-using Domain;
 using Domain.Entity;
-using Domain.Enum;
 using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using Persistence;
-using System.Threading;
-using System.Threading.Tasks;
 using Application.Handler.CourtCombos;
 using FluentAssertions;
 

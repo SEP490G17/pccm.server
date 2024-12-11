@@ -1,16 +1,10 @@
-using Application.Core;
 using Application.Handler.Payments;
 using Application.Interfaces;
 using Domain.Entity;
 using Domain.Enum;
 using Moq;
-using NUnit.Framework;
 using Persistence;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using FluentAssertions;
 
 namespace Pccm.UnitTest.Payments

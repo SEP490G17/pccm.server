@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using API.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Application.DTOs;
-using Application.Handler.Reviews;
 using Application.Handler.Statistics;
 
 namespace Pccm.UnitTest.Reviews

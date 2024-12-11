@@ -1,25 +1,15 @@
 using Moq;
-using NUnit.Framework;
 using Application.Core;
-using Application.DTOs;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entity;
 using Domain.Enum;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Application.Handler.Bookings;
 using Microsoft.AspNetCore.Identity;
 using Domain;
 using FluentAssertions;
-using Moq.EntityFrameworkCore;
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 
 namespace Pccm.UnitTest.Bookings

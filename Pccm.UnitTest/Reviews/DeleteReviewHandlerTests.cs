@@ -1,12 +1,7 @@
 using Application.Handler.Reviews;
-using Moq;
-using NUnit.Framework;
 using Persistence;
 using Domain.Entity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pccm.UnitTest.Reviews
 {

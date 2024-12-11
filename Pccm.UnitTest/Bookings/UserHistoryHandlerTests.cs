@@ -1,4 +1,3 @@
-using Application.Handler.Bookings;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
