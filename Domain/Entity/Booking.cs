@@ -27,7 +27,7 @@ namespace Domain.Entity
         public bool IsSuccess { get; set; } = false;
 
         [Required]
-        [Column(TypeName = "decimal(10, 2)")]
+        [Column(TypeName = "decimal(18, 2)")]
         [Range(1000, double.MaxValue, ErrorMessage = "Tổng giá trị tiền thuê sân phải lớn hơn hoặc bằng 1,000 VND.")]
         public decimal TotalPrice { get; set; }  // Tổng giá trị tiền thuê sân
 

@@ -87,7 +87,7 @@ namespace Application.Handler.Bookings
                 DateTime startDateTimeUtc = startDateWithTime.ToUniversalTime();
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
 
-                if (request.Booking.FromDate.Date < DateTime.Today.Date)
+                if (startDateWithTime < DateTime.Today.Date)
                 {
                     return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
                 }

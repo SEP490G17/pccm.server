@@ -10,7 +10,7 @@ namespace Domain.Entity
         public int? CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Thời gian đặt hàng
         [Required]
-        [Column(TypeName = "decimal(10, 2)")]
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalAmount { get; set; }  // Tổng số tiền của đơn hàng
         public float? Discount { get; set; }
         public bool IsOpen { get; set; } = true;  // Trạng thái đơn hàng: Đang chờ, Đã hoàn thành, hoặc Đã hủy
