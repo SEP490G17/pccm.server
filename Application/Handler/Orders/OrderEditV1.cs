@@ -119,11 +119,12 @@ namespace Application.Handler.Orders
                     }
                     else
                     {
+                        var quantity = Math.Round((double)booking.Duration / 60, 2);
                         newOrderDetails.Service = service;
                         newOrderDetails.ServiceId = service.Id;
                         newOrderDetails.Price = service.Price;
-                        newOrderDetails.Quantity = (double)booking.Duration / 60;
-                        sum += service.Price * booking.Duration / 60;
+                        newOrderDetails.Quantity = quantity;
+                        sum += service.Price * (decimal)quantity;
                         order.OrderDetails.Add(newOrderDetails);
 
                     }
