@@ -101,7 +101,8 @@ namespace API.Controllers
                 _context.Update(order);
             }
             await _context.SaveChangesAsync();
-            return Ok(paymentStatus == PaymentStatus.Success ? "Payment successful." : "Payment failed.");
+            string redirectUrl = "https://trongnp-registry.site/lich-su";
+            return Redirect(redirectUrl);
         }
     }
 }
