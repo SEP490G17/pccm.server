@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -40,16 +41,23 @@ namespace Application.Handler.News
                                 WHERE Tag != ''
                                 GROUP BY Tag
                                 ORDER BY Count DESC
-                                LIMIT 10
+                                LIMIT 6
                             "
                 ).ToListAsync(cancellationToken);
 
 
                 var result = Result<List<KeyValuePair<string, int>>>.Success(
-                    mostCommonTags.Select(x => new KeyValuePair<string, int>(x.Tag, x.Count)).ToList()
+                    mostCommonTags.Select(x => new KeyValuePair<string, int>(CleanKey(x.Tag), x.Count)).ToList()
                 );
 
                 return result;
+            }
+            private static string CleanKey(string key)
+            {
+                key = Regex.Replace(key, @"[\[\]\""]+", string.Empty);
+
+                // Decode Unicode escape sequences
+                return Regex.Unescape(key);
             }
         }
     }

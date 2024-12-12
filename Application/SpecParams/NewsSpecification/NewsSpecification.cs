@@ -4,23 +4,21 @@ namespace Application.SpecParams.NewsSpecification
 {
     public class NewsSpecification : BaseSpecification<NewsBlog>
     {
-        public NewsSpecification(NewsSpecParams specParam) : base(
+        public NewsSpecification(BaseSpecParam specParam, List<string> Tags) : base(
+
             x => (
-                    (
-                        string.IsNullOrEmpty(specParam.Search) ||
-                        x.Title.Contains(specParam.Search) ||
-                        x.Description.Contains(specParam.Search)
-                    ) &&
-                    (
-                        specParam.Tags == null ||
-                        specParam.Tags.Any(tag => x.Tags.AsEnumerable().Contains(tag))
-                    )
-                )
+                (string.IsNullOrEmpty(specParam.Search) ||
+                x.Title.Contains(specParam.Search) ||
+                x.Description.Contains(specParam.Search)) &&
+                (Tags == null || Tags.Count == 0 ||
+                x.Tags.AsEnumerable().Any(tag => Tags.Contains(tag)))  // Buộc tính toán phía client
+            )
         )
         {
             ApplyPaging(specParam.Skip, specParam.PageSize);
             AddOrderByDescending(x => x.CreatedAt);
         }
+
 
     }
 }

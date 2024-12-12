@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Application.Events;
 using Application.Handler.News;
 using Application.SpecParams;
@@ -24,11 +25,14 @@ namespace API.Controllers
             return HandleResult(await Mediator.Send(new Detail.Query() { Id = id }, ct));
         }
 
-        [HttpGet("usersite")]
+        [HttpPost("usersite")]
         [AllowAnonymous]
-        public async Task<IActionResult> ListNewsUserSite([FromQuery] NewsSpecParams newsSpecParams, CancellationToken ct)
+        public async Task<IActionResult> ListNewsUserSite(
+            [FromQuery] BaseSpecParam newsSpecParams,
+            [FromBody] [AllowNull] List<string> Tags
+        , CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new ListNewsUserSite.Query() { NewsSpecParams = newsSpecParams }, ct));
+            return HandleResult(await Mediator.Send(new ListNewsUserSite.Query() { NewsSpecParams = newsSpecParams, Tags = Tags }, ct));
         }
 
         [HttpPost]
@@ -64,6 +68,16 @@ namespace API.Controllers
         public async Task<IActionResult> GetMostCommonTags(CancellationToken ct)
         {
             return HandleResult(await Mediator.Send(new GetMostCommonTags.Query(), ct));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("another-tags")]
+        public async Task<IActionResult> GetTags([FromQuery] BaseSpecParam baseSpecParam, CancellationToken ct)
+        {
+            return HandleResult(await Mediator.Send(new GetTags.Query()
+            {
+                BaseSpecParam = baseSpecParam,
+            }, ct));
         }
     }
 }
