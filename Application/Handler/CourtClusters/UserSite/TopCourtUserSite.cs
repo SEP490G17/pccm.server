@@ -42,7 +42,7 @@ namespace Application.Handler.CourtClusters.UserSite
                     // Lấy danh sách tất cả sân hiện có
                     var allCourts = await unitOfWork.Repository<Court>()
                         .QueryList(null)
-                        .Where(c => c.DeleteAt == null && c.Status == CourtStatus.Available) // Chỉ lấy sân chưa bị xóa
+                        .Where(c => c.DeleteAt == null) // Chỉ lấy sân chưa bị xóa
                         .ToListAsync(cancellationToken);
 
                     // Tính thời gian trống cho từng sân
@@ -129,12 +129,15 @@ namespace Application.Handler.CourtClusters.UserSite
                     return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Success(
                         new Pagination<CourtClusterDto.CourtClusterListPageUserSite>(querySpec.PageSize, totalElement, courtClusters)
                     );
+                }catch{
+                    return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Failure(
+                        "Fail"
+                    );
                 }
-                catch (Exception ex)
-                {
-                    return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Failure($"An error occurred: {ex.Message}");
-                }
+
+
             }
         }
+
     }
 }
