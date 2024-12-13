@@ -94,11 +94,13 @@ namespace Application.Handler.Bookings
                 var roles = await _userManager.GetRolesAsync(user);
                 if (roles.Count == 0)
                 {
-                    var checkBooking = _context.Bookings
+                    var checkBooking = await _context.Bookings
                         .FirstOrDefaultAsync(
                             x => x.AppUserId.Equals(user.Id) &&
                             x.StartTime.Equals(startDateTimeUtc) &&
-                            x.EndTime.Equals(endDateTimeUtc)
+                            x.EndTime.Equals(endDateTimeUtc) &&
+                            x.Status == BookingStatus.Confirmed && // check status vì nó đang lấy cả các booking đã từ chối
+                            x.IsSuccess == true
                     );
 
                     if (checkBooking!= null)
