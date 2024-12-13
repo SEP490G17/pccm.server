@@ -98,9 +98,7 @@ namespace Application.Handler.Bookings
                         .FirstOrDefaultAsync(
                             x => x.AppUserId.Equals(user.Id) &&
                             x.StartTime.Equals(startDateTimeUtc) &&
-                            x.EndTime.Equals(endDateTimeUtc) &&
-                            x.Status == BookingStatus.Confirmed &&    //thêm status vì nó đang check cả lịch đã bị hủy
-                            x.IsSuccess == true 
+                            x.EndTime.Equals(endDateTimeUtc)
                     );
 
                     if (checkBooking!= null)
