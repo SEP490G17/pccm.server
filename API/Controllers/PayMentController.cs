@@ -107,7 +107,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
-            string redirectUrl = $"https://trongnp-registry.site/lich-su/chi-tiet/${bookingId}?"
+            string redirectUrl = $"https://trongnp-registry.site/lich-su/chi-tiet/{bookingId}?"
                 + (paymentStatus == PaymentStatus.Success ? "payment=succes" : "payment=error");
             if (roles.Any())
             {
