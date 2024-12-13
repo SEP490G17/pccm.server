@@ -44,7 +44,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> VNPayCallback([FromQuery] VnPayCallbackDto callback)
         {
-            var paymentStatus =  callback.vnp_ResponseCode.Equals("00")
+            var paymentStatus = callback.vnp_ResponseCode.Equals("00")
                                 ? PaymentStatus.Success
                                 : PaymentStatus.Failed;
 
@@ -62,14 +62,9 @@ namespace API.Controllers
                 }
                 if (booking.TotalPrice < vnpayAmount / 100)
                 {
-                    var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId);
-                    var totalAmount = order.TotalAmount + booking.TotalPrice;
-                    if (vnpayAmount == totalAmount)
-                    {
-                        order.Payment.Status = paymentStatus;
-                        _context.Update(order);
-                    }
-
+                    var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId && o.Payment.Status == PaymentStatus.Pending);
+                    order.Payment.Status = paymentStatus;
+                    _context.Update(order);
                 }
                 booking.Payment.Status = paymentStatus;
                 _context.Update(booking);
@@ -108,11 +103,11 @@ namespace API.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
             string redirectUrl = $"https://trongnp-registry.site/lich-su/chi-tiet/{bookingId}?"
-                + (paymentStatus == PaymentStatus.Success ? "payment=succes" : "payment=error");
+                + (paymentStatus == PaymentStatus.Success ? "payment=success" : "payment=error");
             if (roles.Any())
             {
                 redirectUrl = $"https://admin.trongnp-registry.site/booking/chi-tiet/{bookingId}?"
-                + (paymentStatus == PaymentStatus.Success ? "payment=succes" : "payment=error");
+                + (paymentStatus == PaymentStatus.Success ? "payment=success" : "payment=error");
             }
             return Redirect(redirectUrl);
         }
