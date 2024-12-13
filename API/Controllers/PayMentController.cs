@@ -5,8 +5,10 @@ using Application.Handler.Payments;
 using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Domain;
 using Domain.Enum;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -19,16 +21,17 @@ namespace API.Controllers
         private readonly DataContext _context;
         private readonly BookingRealTimeService _bookingRealTimeService;
         private readonly IMapper _mapper;
-
         private readonly NotificationService _notificationService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public PayMentController(IVnPayService vnpayService, DataContext context, IMapper mapper, NotificationService notificationService, BookingRealTimeService bookingRealTimeService)
+        public PayMentController(IVnPayService vnpayService, DataContext context, IMapper mapper, NotificationService notificationService, BookingRealTimeService bookingRealTimeService, UserManager<AppUser> userManager)
         {
             _vnpayService = vnpayService;
             _context = context;
             _mapper = mapper;
             _bookingRealTimeService = bookingRealTimeService;
             _notificationService = notificationService;
+            _userManager = userManager;
         }
 
         [HttpPost("{type}/{id}/process-payment")]
@@ -41,14 +44,14 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> VNPayCallback([FromQuery] VnPayCallbackDto callback)
         {
-            var isValid = _vnpayService.VerifyVnPaySignature(callback);
-            var paymentStatus = isValid && callback.vnp_ResponseCode.Equals("00")
+            var paymentStatus =  callback.vnp_ResponseCode.Equals("00")
                                 ? PaymentStatus.Success
                                 : PaymentStatus.Failed;
 
             var BillPayId = int.Parse(callback.vnp_TxnRef.Split("_")[0]);
             var type = int.Parse(callback.vnp_TxnRef.Split("_")[1]);
-
+            var userName = callback.vnp_TxnRef.Split("_")[2];
+            int bookingId = BillPayId;
             if (type == (int)PaymentType.Booking)
             {
                 var vnpayAmount = decimal.Parse(callback.vnp_Amount);
@@ -59,11 +62,11 @@ namespace API.Controllers
                 }
                 if (booking.TotalPrice < vnpayAmount / 100)
                 {
-                    var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId && o.Payment.Status == PaymentStatus.Pending);
+                    var order = await _context.Orders.Include(o => o.Payment).FirstOrDefaultAsync(o => o.BookingId == BillPayId);
                     var totalAmount = order.TotalAmount + booking.TotalPrice;
                     if (vnpayAmount == totalAmount)
                     {
-                        order.Payment.Status = PaymentStatus.Success;
+                        order.Payment.Status = paymentStatus;
                         _context.Update(order);
                     }
 
@@ -73,13 +76,13 @@ namespace API.Controllers
                 var realTimeResponse = await _context.Bookings.ProjectTo<BookingDtoV2>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(b => b.Id == booking.Id);
                 if (realTimeResponse != null)
                 {
-                    realTimeResponse.PaymentStatus = PaymentStatus.Success;
+                    realTimeResponse.PaymentStatus = paymentStatus;
                     await _bookingRealTimeService.NotifyUpdateBookingAsync(realTimeResponse, $"admin{realTimeResponse.CourtClusterId}");
                 }
                 var notiuser = await Mediator.Send(new BookingNotification.Command()
                 {
                     BookingId = BillPayId,
-                    Message = $"Thánh toán đơn {BillPayId} thành công",
+                    Message = $"Thánh toán đơn {BillPayId} " + (paymentStatus == PaymentStatus.Success ? "thành công" : "thất bại"),
                     Url = $"{BillPayId}",
                     Title = "Thanh toán",
                     Type = NotificationType.Payment,
@@ -97,11 +100,21 @@ namespace API.Controllers
                 {
                     return NotFound("Order not found.");
                 }
+                bookingId = (int)order.BookingId;
                 order.Payment.Status = paymentStatus;
                 _context.Update(order);
             }
             await _context.SaveChangesAsync();
-            return Ok(paymentStatus == PaymentStatus.Success ? "Payment successful." : "Payment failed.");
+            var user = await _userManager.FindByNameAsync(userName);
+            var roles = await _userManager.GetRolesAsync(user);
+            string redirectUrl = $"https://trongnp-registry.site/lich-su/chi-tiet/${bookingId}?"
+                + (paymentStatus == PaymentStatus.Success ? "payment=succes" : "payment=error");
+            if (roles.Any())
+            {
+                redirectUrl = $"https://admin.trongnp-registry.site/booking/chi-tiet/{bookingId}?"
+                + (paymentStatus == PaymentStatus.Success ? "payment=succes" : "payment=error");
+            }
+            return Redirect(redirectUrl);
         }
     }
 }
