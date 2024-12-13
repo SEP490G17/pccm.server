@@ -58,7 +58,7 @@ namespace Application.Handler.Bookings
 
                 var courtCluster = court.CourtCluster;
 
-                
+
 
                 if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
                 {
@@ -91,6 +91,22 @@ namespace Application.Handler.Bookings
                 // Chuyển đổi thời gian từ GMT+7 về UTC
                 DateTime startDateTimeUtc = startDateWithTime.ToUniversalTime();
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Count == 0)
+                {
+                    var checkBooking = _context.Bookings
+                        .FirstOrDefaultAsync(
+                            x => x.AppUserId.Equals(user.Id) &&
+                            x.StartTime.Equals(startDateTimeUtc) &&
+                            x.EndTime.Equals(endDateTimeUtc)
+                    );
+
+                    if (checkBooking!= null)
+                    {
+                        return Result<BookingDtoV1>.Failure("Bạn đã đặt lịch trong thời gian này");
+                    }
+                }
+
 
                 if (startDateWithTime < DateTime.Now || endDateWithTime < DateTime.Now)
                 {
@@ -164,7 +180,6 @@ namespace Application.Handler.Bookings
                 booking.PhoneNumber = bookingRequest.PhoneNumber;
                 booking.FullName = bookingRequest.FullName;
                 booking.AppUser = user;
-                var roles = await _userManager.GetRolesAsync(user);
                 var acceptableRole = new List<string>() { "Admin", "ManagerCourtCluster", "Owner", "ManagerBooking" };
 
                 // Check nếu là nhân viên có quyền sẽ confirm và tạo thanh toán luôn
@@ -181,7 +196,7 @@ namespace Application.Handler.Bookings
                     booking.Payment = payment;
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
-                    var customer = await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(booking.PhoneNumber),cancellationToken);
+                    var customer = await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(booking.PhoneNumber), cancellationToken);
                     if (customer != null)
                     {
                         booking.AppUser = customer;

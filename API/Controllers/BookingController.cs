@@ -108,17 +108,20 @@ namespace API.Controllers
             var result = await Mediator.Send(new AcceptedBooking.Command() { Id = id });
             await HandleAdminUpdateBookingRealTime(result);
             await HandleUserUpdateBookingRealTime(result);
-            var notification = await Mediator.Send(new BookingNotification.Command()
+            if (result.IsSuccess)
             {
-                BookingId = id,
-                Message = "Lịch đặt của bạn đã được xác nhận thành công",
-                Title = "Đặt lịch",
-                Type = NotificationType.Booking,
-                Url = id.ToString(),
-            });
-            if (notification != null)
-            {
-                await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+                var notification = await Mediator.Send(new BookingNotification.Command()
+                {
+                    BookingId = id,
+                    Message = "Lịch đặt của bạn đã được xác nhận thành công",
+                    Title = "Đặt lịch",
+                    Type = NotificationType.Booking,
+                    Url = id.ToString(),
+                });
+                if (notification != null)
+                {
+                    await _notificationService.NotificationForUser(notification.NotificationDto, notification.PhoneNumber);
+                }
             }
             return HandleResult(result);
         }
@@ -267,7 +270,7 @@ namespace API.Controllers
                         Type = NotificationType.Booking,
                         Url = $"{result.Value.Id}",
                         AppUser = user,
-                    },ct);
+                    }, ct);
                     await _notificationService.NotificationForUser(notification, user.PhoneNumber);
                 }
             }

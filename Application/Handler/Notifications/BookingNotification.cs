@@ -32,7 +32,7 @@ namespace Application.Handler.Notifications
             }
             public async Task<NotificationQueryResult> Handle(Command request, CancellationToken cancellationToken)
             {
-                var booking = _context.Bookings.Include(x => x.AppUser).FirstOrDefault(x => x.Id == request.BookingId);
+                var booking = await _context.Bookings.Include(x => x.AppUser).FirstOrDefaultAsync(x => x.Id == request.BookingId, cancellationToken);
                 if (booking.AppUser == null)
                 {
                     return null;
