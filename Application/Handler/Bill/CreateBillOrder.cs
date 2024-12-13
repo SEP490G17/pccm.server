@@ -135,7 +135,7 @@ namespace Application.Handler.Bill
                         int yPos = margin;
                         int pageHeight = (int)page.Height;
                         int maxHeight = pageHeight - 2 * margin;
-
+                        double maxHeightForRow = 20;
                         void EnsureSpace(int height)
                         {
                             if (yPos + height > maxHeight)
@@ -198,11 +198,23 @@ namespace Application.Handler.Bill
                                 gfx = XGraphics.FromPdfPage(page);
                                 yPos = margin;
                             }
+                            if (item.ProductName.Length >= 37)
+                            {
+                                double productNameHeight = DrawWrappedText(gfx, item.ProductName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                maxHeightForRow = Math.Max(maxHeightForRow, productNameHeight);  // Update max height for the row
+                                                                                                 // DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                                DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                                DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                            }
+                            else
+                            {
+                                DrawCell(gfx, item.ProductName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                                DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                                DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            }
 
-                            DrawCell(gfx, item.ProductName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
-                            DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                            DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                            DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
                             if (yPos + 20 > maxHeight)
                             {
                                 page = document.AddPage();
@@ -235,11 +247,24 @@ namespace Application.Handler.Bill
                                 gfx = XGraphics.FromPdfPage(page);
                                 yPos = margin;
                             }
+                            if (item.ServiceName.Length >= 37)
+                            {
+                                double productNameHeight = DrawWrappedText(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                maxHeightForRow = Math.Max(maxHeightForRow, productNameHeight);  // Update max height for the row
+                                                                                                 // DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                                DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                                DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, maxHeightForRow);
+                            }
 
-                            DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
-                            DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                            DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
-                            DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            else
+                            {
+                                DrawCell(gfx, item.ServiceName, font, margin, yPos, (page.Width - 2 * margin) * 0.4, 20);
+                                DrawCell(gfx, item.Quantity.ToString(), font, (page.Width - 2 * margin) * 0.4 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                                DrawCell(gfx, item.Price.ToString("N0"), font, (page.Width - 2 * margin) * 0.6 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                                DrawCell(gfx, (item.Price * item.Quantity).ToString("N0"), font, (page.Width - 2 * margin) * 0.8 + margin, yPos, (page.Width - 2 * margin) * 0.2, 20);
+                            }
+
                             if (yPos + 20 > maxHeight)
                             {
                                 page = document.AddPage();
@@ -288,6 +313,40 @@ namespace Application.Handler.Bill
             {
                 gfx.DrawRectangle(XPens.Black, x, y, width, height);
                 gfx.DrawString(text, font, XBrushes.Black, new XRect(x + 2, y + 2, width - 4, height - 4), XStringFormats.CenterLeft);
+            }
+
+            private double DrawWrappedText(XGraphics gfx, string text, XFont font, double x, double y, double width, double lineHeight)
+            {
+                var words = text.Split(' ');
+                var currentLine = string.Empty;
+                double currentY = y;
+                double maxHeight = 0;
+
+                double adjustedLineHeight = lineHeight * 0.5;
+
+                foreach (var word in words)
+                {
+                    var testLine = currentLine + word + " ";
+                    if (gfx.MeasureString(testLine, font).Width < width)
+                    {
+                        currentLine = testLine;
+                    }
+                    else
+                    {
+                        gfx.DrawString(currentLine.Trim(), font, XBrushes.Black, new XRect(x + 2, currentY, width, adjustedLineHeight), XStringFormats.TopLeft);
+                        currentY += adjustedLineHeight;
+                        maxHeight = Math.Max(maxHeight, currentY - y);  // Track max height
+                        currentLine = word + " ";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(currentLine))
+                {
+                    gfx.DrawString(currentLine.Trim(), font, XBrushes.Black, new XRect(x + 2, currentY, width, adjustedLineHeight), XStringFormats.TopLeft);
+                    maxHeight = Math.Max(maxHeight, currentY + adjustedLineHeight - y);
+                    gfx.DrawRectangle(XPens.Black, x, y, width, maxHeight);
+                }
+                return maxHeight;
             }
         }
     }

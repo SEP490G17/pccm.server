@@ -12,6 +12,12 @@ namespace Application.DTOs
         public List<ServiceBillDto> services { get; set; }
     }
 
+    public class BillInputDto
+    {
+        public int bookingId { get; set; }
+        public int[] orderId { get; set; }
+    }
+
     public class ProductBillDto
     {
         public int ProductId { get; set; }

@@ -1,4 +1,5 @@
 
+using Application.DTOs;
 using Application.Handler.Bill;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +9,10 @@ namespace API.Controllers
     [AllowAnonymous]
     public class BillController : BaseApiController
     {
-        [HttpGet("billbooking/{id}")]
-        public async Task<IActionResult> CreateBillBooking(int id, CancellationToken ct)
+        [HttpPost("billbooking")]
+        public async Task<IActionResult> CreateBillBooking([FromBody] BillInputDto billInputDto, CancellationToken ct)
         {
-            return HandleResult(await Mediator.Send(new CreateBillAll.Query() { bookingId = id }, ct));
+            return HandleResult(await Mediator.Send(new CreateBillAll.Query() { bookingId = billInputDto.bookingId, orderId = billInputDto.orderId }, ct));
         }
 
         [HttpGet("billorder/{id}")]
