@@ -57,10 +57,15 @@ namespace Application.Handler.Bookings
                 }
 
                 var courtCluster = court.CourtCluster;
+
+                
+
                 if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
                 {
                     return Result<BookingDtoV1>.Failure("Giờ bắt đầu phải lớn hơn giờ kết thúc ít nhất 1 tiếng");
                 }
+
+
 
                 if (request.Booking.ToTime > courtCluster.CloseTime || request.Booking.FromTime < courtCluster.OpenTime) //[ ( ]  [ ) ]
                 {
@@ -86,6 +91,11 @@ namespace Application.Handler.Bookings
                 // Chuyển đổi thời gian từ GMT+7 về UTC
                 DateTime startDateTimeUtc = startDateWithTime.ToUniversalTime();
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
+
+                if (startDateWithTime < DateTime.Now || endDateWithTime < DateTime.Now)
+                {
+                    return Result<BookingDtoV1>.Failure("Không thể đặt lịch trong quá khứ");
+                }
 
                 if (startDateWithTime < DateTime.Today.Date)
                 {
