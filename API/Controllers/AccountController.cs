@@ -24,7 +24,7 @@ namespace API.Controllers
         private readonly TokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
-        private readonly string urlPCCM = "http://localhost:3000/";
+        private readonly string urlPCCM = "https://trongnp-registry.site/";
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService, IMapper mapper, DataContext context)

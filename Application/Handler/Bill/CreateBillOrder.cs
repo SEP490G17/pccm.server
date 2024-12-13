@@ -38,7 +38,7 @@ namespace Application.Handler.Bill
                     .Include(o => o.OrderDetails)
                         .ThenInclude(od => od.Service)
                     .Include(o => o.Payment)
-                    .Where(o => o.Id == orderId && o.Payment.Status == Domain.Enum.PaymentStatus.Success)
+                    .Where(o => o.Id == orderId)
                     .ToListAsync(cancellationToken);
 
                 if (orders == null || orders.Count == 0)
