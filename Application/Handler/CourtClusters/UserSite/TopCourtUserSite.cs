@@ -42,7 +42,7 @@ namespace Application.Handler.CourtClusters.UserSite
                     // Lấy danh sách tất cả sân hiện có
                     var allCourts = await unitOfWork.Repository<Court>()
                         .QueryList(null)
-                        .Where(c => c.DeleteAt == null) // Chỉ lấy sân chưa bị xóa
+                        .Where(c => c.DeleteAt == null && (int) c.Status == (int)CourtStatus.Available ) // Chỉ lấy sân chưa bị xóa
                         .ToListAsync(cancellationToken);
 
                     // Tính thời gian trống cho từng sân
