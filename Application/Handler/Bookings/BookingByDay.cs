@@ -99,7 +99,7 @@ namespace Application.Handler.Bookings
                             x => x.AppUserId.Equals(user.Id) &&
                             x.StartTime.Equals(startDateTimeUtc) &&
                             x.EndTime.Equals(endDateTimeUtc) &&
-                            x.Court.Equals(bookingRequest.CourtId) &&
+                            x.Court.Id.Equals(bookingRequest.CourtId) &&
                             x.Status == BookingStatus.Pending,
                             cancellationToken
                     );
