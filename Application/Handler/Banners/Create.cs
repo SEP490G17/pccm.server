@@ -1,5 +1,6 @@
 ﻿using Application.Core;
 using Application.DTOs;
+using Application.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Domain.Entity;
@@ -16,7 +17,6 @@ namespace Application.Handler.Banners
         public class Command : IRequest<Result<BannerInputDto>>
         {
             public BannerInputDto Banner { get; set; }
-            public string userName { get; set; }
         }
         public class CommandValidator : AbstractValidator<Command>
         {
@@ -29,10 +29,13 @@ namespace Application.Handler.Banners
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
-            public Handler(DataContext context, IMapper mapper)
+            private IUserAccessor _userAccessor;
+
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
                 _mapper = mapper;
                 _context = context;
+                _userAccessor = userAccessor;
             }
             public async Task<Result<BannerInputDto>> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -42,9 +45,8 @@ namespace Application.Handler.Banners
                 }
 
                 var banner = _mapper.Map<Banner>(request.Banner);
-
-                banner.CreatedBy = request.userName;
-
+                var username = _userAccessor.GetUserName();
+                banner.CreatedBy = username;
                 await _context.Banners.AddAsync(banner, cancellationToken);
                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                 if (!result)
@@ -58,7 +60,7 @@ namespace Application.Handler.Banners
 
                 bannerLog.Id = 0;
                 bannerLog.BannerId = banner.Id;
-                bannerLog.CreatedBy = request.userName;
+                bannerLog.CreatedBy = username;
                 bannerLog.Description = "Banner created successfully";
                 bannerLog.LogType = LogType.Create;
 

@@ -34,15 +34,15 @@ namespace Application.Handler.CourtClusters.UserSite
                     var bookings = await unitOfWork.Repository<Booking>()
                         .QueryList(null)
                         .Where(b =>
-                            (b.UntilTime == null && b.StartTime.Date == today) || // Booking theo ngày
-                            (b.UntilTime.HasValue && b.StartTime.Date <= today && b.UntilTime.Value.Date >= today) // Booking combo
+                            (b.UntilTime == null && b.StartTime >= today && b.StartTime < endOfDay) || // Booking theo ngày
+                            (b.UntilTime.HasValue && b.StartTime <= endOfDay && b.UntilTime.Value >= today)
                         )
                         .ToListAsync(cancellationToken);
 
                     // Lấy danh sách tất cả sân hiện có
                     var allCourts = await unitOfWork.Repository<Court>()
                         .QueryList(null)
-                        .Where(c => c.DeleteAt == null && (int) c.Status == (int)CourtStatus.Available ) // Chỉ lấy sân chưa bị xóa
+                        .Where(c => c.DeleteAt == null && (int)c.Status == (int)CourtStatus.Available) // Chỉ lấy sân chưa bị xóa
                         .ToListAsync(cancellationToken);
 
                     // Tính thời gian trống cho từng sân
@@ -129,7 +129,9 @@ namespace Application.Handler.CourtClusters.UserSite
                     return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Success(
                         new Pagination<CourtClusterDto.CourtClusterListPageUserSite>(querySpec.PageSize, totalElement, courtClusters)
                     );
-                }catch{
+                }
+                catch
+                {
                     return Result<Pagination<CourtClusterDto.CourtClusterListPageUserSite>>.Failure(
                         "Fail"
                     );

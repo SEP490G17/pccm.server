@@ -48,12 +48,8 @@ namespace API.Controllers
         [Authorize(Roles = "Admin, Owner, ManagerBanner")]
         public async Task<IActionResult> PostBanner([FromBody] BannerInputDto banner, CancellationToken ct)
         {
-            string userName = userAccessor.GetUserName();
-            if (string.IsNullOrEmpty(userName))
-            {
-                return BadRequest(new { Message = "User is not authenticated" }); // Return a message with a 400 BadRequest status 
-            }
-            return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner, userName = userName }, ct));
+            
+            return HandleResult(await Mediator.Send(new Create.Command() { Banner = banner}, ct));
         }
 
         [HttpPut("{id}")]
