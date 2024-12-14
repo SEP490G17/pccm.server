@@ -99,8 +99,8 @@ namespace Application.Handler.Bookings
                             x => x.AppUserId.Equals(user.Id) &&
                             x.StartTime.Equals(startDateTimeUtc) &&
                             x.EndTime.Equals(endDateTimeUtc) &&
-                            x.Status == BookingStatus.Confirmed && // check status vì nó đang lấy cả các booking đã từ chối
-                            x.IsSuccess == true
+                            x.Status == BookingStatus.Pending,
+                            cancellationToken
                     );
 
                     if (checkBooking!= null)
