@@ -31,7 +31,7 @@ namespace Application.Handler.Bookings
                Console.WriteLine(user.Id);
                querySpec.UserId = user.Id;
                 var spec = new BookingUserHistorySpecification(querySpec);
-                var specCount = new BookingUserHistorySpecification(querySpec);
+                var specCount = new BookingUserHistoryCountSpecification(querySpec);
                 var data = await _unitOfWork.Repository<Booking>()
                     .QueryList(spec)
                     .ProjectTo<BookingUserHistoryDto>(_mapper.ConfigurationProvider)

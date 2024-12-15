@@ -57,6 +57,7 @@ namespace Application.Handler.Bookings
                     return Result<BookingDtoV1>.Failure("Sân không tồn tại");
                 }
 
+
                 var courtCluster = court.CourtCluster;
 
                 if (request.Booking.ToTime < request.Booking.FromTime.AddHours(1))
@@ -95,6 +96,27 @@ namespace Application.Handler.Bookings
                 DateTime endDateTimeUtc = endDateWithTime.ToUniversalTime();
 
                 var until = endDateTimeUtc.AddMonths(combo.Duration);
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var acceptableRole = new List<string>() { "Admin", "ManagerCourtCluster", "Owner", "ManagerBooking" };
+                var check = roles.Any(x => acceptableRole.Contains(x));
+                if (!check)
+                {
+                    var bookingUserConflig = await _context.Bookings
+                    .FirstOrDefaultAsync(x=>
+                        x.AppUserId.Equals(user.Id) && 
+                        x.Court.Id.Equals(bookingRequest.CourtId) &&
+                        x.StartTime.Equals(startDateTimeUtc) && 
+                        x.EndTime.Equals(endDateTimeUtc)&& 
+                        x.UntilTime.Equals(until) && x.Status == BookingStatus.Pending,
+                        cancellationToken
+                    );
+                    if (bookingUserConflig!= null)
+                    {
+                        return Result<BookingDtoV1>.Failure("Bạn đã đặt lịch này trước đó, vui lòng kiểm tra lại lịch sử đặt lịch");
+                    }
+                }
+
                 if (request.Booking.FromDate.Date < DateTime.Today.Date)
                 {
                     return Result<BookingDtoV1>.Failure("Không thể đặt lịch ngày trước ngày hiện tại");
@@ -172,11 +194,9 @@ namespace Application.Handler.Bookings
                     Until = until,
                 };
                 booking.RecurrenceRule = recurrenceRule.ToString();
-                var roles = await _userManager.GetRolesAsync(user);
-                var acceptableRole = new List<string>() { "Admin", "ManagerCourtCluster", "Owner", "ManagerBooking" };
+
 
                 // Check nếu là nhân viên có quyền sẽ confirm và tạo thanh toán luôn
-                var check = roles.Any(x => acceptableRole.Contains(x));
                 if (check)
                 {
                     booking.AcceptedAt = DateTime.Now;
@@ -189,7 +209,7 @@ namespace Application.Handler.Bookings
                     booking.Payment = payment;
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
-                    var customer = await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(booking.PhoneNumber),cancellationToken);
+                    var customer = await _context.Users.FirstOrDefaultAsync(x => x.PhoneNumber.Equals(booking.PhoneNumber), cancellationToken);
                     if (customer != null)
                     {
                         booking.AppUser = customer;
@@ -207,7 +227,7 @@ namespace Application.Handler.Bookings
                 var newBooking = _context.Entry(booking).Entity;
                 var response = await _context.Bookings
                     .ProjectTo<BookingDtoV1>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync(x => x.Id == newBooking.Id,cancellationToken);
+                    .FirstOrDefaultAsync(x => x.Id == newBooking.Id, cancellationToken);
                 return Result<BookingDtoV1>.Success(response);
             }
 

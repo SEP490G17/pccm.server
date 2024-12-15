@@ -15,6 +15,7 @@ namespace Application.DTOs
         public decimal TotalPrice { get; set; }
         public BookingStatus Status { get; set; }
         public bool IsSuccess { get; set; } = false;
+        public DateTime CreatedAt { get; set; }
         public PaymentStatus? PaymentStatus { get; set; }
     }
 }
