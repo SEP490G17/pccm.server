@@ -1,5 +1,6 @@
 using Application.Core;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Handler.Courts
@@ -22,7 +23,15 @@ namespace Application.Handler.Courts
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var court = await _context.Courts.FindAsync(request.Id);
-                if (court is null) return null;
+                if (court is null){
+                    return Result<Unit>.Failure("Không tìm thấy sân.");
+                }
+                var courtCluster = await _context.Courts.Where(c => c.CourtClusterId == court.CourtClusterId && c.DeleteAt == null).ToListAsync(cancellationToken);
+
+                if (courtCluster.Count <= 1)
+                {
+                    return Result<Unit>.Failure("Cụm sân cần ít nhất một sân.");
+                }
                 court.DeleteAt = DateTime.UtcNow;
                 _context.Courts.Update(court);
                 var result = await _context.SaveChangesAsync() > 0;
