@@ -19,6 +19,7 @@ namespace Application.DTOs
         public string RecurrenceRule { get; set; }
         public string PaymentUrl { get; set; } = null;
         public BookingStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
         public bool IsSuccess { get; set; }
         public decimal TotalPrice { get; set; }
     }
