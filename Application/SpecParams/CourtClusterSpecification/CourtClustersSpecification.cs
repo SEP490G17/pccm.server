@@ -23,6 +23,7 @@ namespace Application.SpecParams.CourtClusterSpecification
         )
         {
             ApplyPaging(baseSpecParam.Skip, baseSpecParam.PageSize);
+            AddOrderByDescending(x => x.CreatedAt);
 
         }
     }
