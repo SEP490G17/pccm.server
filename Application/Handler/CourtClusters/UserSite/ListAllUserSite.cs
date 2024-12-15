@@ -29,7 +29,10 @@ namespace Application.Handler.CourtClusters
                 var totalElement = await unitOfWork.Repository<CourtCluster>().CountAsync(specCount, cancellationToken);
 
                 var data = await unitOfWork.Repository<CourtCluster>().QueryList(spec)
-                  .Where(c => c.DeleteAt == null && c.IsVisible)
+                  .Where(c => c.DeleteAt == null
+                  && c.IsVisible
+                  && c.Courts.Count() > 0
+                  && c.Courts.Any(c => c.DeleteAt == null && c.Status == Domain.Enum.CourtStatus.Available))
                   .ProjectTo<CourtClusterDto.CourtClusterListPageUserSite>(mapper.ConfigurationProvider)
                   .ToListAsync(cancellationToken);
 
