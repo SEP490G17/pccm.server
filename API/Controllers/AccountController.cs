@@ -25,6 +25,7 @@ namespace API.Controllers
         private readonly IEmailService _emailService;
         private readonly ISendSmsService _sendSmsService;
         private readonly string urlPCCM = "https://trongnp-registry.site/";
+        private readonly string urlPCCMAdmin = "https://admin.trongnp-registry.site/";
         private readonly IMapper _mapper;
         private readonly DataContext _context;
         public AccountController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, TokenService tokenService, IEmailService emailService, ISendSmsService sendSmsService, IMapper mapper, DataContext context)
@@ -364,6 +365,49 @@ namespace API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost("forgot-password-admin")]
+        public async Task<IActionResult> ForgotPasswordAdmin([FromBody] ForgotPasswordDTO request)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
+            if (user == null)
+            {
+                return Unauthorized("Không tìm thấy người dùng");
+            }
+
+            var token = _tokenService.CreatePasswordResetToken(user);
+
+            var emailMessage = $@"
+                <div style='font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: 20px auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                    <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Yêu cầu đặt lại mật khẩu</h2>
+                    <p style='font-size: 16px; line-height: 1.6;'>Chào bạn,</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào nút dưới đây để đặt lại mật khẩu của bạn:</p>
+                    <p style='text-align: center; margin: 30px 0;'>
+                        <a href='{urlPCCMAdmin}confirm-forgot-password?token={token}' 
+                        style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                            Đặt lại mật khẩu
+                        </a>
+                    </p>
+                    <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu này, bạn có thể bỏ qua email này một cách an toàn.</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                    <footer style='text-align: center; margin-top: 20px; font-size: 12px; color: #999;'>
+                        <p>© 2024 PCCM. All Rights Reserved.</p>
+                    </footer>
+                </div>
+                ";
+
+
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email, "Reset Password", emailMessage);
+                return Ok("Yêu cầu đặt lại mật khẩu đã được gửi.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error sending email: {ex.Message}");
+            }
+        }
+
         // API xác nhận reset mật khẩu sau khi click vào link email
         [AllowAnonymous]
         [HttpPost("confirm-forgot-password")]
@@ -400,7 +444,66 @@ namespace API.Controllers
                     <p style='font-size: 16px; line-height: 1.6;'>Xin chào <b>{userName}</b>,</p>
                     <p style='font-size: 16px; line-height: 1.6;'>Mật khẩu của bạn đã được thiết lập lại thành công. Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
                     <p style='text-align: center; margin: 30px 0;'>
-                        <a href='{urlPCCM}login' 
+                        <a href='{urlPCCM}' 
+                        style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                            Nhấn vào đây để đăng nhập
+                        </a>
+                    </p>
+                    <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi ngay lập tức để được hỗ trợ.</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                    <footer style='text-align: center; margin-top: 20px; font-size: 12px; color: #999;'>
+                        <p>© 2024 PCCM. All Rights Reserved.</p>
+                    </footer>
+                </div>
+                ";
+            try
+            {
+                // Gửi email
+                await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu", emailMessage);
+                return Ok("Mật khẩu đã được thay đổi thành công.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Gửi email thất bại: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("confirm-forgot-password-admin")]
+        public async Task<IActionResult> ConfirmForgotPasswordAdmin([FromBody] ConfirmForgotPasswordDto command)
+        {
+            // Validate token
+            var principal = _tokenService.ValidateToken(command.Token);
+            if (principal == null)
+            {
+                return BadRequest("Token không hợp lệ.");
+            }
+
+            // Extract user email from token
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("Không tìm thấy người dùng");
+            }
+
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, command.NewPassword);
+            user.PasswordHash = hashedPassword;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return StatusCode(500, "Đặt lại mật khẩu thất bại");
+            }
+
+            var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
+
+            var emailMessage = $@"
+                <div style='font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: 20px auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                    <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Thay đổi mật khẩu tài khoản</h2>
+                    <p style='font-size: 16px; line-height: 1.6;'>Xin chào <b>{userName}</b>,</p>
+                    <p style='font-size: 16px; line-height: 1.6;'>Mật khẩu của bạn đã được thiết lập lại thành công. Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                    <p style='text-align: center; margin: 30px 0;'>
+                        <a href='{urlPCCMAdmin}' 
                         style='display: inline-block; padding: 15px 30px; color: #fff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
                             Nhấn vào đây để đăng nhập
                         </a>
@@ -515,7 +618,74 @@ namespace API.Controllers
                                             <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333; background-color: #e9ecef; padding: 10px; border-radius: 5px; display: inline-block; margin: 20px 0;'>{newPassword}</p>
                                             <p style='font-size: 16px; line-height: 1.6;'>Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
                                             <div style='text-align: center; margin: 30px 0;'>
-                                                <a href='{urlPCCM}login' 
+                                                <a href='{urlPCCM}' 
+                                                style='display: inline-block; padding: 15px 30px; font-size: 16px; color: #ffffff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
+                                                    Nhấn vào đây để đăng nhập
+                                                </a>
+                                            </div>
+                                            <p style='font-size: 16px; line-height: 1.6; color: #666;'>Nếu bạn không yêu cầu đặt lại mật khẩu này, vui lòng bỏ qua email hoặc liên hệ với chúng tôi để được hỗ trợ.</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Trân trọng,<br><b style='color: #0056b3;'>Hệ thống PCCM</b></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style='text-align: center; padding: 10px; font-size: 12px; color: #999;'>
+                                            <p>© 2024 PCCM. All Rights Reserved.</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    ";
+
+            try
+            {
+                // Gửi email
+                await _emailService.SendEmailAsync(user.Email, "Đặt lại mật khẩu", emailMessage);
+                return Ok("Mật khẩu mới đã được gửi đến email của bạn.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Gửi email thất bại: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password-admin")]
+        public async Task<IActionResult> ResetPasswordAdmin([FromBody] ForgotPasswordDTO request)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.Equals(request.Email));
+            if (user == null)
+            {
+                return NotFound("Không tìm thấy người dùng");
+            }
+
+            // Tạo mật khẩu mới
+            var newPassword = GenerateSecurePassword();
+
+            var hashedPassword = _userManager.PasswordHasher.HashPassword(user, newPassword);
+            user.PasswordHash = hashedPassword;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return StatusCode(500, "Đặt lại mật khẩu thất bại");
+            }
+
+            var userName = string.IsNullOrEmpty(user.UserName) ? "bạn" : user.UserName;
+            var emailMessage = $@"
+                    <table style='width: 100%; background-color: #f4f6f9; padding: 20px 0; font-family: Arial, sans-serif;'>
+                        <tr>
+                            <td align='center'>
+                                <table style='width: 600px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);'>
+                                    <tr>
+                                        <td style='padding: 20px;'>
+                                            <h2 style='text-align: center; color: #0056b3; margin-bottom: 20px;'>🔒 Mật khẩu mới của bạn</h2>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Xin chào <b>{userName}</b>,</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Mật khẩu của bạn đã được thiết lập lại thành công. Dưới đây là mật khẩu mới của bạn:</p>
+                                            <p style='text-align: center; font-size: 20px; font-weight: bold; color: #333; background-color: #e9ecef; padding: 10px; border-radius: 5px; display: inline-block; margin: 20px 0;'>{newPassword}</p>
+                                            <p style='font-size: 16px; line-height: 1.6;'>Vì lý do bảo mật, vui lòng đăng nhập và thay đổi mật khẩu ngay sau khi nhận được email này.</p>
+                                            <div style='text-align: center; margin: 30px 0;'>
+                                                <a href='{urlPCCMAdmin}login' 
                                                 style='display: inline-block; padding: 15px 30px; font-size: 16px; color: #ffffff; background-color: #0056b3; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;'>
                                                     Nhấn vào đây để đăng nhập
                                                 </a>
