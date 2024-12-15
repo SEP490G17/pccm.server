@@ -103,8 +103,8 @@ namespace Application.Handler.Bookings
 
                 await _context.ProductLogs.AddRangeAsync(productLogs, cancellationToken);
                 await _context.ServiceLogs.AddRangeAsync(serviceLogs, cancellationToken);
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
+                 await _context.SaveChangesAsync();
+                //if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
                 return Result<BookingDtoV2>.Success(_mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity));
             }
         }

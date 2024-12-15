@@ -149,33 +149,5 @@ namespace Pccm.UnitTest.Bookings
             bookings[1].Status.Should().Be(BookingStatus.Declined);
         }
 
-        // [Test]
-        // public async Task Handle_SaveChangesFails_ReturnsFailure()
-        // {
-        //     // Arrange
-        //     var command = new DenyBookingConflict.Command
-        //     {
-        //         Id = new List<int> { 1, 2 }
-        //     };
-
-        //     var bookings = new List<Booking>
-        //     {
-        //         new Booking { Id = 1, Status = BookingStatus.Pending, IsSuccess = false },
-        //         new Booking { Id = 2, Status = BookingStatus.Pending, IsSuccess = false }
-        //     };
-
-        //     _dbContext.Bookings.AddRange(bookings);
-        //     _dbContext.SaveChanges();
-
-        //     _dbContext.Setup(x => x.SaveChangesAsync(CancellationToken.None))
-        //         .ReturnsAsync(0); // Simulate failed save
-
-        //     // Act
-        //     var result = await _handler.Handle(command, CancellationToken.None);
-
-        //     // Assert
-        //     result.IsSuccess.Should().BeFalse();
-        //     result.Error.Should().Be("Xóa lịch thất bại.");
-        // }
     }
 }

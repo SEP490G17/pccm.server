@@ -24,11 +24,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.MinValue, // Invalid StartTime
-                EndTime = DateTime.Now.AddHours(1), // Valid EndTime
-                PhoneNumber = "0987654321", // Valid PhoneNumber
-                FullName = "John Doe", // Valid FullName
-                CourtId = 1 // Valid CourtId
+                StartTime = DateTime.MinValue, 
+                EndTime = DateTime.Now.AddHours(1), 
+                PhoneNumber = "0987654321", 
+                FullName = "John Doe", 
+                CourtId = 1 
             };
 
             var result = _validator.TestValidate(booking);
@@ -40,11 +40,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.Now, // Valid StartTime
-                EndTime = DateTime.MinValue, // Invalid EndTime
-                PhoneNumber = "0987654321", // Valid PhoneNumber
-                FullName = "John Doe", // Valid FullName
-                CourtId = 1 // Valid CourtId
+                StartTime = DateTime.Now, 
+                EndTime = DateTime.MinValue, 
+                PhoneNumber = "0987654321", 
+                FullName = "John Doe", 
+                CourtId = 1 
             };
 
             var result = _validator.TestValidate(booking);
@@ -56,11 +56,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.Now, // Valid StartTime
-                EndTime = DateTime.Now.AddHours(1), // Valid EndTime
-                PhoneNumber = string.Empty, // Invalid PhoneNumber
-                FullName = "John Doe", // Valid FullName
-                CourtId = 1 // Valid CourtId
+                StartTime = DateTime.Now, 
+                EndTime = DateTime.Now.AddHours(1),
+                PhoneNumber = string.Empty, 
+                FullName = "John Doe", 
+                CourtId = 1 
             };
 
             var result = _validator.TestValidate(booking);
@@ -72,11 +72,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.Now, // Valid StartTime
-                EndTime = DateTime.Now.AddHours(1), // Valid EndTime
-                PhoneNumber = "0987654321", // Valid PhoneNumber
-                FullName = string.Empty, // Invalid FullName
-                CourtId = 1 // Valid CourtId
+                StartTime = DateTime.Now, 
+                EndTime = DateTime.Now.AddHours(1),
+                PhoneNumber = "0987654321", 
+                FullName = string.Empty, 
+                CourtId = 1 
             };
 
             var result = _validator.TestValidate(booking);
@@ -88,11 +88,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.Now, // Valid StartTime
-                EndTime = DateTime.Now.AddHours(1), // Valid EndTime
-                PhoneNumber = "0987654321", // Valid PhoneNumber
-                FullName = "John Doe", // Valid FullName
-                CourtId = 0 // Invalid CourtId
+                StartTime = DateTime.Now, 
+                EndTime = DateTime.Now.AddHours(1), 
+                PhoneNumber = "0987654321", 
+                FullName = "John Doe", 
+                CourtId = 0 
             };
 
             var result = _validator.TestValidate(booking);
@@ -104,11 +104,11 @@ namespace Pccm.UnitTest.Bookings
         {
             var booking = new BookingInputDto
             {
-                StartTime = DateTime.Now, // Valid StartTime
-                EndTime = DateTime.Now.AddHours(1), // Valid EndTime
-                PhoneNumber = "0987654321", // Valid PhoneNumber
-                FullName = "John Doe", // Valid FullName
-                CourtId = 1 // Valid CourtId
+                StartTime = DateTime.Now, 
+                EndTime = DateTime.Now.AddHours(1), 
+                PhoneNumber = "0987654321", 
+                FullName = "John Doe", 
+                CourtId = 1 
             };
 
             var result = _validator.TestValidate(booking);

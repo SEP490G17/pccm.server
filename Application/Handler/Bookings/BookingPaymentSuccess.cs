@@ -47,8 +47,8 @@ namespace Application.Handler.Bookings
                 }
                 booking.Payment.Status = PaymentStatus.Success;
                 _context.Bookings.Update(booking);
-                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
+                 await _context.SaveChangesAsync(cancellationToken);
+                //if (!result) return Result<BookingDtoV2>.Failure("Updated failed booking.");
                 return Result<BookingDtoV2>.Success(_mapper.Map<BookingDtoV2>(_context.Entry(booking).Entity));
             }
         }

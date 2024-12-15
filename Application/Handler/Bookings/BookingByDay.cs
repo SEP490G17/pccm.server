@@ -159,24 +159,35 @@ namespace Application.Handler.Bookings
                     var staffDetail = await _context.StaffDetails.FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
                     booking.Staff = staffDetail;
                 }
-               
-                await _context.AddAsync(booking, cancellationToken);
 
-           
-                  //  await _context.SaveChangesAsync(cancellationToken);
-               
-                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
+                await _context.AddAsync(booking, cancellationToken);
+                Console.WriteLine("Truoc wxxd sdsđsdsdsđ");
+
+                // try
+                // {
+                //     await _context.SaveChangesAsync(cancellationToken);
+                // }
+                // catch (Exception ex)
+                // {
+                //     throw new Exception("", ex);
+                // }
+
+
+                 var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                 if (!result) return Result<BookingDtoV1>.Failure("Fail to create booking");
                 var newBooking = _context.Entry(booking).Entity;
                 var response = await _context.Bookings
                     .ProjectTo<BookingDtoV1>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(x => x.Id == newBooking.Id);
+                    Console.WriteLine(response.ToString());
+                    Console.WriteLine("Chuan bi save");
                 return Result<BookingDtoV1>.Success(response);
+
+
+
+
             }
 
-
-
         }
-
     }
 }

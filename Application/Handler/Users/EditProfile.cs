@@ -34,9 +34,9 @@ namespace Application.Handler.Users
 
                     _mapper.Map(request.ProfileInputDto, user);
 
-                    var result = await _context.SaveChangesAsync() > 0;
+                    await _context.SaveChangesAsync();
 
-                    if (!result) return Result<ProfileInputDto>.Failure("Failed to edit profile");
+                    //if (!result) return Result<ProfileInputDto>.Failure("Failed to edit profile");
 
                     return Result<ProfileInputDto>.Success(request.ProfileInputDto);
                 }

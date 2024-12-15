@@ -1,5 +1,4 @@
-
-using Application.Handler.Bill;
+using Infrastructure.Bill;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -104,7 +104,6 @@ namespace Pccm.UnitTest.Bookings
         [Test]
         public async Task Handle_Should_Return_Failure_When_Booking_Expired()
         {
-            // Arrange: Create a CourtCluster with Courts and an expired Booking
             var courtCluster = new CourtCluster
             {
                 Id = 1,
@@ -143,13 +142,8 @@ namespace Pccm.UnitTest.Bookings
             _dbContext.Courts.Add(court);
             _dbContext.Bookings.Add(expiredBooking);
             await _dbContext.SaveChangesAsync();
-
             var command = new AcceptedBooking.Command { Id = 1 };
-
-            // Act
             var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
             result.IsSuccess.Should().BeFalse();
             result.Error.Should().Be("Lịch đặt đã quá hạn");
         }

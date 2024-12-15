@@ -54,9 +54,9 @@ namespace Application.Handler.Orders
                 order.Payment.Status = PaymentStatus.Cancel;
                 _context.UpdateRange(productsRollBack);
                 _context.Update(order);
-                var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+                 await _context.SaveChangesAsync(cancellationToken);
 
-                if (!result) return Result<OrderOfBookingDto>.Failure("Cancel Order thất bại");
+                //if (!result) return Result<OrderOfBookingDto>.Failure("Cancel Order thất bại");
 
                 var res = await _context.Orders.ProjectTo<OrderOfBookingDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync(o => o.Id == request.Id);
                 return Result<OrderOfBookingDto>.Success(res);

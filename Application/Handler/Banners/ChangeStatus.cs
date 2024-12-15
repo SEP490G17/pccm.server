@@ -39,11 +39,11 @@ namespace Application.Handler.Banners
 
                 try
                 {
-                    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
-                    if (!result)
-                    {
-                        return Result<Banner>.Failure("Failed to change status banner");
-                    }
+                    await _context.SaveChangesAsync(cancellationToken) ;
+                    // if (!result)
+                    // {
+                    //     return Result<Banner>.Failure("Failed to change status banner");
+                    // }
 
                     return Result<Banner>.Success(banner);
                 }

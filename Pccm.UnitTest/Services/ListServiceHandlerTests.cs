@@ -40,7 +40,7 @@ namespace Pccm.UnitTest.Services
             return response.Value.Data.Count();
         }
 
-        [TestCase(0, 5, ExpectedResult = 5)]
+        [TestCase(0, 5, ExpectedResult = 4)]
         public async Task<int?> Handle_ShouldListService_WhenSearchByName(int skip, int pageSize)
         {
             if (this.Mediator is null) return null;

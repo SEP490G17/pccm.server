@@ -100,7 +100,6 @@ namespace Pccm.UnitTest.Bookings
         [TearDown]
         public void TearDown()
         {
-            // Cleanup the in-memory database
             _dbContext.Database.EnsureDeleted();
             _dbContext.Dispose();
         }
@@ -108,7 +107,6 @@ namespace Pccm.UnitTest.Bookings
         [Test]
         public async Task Handle_Should_Return_Failure_When_User_Not_Found()
         {
-            // Arrange: Mock the user accessor to return a non-existing user
             _mockUserAccessor.Setup(u => u.GetUserName()).Returns("non_existing_user");
 
             var command = new BookingWithCombo.Command
@@ -135,7 +133,6 @@ namespace Pccm.UnitTest.Bookings
         [Test]
         public async Task Handle_Should_Return_Failure_When_Court_Not_Found()
         {
-            // Arrange: Mock the user accessor to return an existing user
             _mockUserAccessor.Setup(u => u.GetUserName()).Returns("existing_user");
             _mockUserManager.Setup(m => m.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new AppUser());
 

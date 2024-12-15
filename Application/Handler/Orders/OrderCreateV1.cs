@@ -25,8 +25,6 @@ namespace Application.Handler.Orders
             public CommandValidator()
             {
                 RuleFor(x => x).SetValidator(new OrderValidatorV1());
-
-
             }
         }
 

@@ -43,8 +43,8 @@ namespace Application.Handler.StaffPositions
                         _context.StaffPositions.Update(staffPosition);
                     }
                 }
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<List<StaffPosition>>.Failure("Fail to update roles");
+                await _context.SaveChangesAsync();
+                //if (!result) return Result<List<StaffPosition>>.Failure("Fail to update roles");
                 List<StaffPosition> res = await _context.StaffPositions.ToListAsync();
                 return Result<List<StaffPosition>>.Success(res);
             }

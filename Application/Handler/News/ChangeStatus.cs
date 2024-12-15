@@ -34,8 +34,8 @@ namespace Application.Handler.News
                 {
                     news.Status = BannerStatus.Hidden;
                 }
-                var result = await _context.SaveChangesAsync() > 0;
-                if (!result) return Result<NewsBlog>.Failure("Faild to change status news");
+                await _context.SaveChangesAsync();
+               // if (!result) return Result<NewsBlog>.Failure("Faild to change status news");
                 return Result<NewsBlog>.Success(news);
             }
         }

@@ -29,14 +29,12 @@ namespace Application.Handler.Notifications
             {
 
                 var noti = await _context.Notifications.FirstOrDefaultAsync(x => x.Id == request.NotiId, cancellationToken);
-                if (noti.ReadAt == null)
-                {
+            
                     noti.ReadAt = DateTime.Now;
                     _context.Update(noti);
                     var result = await _context.SaveChangesAsync(cancellationToken) > 0;
                     if (!result) return Result<Unit>.Failure("Cập nhật trạng thái thất bại");
 
-                }
                 return Result<Unit>.Success(Unit.Value);
             }
         }

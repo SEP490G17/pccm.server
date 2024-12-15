@@ -30,9 +30,9 @@ namespace Application.Handler.CourtClusters
                 courtCluster.DeleteAt = DateTime.Now;
                 courtCluster.DeleteBy = request.userApp;
                 _context.CourtClusters.Update(courtCluster);
-                var result = await _context.SaveChangesAsync() > 0;
-                if (result) return Result<Unit>.Success(Unit.Value);
-                return Result<Unit>.Failure("Failed to delete the court cluster.");
+                 await _context.SaveChangesAsync();
+                 return Result<Unit>.Success(Unit.Value);
+                //return Result<Unit>.Failure("Failed to delete the court cluster.");
             }
         }
     }

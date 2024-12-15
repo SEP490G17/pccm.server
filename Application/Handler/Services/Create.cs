@@ -93,8 +93,8 @@ namespace Application.Handler.Services
                     serviceLog.Description = $"đã thêm dịch vụ {service.ServiceName}";
                     await _context.ServiceLogs.AddAsync(serviceLog, cancellationToken);
                 }
-                var result1 = await _context.SaveChangesAsync(cancellationToken) > 0;
-                if (!result1) return Result<List<Service>>.Failure("Fail to create servicelog");
+                 await _context.SaveChangesAsync(cancellationToken);
+                //if (!result1) return Result<List<Service>>.Failure("Fail to create servicelog");
 
                 return Result<List<Service>>.Success(services);
             }

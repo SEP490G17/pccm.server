@@ -8,7 +8,7 @@ using Persistence;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 
-namespace Application.Handler.Bill
+namespace Infrastructure.Bill
 {
     public class CreateBillOrder
     {
